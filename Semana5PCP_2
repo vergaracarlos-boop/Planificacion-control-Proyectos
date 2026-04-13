@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Aula Invertida - Gestión en Ingeniería</title>
+    <style>
+        /* TAREA 2: ESTILOS CSS */
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #3498DB;
+            --tertiary-color: #ECF0F1;
+            --success-color: #27AE60;
+            --text-main: #2C3E50;
+            --text-secondary: #7F8C8D;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--tertiary-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Diseño de contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        /* TAREA 3: ENCABEZADO */
+        .header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .header h2 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: var(--secondary-color);
+        }
+
+        /* Estructura de Secciones */
+        .section {
+            padding: 40px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .section-title span {
+            margin-right: 15px;
+            font-size: 2rem;
+        }
+
+        .objective-box {
+            margin-bottom: 20px;
+        }
+
+        .objective-label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .instruction-highlight {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-weight: 500;
+        }
+
+        /* TAREA 8: INTERACTIVIDAD - Tarjetas */
+        .card {
+            background: #ffffff;
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Marca de verificación visual en hover */
+        .card::after {
+            content: '✓';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--success-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card h4 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        /* Iframe styling */
+        .iframe-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 6px;
+            margin-top: 15px;
+            background: #000;
+        }
+
+        .iframe-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Botones estilizados */
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980B9;
+            transform: scale(1.02);
+        }
+
+        /* TAREA 5: Grid de Sesiones Presenciales */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .day-title {
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        /* Etiquetas de estado */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background-color: var(--tertiary-color);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .warning-note {
+            background-color: #FFF3CD;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FFEEBA;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        /* TAREA 7: PIE DE PÁGINA */
+        .footer {
+            padding: 40px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #ddd;
+            width: 60%;
+            margin: 0 auto 30px;
+        }
+
+        .footer-links {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .credits {
+            color: #bdc3c7;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+
+        /* TAREA 2: Responsividad */
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .section {
+                padding: 25px;
+            }
+            .header h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TAREA 3: ENCABEZADO -->
+        <header class="header">
+            <h1>Semana 5: Estructura de Desglose del Trabajo (EDT).</h1>
+            <h2>Planificación del 13 de abril al 17 de abril</h2>
+        </header>
+
+        <!-- TAREA 4: FASE 1 - PREPARACIÓN -->
+        <section class="section">
+            <h3 class="section-title"><span>📖</span> FASE 1: PREPARACIÓN · Trabajo autónomo previo</h3>
+            
+            <div class="objective-box">
+                <p><span class="objective-label">Objetivo:</span> Introducir a los estudiantes en los conceptos fundamentales de la gestión en ingeniería</p>
+            </div>
+
+            <div class="instruction-highlight">
+                Completa las siguientes actividades ANTES de nuestras sesiones presenciales. Prepara tus apuntes y dudas.
+            </div>
+
+            <!-- Lista vertical de recursos -->
+            <div class="card">
+                <h4>📄 Lectura Obligatoria: Estructura de Desglose del Trabajo (EDT): El ADN del Control de Proyectos</h4>
+                <p>Revisa este documento base antes de continuar.</p>
+                <div class="iframe-wrapper">
+                    <iframe src="https://drive.google.com/file/d/1xHyUMYsRpHL-5ZNljpwm8l98yEaRixy0/preview" allow="autoplay"></iframe>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>🎥 Video: Estructura Desglose del Trabajo</h4>
+                <p>Este video complementa la lectura con ejemplos prácticos.</p>
+                <a href="https://youtu.be/ep-gNirdtRA" target="_blank" class="btn">Ver video en YouTube</a>
+            </div>
+
+            <div class="card">
+                <h4>📝 Cuestionario de Autoevaluación</h4>
+                <p>Verifica tu comprensión con este breve cuestionario interactivo.</p>
+                <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/cuestionarioSemana5.html" target="_blank" class="btn">Ir al cuestionario</a>
+            </div>
+        </section>
+
+        <!-- TAREA 5: FASE 2 - SESIONES PRESENCIALES -->
+        <section class="section">
+            <h3 class="section-title"><span>👥</span> FASE 2: SESIONES PRESENCIALES · Práctica guiada y colaboración</h3>
+            
+            <div class="objective-box">
+                <p><span class="objective-label">Objetivo:</span> Profundizar en los conceptos y aplicarlos en actividades prácticas.</p>
+            </div>
+
+            <div class="instruction-highlight">
+                Asiste y participa activamente en ambas sesiones.
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <span class="day-title">MARTES (Recuperar)</span>
+                    <p><strong>Activación:</strong> Aplicación de la regla del 100%.</p>
+                    <p><strong>Actividad:</strong> Construcción de WBS detallado para obra de edificación.</p>
+                </div>
+                <div class="card">
+                    <span class="day-title">JUEVES</span>
+                    <p><strong>Activación:</strong> Análisis de consistencia técnica.</p>
+                    <p><strong>Actividad:</strong> Taller: Evaluación: Aplicación de fundamentos en el Plan Preliminar.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 6: FASE 3 - INTEGRACIÓN -->
+        <section class="section">
+            <h3 class="section-title"><span>🚀</span> FASE 3: INTEGRACIÓN · Trabajo autónomo post-clase</h3>
+            
+            <div class="objective-box">
+                <p><span class="objective-label">Objetivo:</span> Consolidar el aprendizaje mediante la lectura autónoma.</p>
+            </div>
+
+            <div class="instruction-highlight">
+                Realiza esta lectura después de las sesiones presenciales para afianzar conceptos.
+            </div>
+
+            <div class="card" style="max-width: 600px;">
+                <h4>Aplicación práctica</h4>
+                <p>Cierre de documentos y subida a Drive.</p>
+                <span class="status-badge">En espera...</span>
+                
+                <div class="warning-note">
+                    <strong>Mensaje importante:</strong> El enlace al documento será proporcionado por el/la docente en clase o a través de la plataforma institucional.
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 7: PIE DE PÁGINA -->
+        <footer class="footer">
+            <div class="footer-divider"></div>
+            <p><strong>Recuerda que la preparación previa es clave para el aprovechamiento de las sesiones presenciales.</strong></p>
+            
+            <div class="footer-links">
+                <a href="https://poe.com/IngProyectosBot" target="_blank">🤖 Chatbot Educativo (Poe)</a>
+                <a href="https://chat.google.com/room/AAQAx5IqQps?cls=7" target="_blank">💬 Google Chat (Sala de curso)</a>
+            </div>
+
+            <p class="credits">Planificación diseñada para curso de Ingeniería · Formato Aula Invertida</p>
+        </footer>
+    </div>
+
+</body>
+</html>
