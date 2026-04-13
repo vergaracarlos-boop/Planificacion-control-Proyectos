@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Formativa: La EDT como ADN del Control</title>
+    <!-- Librería para generación de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --bg-color: #F0F3F8;
+            --text-dark: #1E2A3A;
+            --text-muted: #7F8C8D;
+            --accent-color: #4A6FA5;
+            --accent-hover: #3A5A85;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --success: #27AE60;
+            --error: #E74C3C;
+            --card-radius: 20px;
+            --btn-radius: 40px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(74, 111, 165, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(93, 123, 160, 0.05) 0px, transparent 50%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Pantallas */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 1.8rem; margin-bottom: 1rem; font-weight: 600; color: var(--text-dark); }
+        p.subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        /* Estilos Login */
+        .input-group { margin-bottom: 1.5rem; position: relative; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; }
+        .email-input-wrapper { display: flex; align-items: center; background: #fff; border: 1px solid #D1D8E0; border-radius: 12px; padding: 0 15px; }
+        input[type="text"] { flex: 1; border: none; padding: 14px 0; font-size: 1rem; outline: none; background: transparent; }
+        .domain-tag { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-left: 5px; }
+
+        /* Botones */
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: var(--btn-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74, 111, 165, 0.2); }
+        .btn-outline { background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); }
+        .btn-outline:hover { background: rgba(74, 111, 165, 0.05); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Quiz UI */
+        .quiz-meta { display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; }
+        .question-title { font-size: 1.25rem; line-height: 1.4; margin-bottom: 25px; font-weight: 600; }
+        .options-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        
+        .option-item {
+            background: #fff;
+            border: 1px solid #E0E6ED;
+            border-radius: 14px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .option-item:hover { border-color: var(--accent-color); background: #F9FBFF; }
+        .option-item.selected { border-color: var(--accent-color); background: #F0F4FF; box-shadow: 0 0 0 1px var(--accent-color); }
+        
+        .radio-circle { width: 18px; height: 18px; border: 2px solid #D1D8E0; border-radius: 50%; margin-top: 2px; flex-shrink: 0; position: relative; }
+        .option-item.selected .radio-circle { border-color: var(--accent-color); }
+        .option-item.selected .radio-circle::after { content: ''; width: 10px; height: 10px; background: var(--accent-color); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        /* Feedback */
+        .feedback { display: none; padding: 18px; border-radius: 14px; margin-bottom: 25px; font-size: 0.9rem; line-height: 1.5; animation: slideUp 0.3s ease; }
+        .feedback.show { display: block; }
+        .feedback.success { background: #E9F7EF; color: var(--success); border: 1px solid #D4EFDF; }
+        .feedback.error { background: #FDEDEC; color: var(--error); border: 1px solid #FADBD8; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Resultados */
+        .score-display { text-align: center; margin: 2rem 0; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 6px solid var(--accent-color); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; color: var(--accent-color); margin: 0 auto 1.5rem; background: #fff; }
+        .recommendation { padding: 1.5rem; border-radius: 14px; background: #FFF9E6; color: #856404; border: 1px solid #FFEEBA; margin-bottom: 2rem; font-size: 0.95rem; text-align: center; }
+
+        .footer-note { font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 1.5rem; }
+
+        /* Utils */
+        .hidden { display: none; }
+        .nav-btns { display: flex; justify-content: space-between; align-items: center; }
+
+        @media (max-width: 600px) {
+            .container { padding: 25px; }
+            h1 { font-size: 1.5rem; }
+            .nav-btns { flex-direction: column-reverse; gap: 12px; }
+            .nav-btns .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- PANTALLA 1: LOGIN -->
+        <div id="screen-login" class="screen active">
+            <h1>Evaluación Formativa</h1>
+            <p class="subtitle">Estructura de Desglose del Trabajo (EDT): El ADN del Control de Proyectos. Ingrese sus datos para comenzar.</p>
+            
+            <div class="input-group">
+                <label>Correo Institucional</label>
+                <div class="email-input-wrapper">
+                    <input type="text" id="user-prefix" placeholder="nombre.apellido" autocomplete="off">
+                    <span class="domain-tag">@alumnos.ulagos.cl</span>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="app.start()">Comenzar Evaluación</button>
+        </div>
+
+        <!-- PANTALLA 2: CUESTIONARIO -->
+        <div id="screen-quiz" class="screen">
+            <div class="quiz-meta">
+                <span id="meta-user"></span>
+                <span id="meta-progress">Pregunta 1/10</span>
+            </div>
+            
+            <h2 class="question-title" id="question-text">¿Cargando pregunta?</h2>
+            
+            <div class="options-list" id="options-container">
+                <!-- Generado por JS -->
+            </div>
+            
+            <div id="quiz-feedback" class="feedback">
+                <!-- Generado por JS -->
+            </div>
+            
+            <div class="nav-btns">
+                <button class="btn btn-outline" id="btn-prev" onclick="app.prev()">Anterior</button>
+                <button class="btn" id="btn-next" onclick="app.handleNext()">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS -->
+        <div id="screen-result" class="screen">
+            <h1 style="text-align: center;">Resultado Final</h1>
+            <div class="score-display">
+                <div class="score-circle" id="result-score">0/10</div>
+                <p id="result-status" style="font-weight: 600; font-size: 1.1rem;"></p>
+            </div>
+            
+            <div id="result-recommendation" class="recommendation hidden">
+                ⚠️ Has obtenido menos de 3 aciertos. Es fundamental que revises nuevamente los materiales de la Clase 5 antes de nuestra sesión presencial.
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn" onclick="app.downloadPDF()">📄 Descargar Resumen (PDF)</button>
+                <button class="btn btn-outline" onclick="app.reset()" id="btn-retry">Reintentar Cuestionario</button>
+            </div>
+            
+            <p class="footer-note">Recuerda subir el PDF al chat de la asignatura en Microsoft Teams o la plataforma correspondiente.</p>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * LÓGICA DE LA APLICACIÓN
+         * Basada en los materiales: Resumen Clase 5, Video y Transcripción sobre EDT/WBS.
+         */
+
+        const app = {
+            currentIdx: 0,
+            userEmail: "",
+            score: 0,
+            answers: [], // Guarda: { selectedIdx: n, isCorrect: bool }
+            
+            questions: [
+                {
+                    q: "¿Qué establece fundamentalmente la 'Regla del 100%' en la elaboración de una EDT?",
+                    options: [
+                        "Que el presupuesto debe ejecutarse en su totalidad sin desviaciones.",
+                        "Que la EDT debe capturar el 100% del alcance definido y todos sus entregables.",
+                        "Que cada paquete de trabajo debe tener asignado el 100% de los recursos.",
+                        "Que el proyecto debe finalizarse con un 100% de aprobación del cliente."
+                    ],
+                    correct: 1,
+                    rationale: "La Regla del 100% asegura que la EDT sea exhaustiva, incluyendo todo el trabajo del proyecto y excluyendo cualquier elemento fuera del alcance."
+                },
+                {
+                    q: "¿Cuál es la función principal de la EDT desde la perspectiva de la Teoría General de Sistemas de Johansen?",
+                    options: [
+                        "Actuar como una herramienta de neguentropía para imponer orden al caos natural de la obra.",
+                        "Generar reportes de costos para la contabilidad central de la empresa constructora.",
+                        "Definir la secuencia cronológica de las tareas mediante diagramas de barras.",
+                        "Eliminar la necesidad de supervisión directa en el terreno de construcción."
+                    ],
+                    correct: 0,
+                    rationale: "La EDT inyecta energía al sistema mediante una planificación estructurada, combatiendo la tendencia natural al desorden (entropía) en sistemas complejos."
+                },
+                {
+                    q: "Al comparar una EDT con un cronograma (Gantt), ¿cuál es la distinción clave establecida en los materiales?",
+                    options: [
+                        "La EDT se enfoca en el presupuesto y el cronograma en la calidad técnica.",
+                        "La EDT es una lista de tareas secuenciales y el cronograma es jerárquico.",
+                        "La EDT responde al '¿Qué?' se va a entregar y el cronograma responde al '¿Cuándo?'.",
+                        "La EDT es utilizada por los obreros y el cronograma por la alta gerencia."
+                    ],
+                    correct: 2,
+                    rationale: "La EDT es una descomposición jerárquica orientada al producto final (entregables), mientras que el cronograma gestiona la dimensión temporal."
+                },
+                {
+                    q: "¿Qué define técnicamente a un 'Paquete de Trabajo' (Work Package)?",
+                    options: [
+                        "Cualquier tarea que tome más de una semana en ejecutarse.",
+                        "Un nivel de desglose que requiere aprobación directa del mandante externo.",
+                        "El nivel más bajo de la EDT que puede ser asignado, presupuestado y controlado.",
+                        "La suma total de todos los materiales necesarios para una fase de la obra."
+                    ],
+                    correct: 2,
+                    rationale: "Es la unidad básica de control; debe ser lo suficientemente pequeño para permitir una estimación precisa de costo y duración."
+                },
+                {
+                    q: "¿Qué consecuencia tiene el 'Ruido Sistémico' según la perspectiva de Kerzner en ausencia de una EDT?",
+                    options: [
+                        "Aumento de la contaminación acústica en el sitio de construcción.",
+                        "Informes de avance ambiguos que ocultan las desviaciones críticas del proyecto.",
+                        "Pérdida de la señal de comunicación entre los equipos de radiofrecuencia.",
+                        "Reducción de la productividad debido al exceso de reuniones técnicas."
+                    ],
+                    correct: 1,
+                    rationale: "Sin una EDT clara como lenguaje unificado, la información de avance carece de contexto, dificultando la detección de problemas reales."
+                },
+                {
+                    q: "De acuerdo a Serpell, ¿cuál es la 'Regla de Oro' para detener el proceso de descomposición jerárquica?",
+                    options: [
+                        "Cuando el proyecto tenga exactamente tres niveles de profundidad.",
+                        "Cuando los paquetes de trabajo puedan ser asignados a un responsable único (RAM).",
+                        "Cuando el costo de cada tarea sea inferior al 1% del presupuesto total.",
+                        "Cuando se hayan agotado todos los recursos financieros destinados a planificación."
+                    ],
+                    correct: 1,
+                    rationale: "El desglose se detiene cuando el elemento es manejable para control de gestión y se puede identificar una responsabilidad clara."
+                },
+                {
+                    q: "En el control de gestión, ¿qué significa comparar el CPTE con el CATE en un paquete de trabajo?",
+                    options: [
+                        "Verificar si los materiales cumplen con las normas técnicas vigentes.",
+                        "Comparar la calidad proyectada con la calidad realmente obtenida en obra.",
+                        "Evaluar el costo presupuestado del trabajo ejecutado frente al costo actual real.",
+                        "Medir el consumo energético de la maquinaria pesada en comparación con el plan."
+                    ],
+                    correct: 2,
+                    rationale: "Esta métrica financiera permite identificar de forma científica si el proyecto está gastando más o menos de lo planeado para el avance logrado."
+                },
+                {
+                    q: "En el ejemplo práctico de un puente, ¿cuál sería el nivel 2 correcto según el diagrama presentado?",
+                    options: [
+                        "Pilotes, Estribos y Tableros.",
+                        "Gestión de Proyecto, Subestructura y Superestructura.",
+                        "Planificación, Control de Costos y Calidad.",
+                        "Fabricación, Montaje y Pavimentación."
+                    ],
+                    correct: 1,
+                    rationale: "El nivel 2 suele agrupar los componentes principales del proyecto y la gestión transversal necesaria para su ejecución."
+                },
+                {
+                    q: "¿Por qué se afirma que la EDT ayuda a evitar la aparición de 'silos de información'?",
+                    options: [
+                        "Porque prohíbe el uso de documentos privados entre los ingenieros.",
+                        "Porque automatiza el envío de correos electrónicos a todo el equipo.",
+                        "Porque establece un lenguaje unificado donde terreno, oficina técnica y gerencia hablan de lo mismo.",
+                        "Porque reduce el número de departamentos involucrados en la toma de decisiones."
+                    ],
+                    correct: 2,
+                    rationale: "La EDT alinea a todos los actores sobre la misma base de entregables, eliminando la ambigüedad en la comunicación interna."
+                },
+                {
+                    q: "¿Cuál de los siguientes es un factor humano de fracaso en la implementación de la EDT?",
+                    options: [
+                        "Uso de software de planificación excesivamente moderno.",
+                        "Falta de apoyo de la gerencia o falta de compromiso del equipo.",
+                        "Condiciones climáticas adversas durante la fase de excavación.",
+                        "Cambios imprevistos en el precio internacional del acero."
+                    ],
+                    correct: 1,
+                    rationale: "Como indica la transcripción, la EDT es una herramienta poderosa pero requiere compromiso organizacional y objetivos claros para ser efectiva."
+                }
+            ],
+
+            start: function() {
+                const prefix = document.getElementById('user-prefix').value.trim();
+                if (!prefix) {
+                    alert("Por favor, ingrese su identificador de correo.");
+                    return;
+                }
+                this.userEmail = prefix + "@alumnos.ulagos.cl";
+                this.answers = new Array(this.questions.length).fill(null);
+                
+                document.getElementById('meta-user').textContent = this.userEmail;
+                this.showScreen('screen-quiz');
+                this.renderQuestion();
+            },
+
+            showScreen: function(id) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            },
+
+            renderQuestion: function() {
+                const q = this.questions[this.currentIdx];
+                const state = this.answers[this.currentIdx];
+                
+                document.getElementById('meta-progress').textContent = `Pregunta ${this.currentIdx + 1}/${this.questions.length}`;
+                document.getElementById('question-text').textContent = q.q;
+                
+                const container = document.getElementById('options-container');
+                container.innerHTML = "";
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    div.className = `option-item ${state && state.selectedIdx === i ? 'selected' : ''}`;
+                    if (state) div.style.cursor = "default";
+                    
+                    div.innerHTML = `
+                        <div class="radio-circle"></div>
+                        <div class="option-text">${opt}</div>
+                    `;
+                    
+                    if (!state) {
+                        div.onclick = () => this.selectOption(i);
+                    }
+                    container.appendChild(div);
+                });
+
+                // Botones
+                document.getElementById('btn-prev').disabled = this.currentIdx === 0;
+                const nextBtn = document.getElementById('btn-next');
+                
+                if (state) {
+                    nextBtn.textContent = (this.currentIdx === this.questions.length - 1) ? "Finalizar" : "Siguiente";
+                    this.showFeedback(state.isCorrect, q.rationale);
+                } else {
+                    nextBtn.textContent = "Comprobar";
+                    document.getElementById('quiz-feedback').classList.remove('show');
+                }
+            },
+
+            selectOption: function(idx) {
+                this.tempSelected = idx;
+                const items = document.querySelectorAll('.option-item');
+                items.forEach((item, i) => {
+                    item.classList.toggle('selected', i === idx);
+                });
+            },
+
+            handleNext: function() {
+                const state = this.answers[this.currentIdx];
+                
+                if (!state) {
+                    // Acción: Comprobar
+                    if (this.tempSelected === undefined) {
+                        alert("Seleccione una opción para continuar.");
+                        return;
+                    }
+                    
+                    const isCorrect = this.tempSelected === this.questions[this.currentIdx].correct;
+                    if (isCorrect) this.score++;
+                    
+                    this.answers[this.currentIdx] = {
+                        selectedIdx: this.tempSelected,
+                        isCorrect: isCorrect
+                    };
+                    this.tempSelected = undefined;
+                    this.renderQuestion();
+                } else {
+                    // Acción: Avanzar
+                    if (this.currentIdx < this.questions.length - 1) {
+                        this.currentIdx++;
+                        this.renderQuestion();
+                    } else {
+                        this.finish();
+                    }
+                }
+            },
+
+            prev: function() {
+                if (this.currentIdx > 0) {
+                    this.currentIdx--;
+                    this.renderQuestion();
+                }
+            },
+
+            showFeedback: function(isCorrect, rationale) {
+                const fb = document.getElementById('quiz-feedback');
+                fb.className = `feedback show ${isCorrect ? 'success' : 'error'}`;
+                fb.innerHTML = `<strong>${isCorrect ? '✅ Correcto' : '❌ Incorrecto'}</strong><br>${rationale}`;
+            },
+
+            finish: function() {
+                document.getElementById('result-score').textContent = `${this.score}/${this.questions.length}`;
+                const status = document.getElementById('result-status');
+                const rec = document.getElementById('result-recommendation');
+                const retryBtn = document.getElementById('btn-retry');
+                
+                if (this.score >= 7) {
+                    status.textContent = "¡Excelente! Dominas los conceptos clave de la EDT.";
+                    status.style.color = "var(--success)";
+                    rec.classList.add('hidden');
+                    retryBtn.classList.add('hidden');
+                } else if (this.score >= 4) {
+                    status.textContent = "Buen intento. Te recomendamos repasar los temas más débiles.";
+                    status.style.color = "var(--text-dark)";
+                    rec.classList.add('hidden');
+                    retryBtn.classList.remove('hidden');
+                } else {
+                    status.textContent = "Desempeño bajo lo esperado.";
+                    status.style.color = "var(--error)";
+                    rec.classList.remove('hidden');
+                    retryBtn.classList.remove('hidden');
+                }
+                
+                this.showScreen('screen-result');
+            },
+
+            reset: function() {
+                this.currentIdx = 0;
+                this.score = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.showScreen('screen-quiz');
+                this.renderQuestion();
+            },
+
+            downloadPDF: function() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(18);
+                doc.text("Resumen de Evaluación Formativa: La EDT", 20, 20);
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Estudiante: ${this.userEmail}`, 20, 35);
+                doc.text(`Fecha: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 42);
+                doc.text(`Puntaje: ${this.score} de ${this.questions.length} respuestas correctas.`, 20, 49);
+                
+                doc.line(20, 55, 190, 55);
+                
+                let y = 65;
+                this.questions.forEach((q, i) => {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    const state = this.answers[i];
+                    const result = state.isCorrect ? "[Correcta]" : "[Incorrecta]";
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`${i+1}. ${result}`, 20, y);
+                    doc.setFont("helvetica", "normal");
+                    const splitText = doc.splitTextToSize(q.q, 160);
+                    doc.text(splitText, 20, y + 7);
+                    y += (splitText.length * 7) + 10;
+                });
+                
+                doc.save(`Resultado_EDT_${this.userEmail.split('@')[0]}.pdf`);
+            }
+        };
+
+        // Prevenir envío accidental con Enter
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const active = document.querySelector('.screen.active').id;
+                if (active === 'screen-login') app.start();
+            }
+        });
+    </script>
+</body>
+</html>
