@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Interactiva: Planificación y Control de Proyectos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            height: 220px;
+        }
+
+        @media (min-width: 1024px) {
+            .chart-container {
+                max-width: 400px;
+                height: 250px;
+            }
+        }
+
+        .week-card { transition: all 0.2s ease; }
+        .details-hidden { display: none; }
+        
+        .fase-badge { font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.025em; }
+        .content-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.25rem; }
+        .section-title { font-size: 0.7rem; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; display: flex; items-center: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+
+        .step-number { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 800; font-size: 0.65rem; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 leading-normal">
+
+<!-- Chosen Palette: Brilliant Blues & Energetic Accents -->
+<!-- Application Structure Plan: 
+     1. Header con Gráfico de Ponderaciones responsivo (fijo solo en Desktop).
+     2. Resumen de asignatura y Modelo de Oficina Técnica.
+     3. Resultados de Aprendizaje (RA) alineados con Programa FDICO26.
+     4. Cronograma dinámico con layout de tarjetas (Flipped Classroom).
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 border-b border-blue-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">📑</span>
+            <span class="font-extrabold text-lg md:text-xl tracking-tight uppercase">PLANIFICACIÓN & CONTROL DE PROYECTOS 2026</span>
+        </div>
+        <div class="hidden md:block text-slate-400 text-xs font-bold uppercase tracking-widest">
+            Ingeniería Civil • Oficina Técnica • ULagos
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    
+    <!-- Sección Dashboard -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 items-start">
+        
+        <!-- Contenedor del Gráfico: Fijo solo en Desktop (lg:sticky) -->
+        <div class="lg:col-span-4 lg:sticky lg:top-24 mb-8 lg:mb-0">
+            <h2 class="text-sm font-bold mb-4 text-center text-slate-500 uppercase tracking-widest">Estructura de Calificación</h2>
+            <div class="chart-container">
+                <canvas id="raDistChart"></canvas>
+            </div>
+            <div class="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-[10px] text-center text-slate-500 italic">
+                    <strong>Sistema de Evaluación Modular:</strong><br>
+                    Cada RA contempla un 60% de Nota de Proceso (Quizzes/Foros) y un 40% de Nota de Producto (Hitos Técnicos).
+                </p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-8 space-y-10">
+            <!-- Resumen de Asignatura -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-extrabold text-slate-900">Resumen de la Asignatura</h2>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Esta actividad curricular contribuye al perfil de egreso mediante el desarrollo de competencias específicas en construcción. Aporta herramientas para la gestión de proyectos complejos, integrando técnicas de planificación y control, habilidades clave para la gestión eficiente de obras civiles considerando recursos humanos, materiales y económicos.
+                </p>
+            </div>
+
+            <!-- El Modelo de Oficina Técnica -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">El Modelo de Oficina Técnica</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-sky-50 p-5 rounded-2xl border border-sky-100 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="step-number bg-sky-200 text-sky-700">1</span>
+                            <span class="text-xs font-extrabold text-sky-800 uppercase tracking-tighter">HUB / MOODLE</span>
+                        </div>
+                        <p class="text-[11px] text-sky-700 leading-relaxed">
+                            <strong>Centro de mando.</strong> Acceso a materiales y foros de consulta permanente.
+                        </p>
+                    </div>
+                    <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-100 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="step-number bg-indigo-200 text-indigo-700">2</span>
+                            <span class="text-xs font-extrabold text-indigo-800 uppercase tracking-tighter">GOOGLE WORKSPACE</span>
+                        </div>
+                        <p class="text-[11px] text-indigo-700 leading-relaxed">
+                            <strong>Ecosistema de co-creación.</strong> Producción técnica colaborativa en Sheets, Docs y FigJam.
+                        </p>
+                    </div>
+                    <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="step-number bg-blue-200 text-blue-700">3</span>
+                            <span class="text-xs font-extrabold text-blue-800 uppercase tracking-tighter">EL AULA (Sincrónico)</span>
+                        </div>
+                        <p class="text-[11px] text-blue-700 leading-relaxed">
+                            <strong>Espacio exclusivo</strong> para debates técnicos y resolución de problemas complejos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados de Aprendizaje Oficiales -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Resultados de Aprendizaje (RA)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="bg-blue-600 text-white h-6 w-6 rounded-full flex items-center justify-center font-bold text-[10px]">1</span>
+                            <span class="font-black text-blue-900 text-lg">25%</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-[10px] uppercase mb-1">Planificación Preliminar</h4>
+                        <p class="text-[10px] text-slate-500 leading-tight">Planifica en etapa global para preparar la fase operacional del proyecto.</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="bg-emerald-600 text-white h-6 w-6 rounded-full flex items-center justify-center font-bold text-[10px]">2</span>
+                            <span class="font-black text-emerald-900 text-lg">40%</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-[10px] uppercase mb-1">Desarrollo de Planes</h4>
+                        <p class="text-[10px] text-slate-500 leading-tight">Aplica técnicas avanzadas para la gestión eficiente de recursos y plazos.</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="bg-amber-600 text-white h-6 w-6 rounded-full flex items-center justify-center font-bold text-[10px]">3</span>
+                            <span class="font-black text-amber-900 text-lg">35%</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-[10px] uppercase mb-1">Control de Gestión</h4>
+                        <p class="text-[10px] text-slate-500 leading-tight">Monitorea plazos, costos y calidad bajo estándares técnicos nacionales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cronograma -->
+    <section class="space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Cronograma del Semestre</h2>
+            <div class="flex gap-2 flex-wrap" id="ra-filters">
+                <button onclick="filterRA('all')" class="ra-btn px-5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white transition-all shadow-sm" data-ra="all">VER TODO</button>
+                <button onclick="filterRA('RA1')" class="ra-btn px-5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all shadow-sm" data-ra="RA1">RA1 (25%)</button>
+                <button onclick="filterRA('RA2')" class="ra-btn px-5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all shadow-sm" data-ra="RA2">RA2 (40%)</button>
+                <button onclick="filterRA('RA3')" class="ra-btn px-5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all shadow-sm" data-ra="RA3">RA3 (35%)</button>
+            </div>
+        </div>
+
+        <div id="timeline-container" class="space-y-6">
+            <!-- Inyectado por JS -->
+        </div>
+    </section>
+</main>
+
+<script>
+    const courseData = [
+        { 
+            sem: 1, ra: "RA1", obj: "Introducción a la planificación de proyectos.", 
+            before: "Revisar presentación sobre conceptos básicos y herramientas comunes.", 
+            tue: { act: "Debate: Rol del Ingeniero en la oficina técnica.", main: "Identificación de herramientas de gestión por tipo de obra." },
+            thu: { act: "Definición de niveles de planificación.", main: "Configuración del entorno colaborativo (Google Workspace)." },
+            after: "Lectura complementaria: Ciclo de vida del proyecto civil.",
+            procEval: "Foro: Herramientas de Planificación"
+        },
+        { 
+            sem: 2, ra: "RA1", obj: "Teoría de Sistemas aplicada a la gestión.", 
+            before: "Estudiar conceptos de Teoría de Sistemas en la construcción.", 
+            tue: { act: "Identificación de sistemas en proyectos reales.", main: "Mapeo de entradas, procesos y salidas en una obra civil." },
+            thu: { act: "Estructura de subdivisión del proyecto.", main: "Caso de estudio: El proyecto como sistema abierto." },
+            after: "Exploración de licitaciones en MercadoPúblico.",
+            procEval: "Quiz: Teoría de Sistemas"
+        },
+        { 
+            sem: 3, ra: "RA1", obj: "Objetivos, alcances y restricciones.", 
+            before: "Analizar ejemplos de alcances en proyectos de infraestructura.", 
+            tue: { act: "Formulación de objetivos técnicos SMART.", main: "Taller: Definición de alcances para un puente vial." },
+            thu: { act: "Gestión de restricciones críticas.", main: "Control formativo (Forms): Objetivos y restricciones." },
+            after: "Preparar cubicación preliminar para estimación inicial.",
+            procEval: "Bitácora: Definición de Alcance"
+        },
+        { 
+            sem: 4, ra: "RA1", obj: "Triángulo de Gestión de Proyectos.", 
+            before: "Casos reales sobre el impacto en Alcance, Costo y Plazo.", 
+            tue: { act: "Simulación: Modificación presupuestaria en obra.", main: "Análisis de impacto: Alcance vs Plazo en edificación." },
+            thu: { act: "Definición de estrategia técnica.", main: "Taller: Consolidación estratégica del Plan Preliminar." },
+            after: "Estructuración de la Carpeta RA1.",
+            procEval: "Quiz: Triángulo de Gestión"
+        },
+        { 
+            sem: 5, ra: "RA1", obj: "Estructura de Desglose del Trabajo (EDT/WBS).", 
+            before: "Importancia de la EDT en la planificación de proyectos.", 
+            tue: { act: "Aplicación de la regla del 100%.", main: "Construcción de WBS detallado para obra de edificación." },
+            thu: { act: "Análisis de consistencia técnica.", main: "Evaluación: Aplicación de fundamentos en el Plan Preliminar." },
+            after: "Cierre de documentos y subida a Drive.",
+            sumEval: { label: "Hito RA1: Plan Preliminar", desc: "Entrega del Acta de Constitución, Análisis de Interesados y EDT técnica (Procedimental: Elabora planificación preliminar)." },
+            procEval: "Cierre Nota Proceso RA1 (60%)"
+        },
+        { 
+            sem: 6, ra: "RA2", obj: "Planificación tradicional: Diagrama de Gantt.", 
+            before: "Fundamentos del uso de Gantt en la construcción civil.", 
+            tue: { act: "Determinación de lógica rítmica.", main: "Diagramación de un proyecto civil en Carta Gantt." },
+            thu: { act: "Software de planificación técnica.", main: "Selección y configuración de herramientas para programación." },
+            after: "Investigación rinde de cuadrillas (Base Ondac).",
+            procEval: "Bitácora: Programación Gantt"
+        },
+        { 
+            sem: 7, ra: "RA2", obj: "CPM (Método de la Ruta Crítica).", 
+            before: "Estudiar algoritmos de cálculo de redes CPM.", 
+            tue: { act: "Cálculo manual de fechas y holguras.", main: "Identificación de la Ruta Crítica en red de actividades." },
+            thu: { act: "Relaciones lógicas complejas.", main: "Simulación: Ajuste de mallas ante cambios constructivos." },
+            after: "Práctica autónoma: Ejercicios CPM avanzados.",
+            procEval: "Quiz: Ruta Crítica"
+        },
+        { 
+            sem: 8, ra: "RA2", obj: "PDM con actividades continuas.", 
+            before: "Diferencias metodológicas entre CPM y PDM.", 
+            tue: { act: "Uso estratégico de Lags.", main: "Programación con actividades continuas y traslapes lógicos." },
+            thu: { act: "Diagramas de precedencia técnica.", main: "Modelamiento PDM para etapa de obra gruesa." },
+            after: "Lectura complementaria: Variabilidad y Buffering.",
+            procEval: "Bitácora: Lógica PDM"
+        },
+        { 
+            sem: 9, ra: "RA2", obj: "Semana de Vida Universitaria.", 
+            before: "Sin actividades académicas directas.", 
+            tue: { act: "Pausa institucional.", main: "No hay actividades en aula." },
+            thu: { act: "Preparación RA2.", main: "Trabajo autónomo: Consolidación del cronograma de obra." },
+            after: "Finalización de Carta Gantt detallada.",
+            procEval: "Sin evaluación"
+        },
+        { 
+            sem: 10, ra: "RA2", obj: "PDM con actividades discontinuas.", 
+            before: "Gestión de paradas técnicas en programación de obra.", 
+            tue: { act: "Modelamiento de paradas.", main: "Programación técnica de partidas con interrupciones lógicas." },
+            thu: { act: "Incertidumbre en la planificación.", main: "Simulación: Planificación bajo escenarios de incertidumbre." },
+            after: "Ajuste de calendarios de faena.",
+            procEval: "Quiz: PDM Discontinuo"
+        },
+        { 
+            sem: 11, ra: "RA2", obj: "Planificación con incertidumbre: PERT.", 
+            before: "Fórmulas PERT y distribuciones de probabilidad.", 
+            tue: { act: "Probabilidad de cumplimiento de hitos.", main: "Estimación probabilística de tiempos (O, P, M)." },
+            thu: { act: "Varianza y nivel de confianza.", main: "Cálculo de fechas contractuales con seguridad estadística." },
+            after: "Búsqueda rinde de cuadrillas según contexto.",
+            procEval: "Bitácora: Estimación PERT"
+        },
+        { 
+            sem: 12, ra: "RA2", obj: "Simulación Montecarlo y Repaso.", 
+            before: "Aplicación de Montecarlo en estimación de costos.", 
+            tue: { act: "Análisis de histogramas de frecuencia.", main: "Simulación de escenarios de costo/plazo para hito crítico." },
+            thu: { act: "Integración de técnicas.", main: "Ejercicios integradores: Combinación CPM, PDM, PERT y Montecarlo." },
+            after: "Cierre del Plan Maestro RA2.",
+            sumEval: { label: "Hito RA2: Plan Detallado", desc: "Entrega de Cronograma, presupuestación y recursos (Procedimental: Planifica recursos y plazos según contexto)." },
+            procEval: "Cierre Nota Proceso RA2 (60%)"
+        },
+        { 
+            sem: 13, ra: "RA3", obj: "Seguimiento y control: Curva S y EVM.", 
+            before: "Casos de aplicación de Valor Ganado en Chile.", 
+            tue: { act: "Alcance del control técnico de obra.", main: "Construcción de Curva S física y financiera en Sheets." },
+            thu: { act: "Métricas de desempeño (KPI).", main: "Taller: Cálculo de SPI y CPI para reporte de avance real." },
+            after: "Lectura: Control tradicional vs Método EVM.",
+            procEval: "Bitácora: Curva S"
+        },
+        { 
+            sem: 14, ra: "RA3", obj: "Método del Cronograma Ganado (ES).", 
+            before: "Conceptos de Cronograma Ganado vs Plazo.", 
+            tue: { act: "Pronósticos de término de proyecto.", main: "Análisis de variabilidad en el tiempo y cambios de alcance." },
+            thu: { act: "Estimaciones al término (EAC).", main: "Cálculo de EAC y fecha proyectada de recepción de obra." },
+            after: "Preparación de reporte de control mensual.",
+            procEval: "Quiz: Cronograma Ganado"
+        },
+        { 
+            sem: 15, ra: "RA3", obj: "Control de Calidad y Costos.", 
+            before: "Tipos de control en obras de ingeniería civil.", 
+            tue: { act: "Identificación de partidas de control.", main: "Definición de indicadores clave para calidad y costos." },
+            thu: { act: "Estrategias de mejora continua.", main: "Comparación: Planificación vs Avance real para toma de decisiones." },
+            after: "Compilación de Informe de Gestión RA3.",
+            procEval: "Foro: Calidad vs Costo"
+        },
+        { 
+            sem: 16, ra: "RA3", obj: "Repaso y Cierre de Control.", 
+            before: "Ejercicios finales de aplicación de seguimiento.", 
+            tue: { act: "Resolución de dudas métricas EVM.", main: "Evaluación formativa: Comprensión del control total." },
+            thu: { act: "Retroalimentación de proyectos.", main: "Revisión final de informes de control y ajustes técnicos." },
+            after: "Finalización de Informe de Control.",
+            sumEval: { label: "Hito RA3: Informe de Control", desc: "Entrega del análisis de desempeño mediante EVM/ES y planes de mejora (Procedimental: Compara planificación con avance real)." },
+            procEval: "Cierre Nota Proceso RA3 (60%)"
+        },
+        { 
+            sem: 17, ra: "RA3", obj: "Cierre del curso y reflexión final.", 
+            before: "Autoevaluación de desempeño en la oficina técnica.", 
+            tue: { act: "Debate: Lecciones aprendidas en obra.", main: "Presentación final de resultados de gestión por equipos." },
+            thu: { act: "Evaluación actitudinal final.", main: "Cierre del semestre y retroalimentación personalizada." },
+            after: "Fin del curso.",
+            procEval: "Calificación Final Consolidada"
+        }
+    ];
+
+    function renderTimeline(filter = 'all') {
+        const container = document.getElementById('timeline-container');
+        container.innerHTML = '';
+        
+        courseData.forEach(w => {
+            if (filter !== 'all' && w.ra !== filter) return;
+
+            const raBadgeColor = w.ra === 'RA1' ? 'bg-blue-600 text-white' : (w.ra === 'RA2' ? 'bg-emerald-600 text-white' : 'bg-amber-600 text-white');
+            const highlightBorder = w.sumEval ? 'border-l-4 border-slate-900 shadow-lg ring-1 ring-slate-900/5' : '';
+
+            container.innerHTML += `
+                <div class="week-card bg-white border border-slate-200 rounded-2xl overflow-hidden ${highlightBorder}">
+                    <div class="p-4 md:p-6 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleDetails(${w.sem})">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-slate-100 text-slate-700 font-extrabold rounded-lg h-12 w-12 flex items-center justify-center text-lg shrink-0">S${w.sem}</div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="fase-badge ${raBadgeColor}">${w.ra}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Plan 2026</span>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-sm md:text-base leading-tight">${w.obj}</h3>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-300">
+                            <span class="text-[10px] font-bold uppercase hidden md:block">Ver Detalles</span>
+                            <span id="icon-${w.sem}" class="text-xl">⊕</span>
+                        </div>
+                    </div>
+                    
+                    <div id="details-${w.sem}" class="details-hidden bg-slate-50/50 border-t border-slate-100 p-4 md:p-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                            <div class="content-box">
+                                <h4 class="section-title">🏠 Antes de Clase</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">${w.before}</p>
+                            </div>
+                            
+                            <div class="content-box">
+                                <h4 class="section-title">🏫 Taller Presencial</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border-l-2 border-blue-500 pl-3">
+                                        <p class="text-[10px] font-extrabold text-blue-600 uppercase mb-1">MARTES</p>
+                                        <p class="text-[10px] text-slate-500 mb-1"><strong>Activación:</strong> ${w.tue.act}</p>
+                                        <p class="text-xs text-slate-800"><strong>Actividad:</strong> ${w.tue.main}</p>
+                                    </div>
+                                    <div class="border-l-2 border-indigo-500 pl-3">
+                                        <p class="text-[10px] font-extrabold text-indigo-600 uppercase mb-1">JUEVES</p>
+                                        <p class="text-[10px] text-slate-500 mb-1"><strong>Activación:</strong> ${w.thu.act}</p>
+                                        <p class="text-xs text-slate-800"><strong>Actividad:</strong> ${w.thu.main}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-box mb-4">
+                            <h4 class="section-title">🚀 Después de Clase (Consolidación)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">${w.after}</p>
+                        </div>
+
+                        <div class="flex flex-col md:flex-row gap-4 items-stretch">
+                            <div class="flex-1 bg-slate-100/50 p-3 rounded-xl border border-dashed border-slate-300 flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">⚙️ Nota de Proceso (60%)</span>
+                                <span class="text-[11px] font-bold text-slate-800">${w.procEval}</span>
+                            </div>
+                            ${w.sumEval ? `
+                            <div class="flex-1 bg-slate-900 text-white p-4 rounded-xl shadow-lg border-l-4 border-blue-400">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Hito Sumativo (40% RA)</span>
+                                    <span class="text-xs font-bold bg-white/10 px-2 py-0.5 rounded">Producto</span>
+                                </div>
+                                <h5 class="text-sm font-bold mb-1">${w.sumEval.label}</h5>
+                                <p class="text-[10px] text-slate-400 leading-tight italic">"${w.sumEval.desc}"</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function toggleDetails(sem) {
+        const div = document.getElementById(`details-${sem}`);
+        const icon = document.getElementById(`icon-${sem}`);
+        if (div.style.display === 'block') {
+            div.style.display = 'none';
+            icon.textContent = '⊕';
+        } else {
+            div.style.display = 'block';
+            icon.textContent = '⊖';
+        }
+    }
+
+    function filterRA(ra) {
+        renderTimeline(ra);
+        document.querySelectorAll('.ra-btn').forEach(b => {
+            if (b.dataset.ra === ra) {
+                b.classList.remove('bg-white', 'text-slate-600');
+                b.classList.add('bg-slate-800', 'text-white');
+            } else {
+                b.classList.add('bg-white', 'text-slate-600');
+                b.classList.remove('bg-slate-800', 'text-white');
+            }
+        });
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('raDistChart').getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['RA1 (25%)', 'RA2 (40%)', 'RA3 (35%)'],
+                datasets: [{
+                    data: [25, 40, 35],
+                    backgroundColor: ['#2563eb', '#059669', '#d97706'],
+                    borderWidth: 0,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 10, weight: '700' }, padding: 15, color: '#475569' } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) { return ` Ponderación Final: ${ctx.raw}%`; }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    window.onload = () => {
+        renderTimeline();
+        initChart();
+    };
+</script>
+
+</body>
+</html>
