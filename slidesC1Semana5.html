@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación y Control - Clase 1 Semana 5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f7f7f7;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --accent: #002147; /* Azul marino arquitectónico */
+            --grid-cols: 12;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden; /* Previene el scroll */
+            line-height: 1.4;
+            font-size: 16px; 
+        }
+
+        /* Contenedor y Rejilla */
+        .presentation {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(var(--grid-cols), 1fr);
+            padding: 6vmin 8vmin; 
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(20px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Etiqueta de Sección */
+        .section-tag {
+            grid-column: 1 / 4;
+            font-size: clamp(0.7rem, 1.5vmin, 1rem);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid #dcdcdc;
+            padding-bottom: 0.5rem;
+            align-self: start;
+            margin-top: 1vh;
+        }
+
+        /* Contenido principal */
+        .content {
+            grid-column: 5 / 13;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        /* Tipografía adaptativa */
+        h1 {
+            font-size: clamp(2rem, 5vmin, 4.2rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: clamp(1rem, 3vmin, 2rem);
+            color: var(--text-main);
+            max-width: 95%;
+        }
+        
+        h2 {
+            font-size: clamp(1.2rem, 2.5vmin, 2rem);
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-bottom: clamp(1.5rem, 4vmin, 3rem);
+        }
+
+        .accent-line {
+            width: clamp(40px, 6vmin, 60px);
+            height: 4px;
+            background-color: var(--accent);
+            margin-bottom: clamp(1rem, 3vmin, 2rem);
+        }
+
+        /* Listas y Tabulaciones (CORREGIDO) */
+        ul {
+            list-style: none;
+            max-width: 95%;
+        }
+
+        li {
+            font-size: clamp(1rem, 2.3vmin, 1.6rem);
+            font-weight: 300;
+            margin-bottom: clamp(0.8rem, 2vmin, 1.5rem);
+            position: relative;
+            /* El padding-left asegura que la segunda línea respete la tabulación */
+            padding-left: clamp(1.5rem, 3.5vmin, 2.5rem); 
+            line-height: 1.45;
+        }
+
+        /* Viñeta minimalista independiente del texto */
+        li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.45em; /* Alineación vertical con la primera línea */
+            width: clamp(8px, 1.2vmin, 12px);
+            height: clamp(8px, 1.2vmin, 12px);
+            background-color: var(--accent);
+        }
+
+        /* Jerarquía visual: Números grandes */
+        .big-number-list {
+            counter-reset: slide-counter;
+        }
+
+        .big-number-list li {
+            counter-increment: slide-counter;
+            padding-left: clamp(2.5rem, 5vmin, 3.5rem);
+        }
+
+        .big-number-list li::before {
+            content: "0" counter(slide-counter) ".";
+            font-size: clamp(1.1rem, 2.6vmin, 1.8rem);
+            font-weight: 800;
+            color: var(--text-muted);
+            background: none;
+            top: -0.05em;
+            width: auto;
+            height: auto;
+        }
+
+        /* Jerarquía Visual: Árbol o ramas (Caso Análisis) */
+        .tree-list li.root-node::before {
+            content: "";
+            background-color: var(--accent);
+        }
+        
+        .tree-list li.child-node {
+            padding-left: clamp(3rem, 6vmin, 4.5rem);
+        }
+
+        .tree-list li.child-node::before {
+            content: "↳";
+            background: none;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 1.2em;
+            left: clamp(1.2rem, 2.5vmin, 2rem);
+            top: -0.1em;
+        }
+
+        .highlight {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .quote {
+            font-size: clamp(1.4rem, 3vmin, 2.2rem);
+            font-weight: 300;
+            font-style: italic;
+            border-left: 4px solid var(--accent);
+            padding-left: clamp(1.5rem, 3vmin, 2rem);
+            margin: clamp(1.5rem, 3vmin, 2.5rem) 0;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* Metadatos Portada */
+        .metadata {
+            margin-top: 4vmin;
+            border-top: 1px solid #dcdcdc;
+            padding-top: 2vmin;
+            font-size: clamp(0.9rem, 1.8vmin, 1.2rem);
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Barra de Progreso */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        /* Pista de Navegación */
+        .nav-hint {
+            position: absolute;
+            bottom: 3vmin;
+            right: 4vmin;
+            font-size: clamp(0.6rem, 1.2vmin, 0.8rem);
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Elementos UI adicionales */
+        .time-badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: clamp(1rem, 2vmin, 1.5rem);
+            margin-top: 2vmin;
+        }
+
+        /* Rúbrica Grid */
+        .rubric-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr 1fr;
+            gap: 1px;
+            background-color: #dcdcdc;
+            border: 1px solid #dcdcdc;
+            margin-top: 2vmin;
+            max-width: 98%;
+        }
+
+        .rubric-cell {
+            background-color: var(--bg-color);
+            padding: clamp(0.5rem, 1.5vmin, 1rem);
+            font-size: clamp(0.8rem, 1.5vmin, 1.1rem);
+            font-weight: 300;
+        }
+
+        .rubric-header {
+            font-weight: 600;
+            color: var(--accent);
+            background-color: #eaeaea;
+        }
+        
+        .rubric-col-title {
+            font-weight: 600;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="presentation" id="presentation">
+
+        <!-- SLIDE 1: Portada -->
+        <div class="slide active">
+            <div class="section-tag">01. PORTADA</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Actividad Presencial</h1>
+                <h2>Planificación y Control de Proyectos</h2>
+                <ul>
+                    <li>Clase 1, Semana 5: El ADN del Control.</li>
+                    <li>Estructura de Desglose del Trabajo (EDT).</li>
+                </ul>
+                <div class="metadata">
+                    <p><strong>Docente:</strong> Carlos Vergara</p>
+                    <p><strong>Fecha:</strong> 14 de abril del 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Resumen de Conceptos (1/2) -->
+        <div class="slide">
+            <div class="section-tag">02. RESUMEN DE CONCEPTOS (1/2)</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>¿Qué estamos gestionando realmente?</h1>
+                <ul>
+                    <li><span class="highlight">De Teoría de Sistemas a la Obra:</span> Un proyecto es un sistema abierto que tiende a la entropía (Johansen, 2004).</li>
+                    <li><span class="highlight">EDT como Neguentropía:</span> Inyección de energía (orden) para estabilizar el sistema.</li>
+                    <li><span class="highlight">EDT vs. Cronograma:</span> La EDT responde al QUÉ (Alcance / "Contrato Técnico"). El cronograma al CUÁNDO (Secuencia).</li>
+                </ul>
+                <div class="quote">
+                    "Si no está en la EDT, no está en el proyecto" (PMI).
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Resumen de Conceptos (2/2) -->
+        <div class="slide">
+            <div class="section-tag">03. RESUMEN DE CONCEPTOS (2/2)</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Elementos Críticos de una EDT Efectiva</h1>
+                <ul>
+                    <li><span class="highlight">Regla del 100%:</span> La EDT debe incluir el 100% del trabajo definido por el alcance y capturar todos los entregables (incluyendo la gestión de proyectos).</li>
+                    <li><span class="highlight">Paquete de Trabajo (WP):</span> El nivel más bajo de la descomposición. Según Serpell (2000), un WP debe ser Medible, Asignable y Controlable.</li>
+                    <li><span class="highlight">Evitar el "ruido sistémico":</span> (Kerzner, 2009) mediante una codificación jerárquica clara.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Activación -->
+        <div class="slide">
+            <div class="section-tag">04. ACTIVACIÓN 🧩</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Desafío: La Caza del Error</h1>
+                <h2>Identificando omisiones en la Regla del 100%</h2>
+                <ul>
+                    <li><span class="highlight">Instrucción:</span> En los próximos 10 minutos, analicen la siguiente rama de una EDT.</li>
+                    <li>Rama objetivo: "Instalaciones Eléctricas".</li>
+                    <li>Identifiquen qué falta para cumplir estrictamente con la Regla del 100%.</li>
+                </ul>
+                <div class="time-badge">⏳ 10 Minutos</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Activación - Caso de Análisis -->
+        <div class="slide">
+            <div class="section-tag">05. CASO DE ANÁLISIS</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>¿Dónde está el 100% del Alcance?</h1>
+                <ul class="tree-list">
+                    <li class="root-node" style="color:var(--text-main); font-weight:600;">Nivel 2: Instalaciones Eléctricas</li>
+                    <li class="child-node">Nivel 3: Canalizaciones Subterráneas</li>
+                    <li class="child-node">Nivel 3: Alambrado y Cableado</li>
+                    <li class="child-node">Nivel 3: Montaje de Tableros</li>
+                </ul>
+                <div class="quote">
+                    ¿Qué pasa con las pruebas de continuidad? ¿Y la certificación TE1 ante la SEC?
+                </div>
+                <ul>
+                    <li><span class="highlight">Discusión:</span>&nbsp; Si el entregable es una "Instalación Operativa", los entregables de gestión y pruebas son obligatorios y parte del 100%.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: Transición a la Actividad -->
+        <div class="slide">
+            <div class="section-tag">06. TRANSICIÓN</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Del "Ruido" al Control Preciso</h1>
+                <ul>
+                    <li>Ahora pasaremos de la identificación a la&nbsp;<span class="highlight">construcción</span>.</li>
+                    <li>El objetivo es transformar un proyecto de edificación en un conjunto de "Ladrillos de Gestión" (Paquetes de Trabajo).</li>
+                    <li>Estos ladrillos permitirán aplicar el CPTE vs CATE (Métrica de Valor Ganado) en el futuro con exactitud.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: ACTIVIDAD FORMATIVA -->
+        <div class="slide">
+            <div class="section-tag">07. ACTIVIDAD FORMATIVA 🛠️</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Taller de Construcción de EDT</h1>
+                <h2>Edificio "Sistemas Ulagos"</h2>
+                <ul>
+                    <li>Metodología: Trabajo grupal (2 estudiantes).</li>
+                    <li>Aplicación práctica para la estructuración táctica del proyecto.</li>
+                </ul>
+                <div class="time-badge">⏱️ Tiempo: 60 minutos</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Definición del Caso (1/2) -->
+        <div class="slide">
+            <div class="section-tag">08. DEFINICIÓN DEL CASO (1/2)</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Datos Técnicos del Edificio</h1>
+                <ul>
+                    <li><span class="highlight">El Proyecto:</span> Edificio de viviendas de 5 niveles con un subterráneo de estacionamientos.</li>
+                    <li><span class="highlight">Superficie y Estructura:</span> 1.800 m². Construcción en Hormigón armado (muros y losas).</li>
+                    <li><span class="highlight">Terminaciones:</span> Piso flotante, muros pintados, ventanas termopanel.</li>
+                    <li><span class="highlight">Especialidades:</span> Electricidad, Sanitaria, Gas, Corrientes Débiles.</li>
+                    <li><span class="highlight">Contexto:</span> El mandante exige reportes semanales basados en paquetes de trabajo que no excedan las 2 semanas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: Tareas a Realizar (2/2) -->
+        <div class="slide">
+            <div class="section-tag">09. TAREAS A REALIZAR (2/2)</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Entregables del Taller Grupal</h1>
+                <ul class="big-number-list">
+                    <li><span class="highlight">Estructura Jerárquica:</span> Desarrollar la EDT hasta el Nivel 4 (Paquetes de Trabajo) para la rama de "Obra Gruesa" y "Terminaciones".</li>
+                    <li><span class="highlight">Diccionario de la EDT:</span> Para 2 paquetes elegidos definir Nombre, Criterio de Aceptación y Responsable.</li>
+                    <li><span class="highlight">Sistema de Codificación:</span> Aplicar una codificación lógica (ej: 1.2.1.1) que evite la ambigüedad de información.</li>
+                    <li><span class="highlight">Justificación Regla 100%:</span> Explicar cómo aseguraron que la gestión y las pruebas están incluidas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: Rúbrica de Evaluación (1/2) -->
+        <div class="slide">
+            <div class="section-tag">10. RÚBRICA DE EVALUACIÓN</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Escala de Desempeño (100 Pts)</h1>
+                <div class="rubric-grid">
+                    <div class="rubric-cell rubric-header">Criterio</div>
+                    <div class="rubric-cell rubric-col-title">Excelente (25pts)</div>
+                    <div class="rubric-cell rubric-col-title">Satisfactorio (15pts)</div>
+                    <div class="rubric-cell rubric-col-title">Insuficiente (5pts)</div>
+
+                    <div class="rubric-cell rubric-header">Jerarquía / Estructura</div>
+                    <div class="rubric-cell">4 niveles claros orientados a entregables.</div>
+                    <div class="rubric-cell">3 niveles definidos, mezcla tareas y entregables.</div>
+                    <div class="rubric-cell">Estructura plana o lista de tareas simple.</div>
+
+                    <div class="rubric-cell rubric-header">Regla del 100%</div>
+                    <div class="rubric-cell">Incluye alcance físico, gestión y pruebas. Sin omisiones.</div>
+                    <div class="rubric-cell">Incluye físico principal, omite gestión o cierres.</div>
+                    <div class="rubric-cell">Omisiones graves del alcance principal.</div>
+
+                    <div class="rubric-cell rubric-header">Paquetes (WP)</div>
+                    <div class="rubric-cell">Unidades medibles, asignables y duración controlable.</div>
+                    <div class="rubric-cell">Unidades demasiado grandes o difíciles de medir.</div>
+                    <div class="rubric-cell">Concepto de WP no comprendido (muy vago).</div>
+
+                    <div class="rubric-cell rubric-header">Codificación</div>
+                    <div class="rubric-cell">Código lógico y diccionario con criterios técnicos.</div>
+                    <div class="rubric-cell">Codificación incompleta o sin criterios claros.</div>
+                    <div class="rubric-cell">Sin codificación ni diccionario.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: Cierre y Reflexión -->
+        <div class="slide">
+            <div class="section-tag">11. CIERRE Y REFLEXIÓN</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Conclusiones del Módulo</h1>
+                <ul>
+                    <li>La EDT es la base de todos los subsistemas de control: Presupuesto, Programación y Calidad.</li>
+                    <li>Recuerden: "El mapa no es el territorio", pero sin mapa (EDT), el ingeniero está perdido en la entropía de la obra.</li>
+                </ul>
+                <div class="quote">
+                    "La ingeniería civil no es solo hormigón; es la gestión inteligente de la complejidad."
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: Bibliografía -->
+        <div class="slide">
+            <div class="section-tag">12. BIBLIOGRAFÍA</div>
+            <div class="content">
+                <div class="accent-line"></div>
+                <h1>Referencias</h1>
+                <ul>
+                    <li><span class="highlight">Serpell, A. (2000).</span> Planificación y Control de Proyectos. Ediciones Universidad Católica de Chile. (Cap. 2 y 16).</li>
+                    <li><span class="highlight">Kerzner, H. (2009).</span> Project Management: A Systems Approach... 10ª ed. John Wiley & Sons. (Cap. 11).</li>
+                    <li><span class="highlight">Johansen, O. (2004).</span> Introducción a la Teoría General de Sistemas. Limusa. (Cap. 5: Entropía).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Elementos UI -->
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="nav-hint">Clic o Flechas para navegar</div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const progressBar = document.getElementById('progress-bar');
+            let currentSlide = 0;
+
+            function updateSlides() {
+                slides.forEach((slide, index) => {
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                
+                // Actualiza Barra de Progreso
+                const progress = ((currentSlide + 1) / slides.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            function nextSlide() {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    updateSlides();
+                }
+            }
+
+            function prevSlide() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlides();
+                }
+            }
+
+            // Navegación por teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'Space') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                }
+            });
+
+            // Navegación por clic en la pantalla
+            document.getElementById('presentation').addEventListener('click', (e) => {
+                const width = window.innerWidth;
+                const clickX = e.clientX;
+                
+                if (clickX > width / 2) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            });
+
+            // Iniciar
+            updateSlides();
+        });
+    </script>
+</body>
+</html>
