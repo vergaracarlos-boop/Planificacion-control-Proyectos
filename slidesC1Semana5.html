@@ -59,6 +59,15 @@
             transform: translateY(0);
         }
 
+        /* Fondo para Slide 1 */
+        .bg-portada {
+            /* Gradiente + Imagen configurada con la ruta solicitada */
+            background-image: linear-gradient(to right, rgba(247, 247, 247, 1) 40%, rgba(247, 247, 247, 0.2) 100%), url('assets/img/slide1_minimalist3D.png');
+            background-size: cover;
+            background-position: center right;
+            background-repeat: no-repeat;
+        }
+
         /* Etiqueta de Sección */
         .section-tag {
             grid-column: 1 / 4;
@@ -71,6 +80,8 @@
             padding-bottom: 0.5rem;
             align-self: start;
             margin-top: 1vh;
+            position: relative;
+            z-index: 5;
         }
 
         /* Contenido principal */
@@ -80,7 +91,48 @@
             flex-direction: column;
             justify-content: center;
             height: 100%;
+            position: relative;
+            z-index: 2; /* Asegura que el texto esté sobre las imágenes si se achica la pantalla */
         }
+
+        /* Modificadores para desplazar el texto cuando hay imágenes */
+        .content.shift-left {
+            grid-column: 2 / 8; /* Empuja el texto a la izquierda para dejar la derecha libre */
+        }
+
+        .content.shift-right {
+            grid-column: 6 / 13; /* Empuja el texto más a la derecha para dejar la izquierda libre */
+        }
+
+        /* --- CLASES PARA LAS IMÁGENES AGREGADAS --- */
+        .slide-image {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            object-fit: contain;
+            z-index: 1; 
+            transition: opacity 0.5s ease;
+        }
+
+        .img-right-40 {
+            right: 4vw;
+            width: 40vw;
+            max-height: 80vh;
+        }
+
+        .img-left-35 {
+            left: 4vw;
+            width: 35vw;
+            max-height: 80vh;
+            top: 55%; /* Ligeramente más abajo para no tapar la etiqueta de sección */
+        }
+
+        .img-right-45 {
+            right: 4vw;
+            width: 45vw;
+            max-height: 85vh;
+        }
+        /* ------------------------------------------ */
 
         /* Tipografía adaptativa */
         h1 {
@@ -107,7 +159,7 @@
             margin-bottom: clamp(1rem, 3vmin, 2rem);
         }
 
-        /* Listas y Tabulaciones (CORREGIDO) */
+        /* Listas y Tabulaciones */
         ul {
             list-style: none;
             max-width: 95%;
@@ -118,17 +170,15 @@
             font-weight: 300;
             margin-bottom: clamp(0.8rem, 2vmin, 1.5rem);
             position: relative;
-            /* El padding-left asegura que la segunda línea respete la tabulación */
             padding-left: clamp(1.5rem, 3.5vmin, 2.5rem); 
             line-height: 1.45;
         }
 
-        /* Viñeta minimalista independiente del texto */
         li::before {
             content: "";
             position: absolute;
             left: 0;
-            top: 0.45em; /* Alineación vertical con la primera línea */
+            top: 0.45em; 
             width: clamp(8px, 1.2vmin, 12px);
             height: clamp(8px, 1.2vmin, 12px);
             background-color: var(--accent);
@@ -203,7 +253,7 @@
             gap: 0.5rem;
         }
 
-        /* Barra de Progreso */
+        /* Elementos UI adicionales */
         .progress-bar {
             position: absolute;
             bottom: 0;
@@ -211,9 +261,9 @@
             height: 4px;
             background-color: var(--accent);
             transition: width 0.3s ease;
+            z-index: 10;
         }
 
-        /* Pista de Navegación */
         .nav-hint {
             position: absolute;
             bottom: 3vmin;
@@ -222,9 +272,9 @@
             color: var(--text-muted);
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            z-index: 10;
         }
 
-        /* Elementos UI adicionales */
         .time-badge {
             display: inline-block;
             background-color: var(--accent);
@@ -265,22 +315,14 @@
             color: var(--text-main);
             text-align: center;
         }
-        
-        /* Fondo personalizado para la Portada */
-        .bg-portada {
-            /* El gradiente va de color sólido a la izquierda a casi transparente a la derecha */
-            background-image: linear-gradient(to right, rgba(247, 247, 247, 1) 40%, rgba(247, 247, 247, 0.2) 100%), url('assets/img/slide1_minimalist3D.png');
-            background-size: cover;
-            background-position: center right;
-            background-repeat: no-repeat;
-        }
+
     </style>
 </head>
 <body>
 
     <div class="presentation" id="presentation">
 
-        <!-- SLIDE 1: Portada -->
+        <!-- SLIDE 1: Portada (Con fondo configurado en CSS .bg-portada) -->
         <div class="slide active bg-portada">
             <div class="section-tag">01. PORTADA</div>
             <div class="content">
@@ -298,10 +340,10 @@
             </div>
         </div>
 
-        <!-- SLIDE 2: Resumen de Conceptos (1/2) -->
+        <!-- SLIDE 2: Resumen de Conceptos (1/2) - CON IMAGEN -->
         <div class="slide">
             <div class="section-tag">02. RESUMEN DE CONCEPTOS (1/2)</div>
-            <div class="content">
+            <div class="content shift-left">
                 <div class="accent-line"></div>
                 <h1>¿Qué estamos gestionando realmente?</h1>
                 <ul>
@@ -313,6 +355,8 @@
                     "Si no está en la EDT, no está en el proyecto" (PMI).
                 </div>
             </div>
+            <!-- IMAGEN LADO DERECHO 40% -->
+            <img src="assets/img/slide2_cuboarmadocaos.png" alt="Cubo Caos" class="slide-image img-right-40">
         </div>
 
         <!-- SLIDE 3: Resumen de Conceptos (2/2) -->
@@ -345,10 +389,10 @@
             </div>
         </div>
 
-        <!-- SLIDE 5: Activación - Caso de Análisis -->
+        <!-- SLIDE 5: Activación - Caso de Análisis - CON IMAGEN -->
         <div class="slide">
             <div class="section-tag">05. CASO DE ANÁLISIS</div>
-            <div class="content">
+            <div class="content shift-right">
                 <div class="accent-line"></div>
                 <h1>¿Dónde está el 100% del Alcance?</h1>
                 <ul class="tree-list">
@@ -364,6 +408,8 @@
                     <li><span class="highlight">Discusión:</span>&nbsp; Si el entregable es una "Instalación Operativa", los entregables de gestión y pruebas son obligatorios y parte del 100%.</li>
                 </ul>
             </div>
+            <!-- IMAGEN LADO IZQUIERDO 35% -->
+            <img src="assets/img/slide5_lupa.png" alt="Lupa Análisis" class="slide-image img-left-35">
         </div>
 
         <!-- SLIDE 6: Transición a la Actividad -->
@@ -395,10 +441,10 @@
             </div>
         </div>
 
-        <!-- SLIDE 8: Definición del Caso (1/2) -->
+        <!-- SLIDE 8: Definición del Caso (1/2) - CON IMAGEN -->
         <div class="slide">
             <div class="section-tag">08. DEFINICIÓN DEL CASO (1/2)</div>
-            <div class="content">
+            <div class="content shift-left">
                 <div class="accent-line"></div>
                 <h1>Datos Técnicos del Edificio</h1>
                 <ul>
@@ -409,6 +455,8 @@
                     <li><span class="highlight">Contexto:</span> El mandante exige reportes semanales basados en paquetes de trabajo que no excedan las 2 semanas.</li>
                 </ul>
             </div>
+            <!-- IMAGEN LADO DERECHO 45% -->
+            <img src="assets/img/slide8_transparentbuilding.png" alt="Edificio Transparente" class="slide-image img-right-45">
         </div>
 
         <!-- SLIDE 9: Tareas a Realizar (2/2) -->
