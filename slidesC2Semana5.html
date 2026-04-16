@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación y Control de Proyectos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* BASE & VARIABLES */
+        :root {
+            --bg-color: #FAFAFA;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --accent: #0A2540; /* Navy Blue */
+            --grid-line: #EAEAEA;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            /* Architectural Grid Background */
+            background-image: 
+                linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+            background-size: 5vw 5vw;
+        }
+
+        /* SLIDE CONTAINER */
+        #presentation {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(20px);
+            padding: 10vh 10vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            z-index: 10;
+        }
+
+        /* TOP LEFT CORNER META */
+        .slide-meta {
+            position: absolute;
+            top: 5vh;
+            left: 5vw;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            width: 250px;
+        }
+
+        /* TYPOGRAPHY */
+        h1 {
+            font-size: clamp(2.5rem, 4vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 2.5rem;
+            max-width: 80%;
+            color: var(--text-main);
+        }
+
+        p {
+            font-size: clamp(1rem, 1.5vw, 1.5rem);
+            font-weight: 300;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        /* ASYMMETRICAL LAYOUTS */
+        .grid-split {
+            display: grid;
+            grid-template-columns: 5fr 6fr;
+            gap: 5vw;
+            align-items: start;
+            margin-top: 2rem;
+        }
+
+        .grid-split-inverse {
+            display: grid;
+            grid-template-columns: 6fr 5fr;
+            gap: 5vw;
+            align-items: start;
+        }
+
+        .col-border-left {
+            border-left: 2px solid var(--text-main);
+            padding-left: 2vw;
+        }
+
+        /* LISTS & POINTS (Sharp, Architectural) */
+        ul {
+            list-style: none;
+            counter-reset: arch-counter;
+        }
+
+        .big-points li {
+            position: relative;
+            margin-bottom: 2.5rem;
+            padding-left: 4rem;
+        }
+
+        .big-points li::before {
+            counter-increment: arch-counter;
+            content: "0" counter(arch-counter);
+            position: absolute;
+            left: 0;
+            top: -0.2rem;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .big-points h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        /* COMPARISON TABLES / GRIDS */
+        .compare-box {
+            background-color: #FFFFFF;
+            border: 1px solid var(--grid-line);
+            padding: 3rem;
+            box-shadow: 20px 20px 0px rgba(10, 37, 64, 0.05); /* Sharp shadow */
+        }
+        
+        .compare-box h3 {
+            font-size: 1.8rem;
+            border-bottom: 4px solid var(--accent);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        /* EMPHASIS */
+        strong {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .highlight-box {
+            background: var(--accent);
+            color: white;
+            padding: 2rem;
+            border-left: 10px solid var(--text-main);
+        }
+        
+        .highlight-box p, .highlight-box h3 {
+            color: white;
+        }
+
+        /* NAVIGATION CONTROLS */
+        .controls {
+            position: absolute;
+            bottom: 5vh;
+            right: 5vw;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .controls span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        button {
+            background: none;
+            border: 1px solid var(--text-main);
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            color: var(--text-main);
+        }
+
+        button:hover {
+            background: var(--text-main);
+            color: var(--bg-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="presentation">
+
+        <!-- SLIDE 1 -->
+        <div class="slide active">
+            <div class="slide-meta">01. INTRODUCCIÓN</div>
+            <div class="grid-split">
+                <div>
+                    <h1>Domina el Control de Tus Proyectos</h1>
+                    <p class="col-border-left">
+                        <strong>Actividad Presencial</strong><br>
+                        Planificación y Control de Proyectos<br>
+                        Clase 2, Semana 5
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="slide">
+            <div class="slide-meta">02. AGENDA</div>
+            <h1>Conoce la Hoja de Ruta de Hoy</h1>
+            <div class="grid-split">
+                <div></div>
+                <ul class="big-points">
+                    <li>
+                        <h3>Conceptos Clave</h3>
+                        <p>Fundamentos de la EDT/WBS y diferencias con actividades.</p>
+                    </li>
+                    <li>
+                        <h3>Activación Estratégica</h3>
+                        <p>Resolución de dilemas técnicos y Triángulo de Hierro.</p>
+                    </li>
+                    <li>
+                        <h3>Taller Práctico</h3>
+                        <p>Aplicación en el caso de estudio PTAS Valle Central.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="slide">
+            <div class="slide-meta">03. CONCEPTOS I</div>
+            <h1>Estructura el Caos con la EDT</h1>
+            <div class="grid-split-inverse">
+                <ul class="big-points">
+                    <li>
+                        <h3>Regla del 100%</h3>
+                        <p>Representa absolutamente todo el alcance. Sin omisiones ni extras.</p>
+                    </li>
+                    <li>
+                        <h3>Neguentropía</h3>
+                        <p>El mecanismo de orden que estructura el caos del proyecto.</p>
+                    </li>
+                    <li>
+                        <h3>Jerarquía Sistémica</h3>
+                        <p>Descomposición lógica desde el nivel "Proyecto" hasta "Paquetes".</p>
+                    </li>
+                </ul>
+                <div class="compare-box" style="padding: 2rem;">
+                    <p style="font-size: 1.2rem; font-style: italic;">"La EDT es el ADN del control. Estructura el sistema para evitar el colapso entrópico."</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div class="slide">
+            <div class="slide-meta">04. CONCEPTOS II</div>
+            <h1>Diferencia Entregables de Simples Acciones</h1>
+            <div class="grid-split">
+                <div class="compare-box">
+                    <h3>Paquete de Trabajo (WP)</h3>
+                    <p>• Es un entregable u objeto físico.<br>
+                       • Permite asignar responsabilidad (RAM).<br>
+                       • Es medible y controlable en costo.</p>
+                </div>
+                <div class="compare-box" style="border-color: var(--accent);">
+                    <h3 style="border-bottom-color: var(--text-main);">Actividad</h3>
+                    <p>• Es la acción necesaria para producirlo.<br>
+                       • Contiene duración y precedencias.<br>
+                       • <strong>No van en la EDT.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div class="slide">
+            <div class="slide-meta">05. ACTIVACIÓN</div>
+            <h1>Resuelve el Dilema de la Estrategia</h1>
+            <div class="grid-split-inverse">
+                <div class="col-border-left">
+                    <p><strong>Micro-Desafío (15 min):</strong><br><br>
+                    Puente atirantado de 400m sobre un río caudaloso.<br><br>¿Cómo desglosar antes de dibujar la EDT?</p>
+                </div>
+                <div class="compare-box">
+                    <h3>Opción A: Geográfica</h3>
+                    <p>Dividir en "Acceso Norte", "Pila Central" y "Acceso Sur".</p>
+                    <br><br>
+                    <h3>Opción B: Especialidades</h3>
+                    <p>Dividir en "Obras Civiles", "Estructuras" e "Instalaciones".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6 -->
+        <div class="slide">
+            <div class="slide-meta">06. DEBATE</div>
+            <h1>Protege el Triángulo de Hierro</h1>
+            <div class="grid-split">
+                <div></div>
+                <ul class="big-points">
+                    <li>
+                        <h3>Plazo Crítico</h3>
+                        <p>¿Cuál estrategia facilita el Fast-Tracking si el tiempo apremia?</p>
+                    </li>
+                    <li>
+                        <h3>Flujo de Información</h3>
+                        <p>¿Cómo impacta la externalización del acero en la neguentropía?</p>
+                    </li>
+                    <li>
+                        <h3>Decisión Estructural</h3>
+                        <p>¿Qué esquina del Triángulo protegemos con cada decisión?</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 7 -->
+        <div class="slide">
+            <div class="slide-meta">07. TALLER</div>
+            <h1>Aplica el Control en Proyectos Complejos</h1>
+            <div class="grid-split">
+                <div class="highlight-box">
+                    <h3>Misión del Taller</h3>
+                    <p style="margin-top: 1rem;">Garantizar la trazabilidad del alcance y definir paquetes de trabajo controlables usando estándares internacionales.</p>
+                </div>
+                <div class="col-border-left">
+                    <p><strong>60 Minutos</strong> de trabajo intensivo en equipos de Oficina Técnica (4-5 integrantes).<br><br>Entrega final requerida al terminar la sesión.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 -->
+        <div class="slide">
+            <div class="slide-meta">08. EL CASO</div>
+            <h1>Analiza el Caso: PTAS Valle Central</h1>
+            <div class="grid-split-inverse">
+                <ul class="big-points">
+                    <li>
+                        <h3>Obras Civiles</h3>
+                        <p>Estanques de hormigón armado y excavaciones masivas.</p>
+                    </li>
+                    <li>
+                        <h3>Equipamiento & Control</h3>
+                        <p>Bombas, aireadores, sensores e Instalaciones Eléctricas (PLC).</p>
+                    </li>
+                    <li>
+                        <h3>Gestión de Proyecto</h3>
+                        <p>Tramitación de Permisos, Oficina Técnica y Seguridad.</p>
+                    </li>
+                </ul>
+                <div class="col-border-left">
+                    <p><strong>Contexto:</strong><br>Proyecto de infraestructura civil e industrial con alta interdependencia.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9 -->
+        <div class="slide">
+            <div class="slide-meta">09. DESAFÍO</div>
+            <h1>Supera la Restricción Estratégica del Cliente</h1>
+            <div class="grid-split">
+                <div class="highlight-box" style="background: var(--text-main); border-left-color: var(--accent);">
+                    <h3>Exigencia del Mandante</h3>
+                    <p style="margin-top: 1rem; font-size: 1.5rem;">El sistema de bombeo debe ser entregado <strong>antes</strong> que el resto de la planta para pruebas de red externa.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10 -->
+        <div class="slide">
+            <div class="slide-meta">10. MÉTODO</div>
+            <h1>Sigue el Método para el Éxito</h1>
+            <div class="grid-split">
+                <div></div>
+                <ul class="big-points">
+                    <li>
+                        <h3>Análisis de Caso</h3>
+                        <p>Definir la estrategia de división inicial.</p>
+                    </li>
+                    <li>
+                        <h3>Desarrollo</h3>
+                        <p>Construcción de la EDT (Mínimo 4 niveles de profundidad).</p>
+                    </li>
+                    <li>
+                        <h3>Consolidación</h3>
+                        <p>Definición de Diccionario para 2 Paquetes de Trabajo críticos.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 11 -->
+        <div class="slide">
+            <div class="slide-meta">11. TAREAS</div>
+            <h1>Completa las Tareas Clave del Taller</h1>
+            <div class="grid-split-inverse">
+                <ul class="big-points">
+                    <li>
+                        <h3>Declaración</h3>
+                        <p>Justificar si la EDT será orientada a procesos o productos físicos.</p>
+                    </li>
+                    <li>
+                        <h3>Verificación 100%</h3>
+                        <p>Asegurar que la suma de los hijos es igual al padre.</p>
+                    </li>
+                    <li>
+                        <h3>Identificación WPs</h3>
+                        <p>Codificar 2 WPs críticos para la entrega anticipada del bombeo.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 12 -->
+        <div class="slide">
+            <div class="slide-meta">12. EVALUACIÓN</div>
+            <h1>Conoce los Criterios de Evaluación</h1>
+            <div class="grid-split">
+                <div class="compare-box">
+                    <p><strong>Rúbrica (100 Puntos)</strong></p><br>
+                    <p>• <strong>Lógica de Desglose:</strong> Jerarquía clara y técnica.<br><br>
+                       • <strong>Regla 100%:</strong> Alcance total sin solapamientos.<br><br>
+                       • <strong>Definición:</strong> WPs medibles y asignables.<br><br>
+                       • <strong>Integración:</strong> Facilita entrega anticipada.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 13 -->
+        <div class="slide">
+            <div class="slide-meta">13. CONCLUSIÓN</div>
+            <h1>Trae el Futuro al Presente Hoy</h1>
+            <div class="grid-split-inverse">
+                <div>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--accent); margin-bottom: 2rem;">
+                        "Planificar es traer el futuro al presente para que puedas hacer algo al respecto ahora."
+                    </p>
+                    <p>— Alan Lakein</p>
+                </div>
+                <div class="col-border-left">
+                    <p><strong>Escala de Desempeño:</strong><br><br>
+                    <strong>90-100:</strong> Senior de Oficina Técnica.<br>
+                    <strong>70-89:</strong> Planificador avanzado.<br>
+                    <strong>&lt;50:</strong> Riesgo de entropía crítica.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 14 -->
+        <div class="slide">
+            <div class="slide-meta">14. REFERENCIAS</div>
+            <h1>Profundiza con Bibliografía Seleccionada</h1>
+            <div class="grid-split">
+                <div></div>
+                <ul class="big-points">
+                    <li>
+                        <h3>Serpell, A. (2002)</h3>
+                        <p>Planificación y Control de Proyectos. Ed. PUC (Caps 2 y 16).</p>
+                    </li>
+                    <li>
+                        <h3>Kerzner, H. (2017)</h3>
+                        <p>Project Management: A Systems Approach. Wiley (Capítulo 11).</p>
+                    </li>
+                    <li>
+                        <h3>Johansen, O. (1992)</h3>
+                        <p>Introducción a la Teoría General de Sistemas. Limusa.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">Anterior</button>
+        <span id="slideCounter">1 / 14</span>
+        <button id="nextBtn" onclick="changeSlide(1)">Siguiente</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('slideCounter');
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            counter.innerText = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+            updateSlides();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Initialize
+        updateSlides();
+    </script>
+</body>
+</html>
