@@ -4,551 +4,845 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificación y Control de Proyectos</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* BASE & VARIABLES */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+
         :root {
-            --bg-color: #FAFAFA;
-            --text-main: #111111;
-            --text-muted: #555555;
-            --accent: #0A2540; /* Navy Blue */
-            --grid-line: #EAEAEA;
-            --font-family: 'Inter', sans-serif;
+            /* Paleta: Minimalismo Profesional / Arquitectónico */
+            --bg-color: #F9FAFB;
+            --text-main: #111827;
+            --text-muted: #4B5563;
+            --navy: #0F172A;
+            --accent: #2563EB;
+            --white: #FFFFFF;
+            --border-light: #E5E7EB;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: var(--font-family);
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden;
-            /* Architectural Grid Background */
-            background-image: 
-                linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-            background-size: 5vw 5vw;
-        }
-
-        /* SLIDE CONTAINER */
-        #presentation {
-            position: relative;
-            width: 100vw;
+            overflow: hidden; 
             height: 100vh;
+            width: 100vw;
         }
 
+        /* Estructura Base de Diapositiva */
         .slide {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            padding: 10vh 8vw;
+            display: none;
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateY(20px);
-            padding: 10vh 10vw;
-            display: flex;
+            transition: opacity 0.4s ease-in-out;
             flex-direction: column;
             justify-content: center;
+            overflow-y: auto; 
         }
 
         .slide.active {
+            display: flex;
             opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            z-index: 10;
         }
 
-        /* TOP LEFT CORNER META */
-        .slide-meta {
+        .slide::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        .slide::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 10px;
+        }
+
+        /* Indicador Superior Izquierdo */
+        .top-left-indicator {
             position: absolute;
-            top: 5vh;
-            left: 5vw;
+            top: 4vh;
+            left: 8vw;
             font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
+            font-weight: 800;
             letter-spacing: 0.15em;
-            color: var(--accent);
+            text-transform: uppercase;
+            color: var(--navy);
             border-bottom: 2px solid var(--accent);
-            padding-bottom: 0.5rem;
-            width: 250px;
+            padding-bottom: 4px;
         }
 
-        /* TYPOGRAPHY */
+        .slide-content {
+            margin-top: 3vh;
+            width: 100%;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Tipografía responsiva */
         h1 {
-            font-size: clamp(2.5rem, 4vw, 4.5rem);
+            font-size: clamp(2.5rem, 4.5vw, 5rem);
             font-weight: 900;
             line-height: 1.05;
+            color: var(--navy);
             letter-spacing: -0.03em;
-            margin-bottom: 2.5rem;
-            max-width: 80%;
-            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            max-width: 1000px;
         }
 
-        p {
-            font-size: clamp(1rem, 1.5vw, 1.5rem);
-            font-weight: 300;
+        h2 {
+            font-size: clamp(1.8rem, 3vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--navy);
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+        }
+
+        p, li {
+            font-size: clamp(0.95rem, 1.1vw, 1.25rem);
             line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        ul { padding-left: 1.5rem; }
+        li { margin-bottom: 0.75rem; padding-left: 0.25rem; }
+        
+        /* Modificado para que no aplique a la lista interactiva de la slide 4 */
+        .standard-list li::marker { color: var(--accent); font-weight: bold; }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Sistemas de Cuadrícula (Grid) */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            width: 100%;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            width: 100%;
+        }
+
+        .grid-asym {
+            display: grid;
+            grid-template-columns: 4.5fr 5.5fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        /* Componentes Visuales */
+        .card {
+            background: var(--white);
+            padding: 2.5rem 2rem;
+            border-top: 4px solid var(--navy);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border-radius: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card.accent {
+            border-top: 4px solid var(--accent);
+            background: var(--navy);
+        }
+        .card.accent h3, .card.accent p, .card.accent li {
+            color: var(--white);
+        }
+
+        .big-number {
+            font-size: clamp(3rem, 4vw, 4rem);
+            font-weight: 900;
+            color: var(--border-light);
+            line-height: 1;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .notice-box {
+            background: var(--border-light);
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent);
+            margin-top: 1.5rem;
+        }
+
+        .notice-box p {
+            margin: 0;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        /* Rúbrica / Tablas */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: var(--white);
+            min-width: 800px; 
+        }
+
+        th, td {
+            padding: 1.25rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--navy);
+            color: var(--white);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.8rem;
+        }
+
+        td { color: var(--text-muted); }
+        tr:hover td { background-color: #F3F4F6; color: var(--navy); }
+
+        /* Slide 04: Componente Interactivo de Ayuda (Acordeón) */
+        .interactive-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .interactive-list > li {
+            margin-bottom: 1rem;
+            padding: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
+        }
+        .interactive-list > li:last-child {
+            border-bottom: none;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .question-text {
+            flex: 1;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: var(--white);
+        }
+        .question-text::before {
+            content: "• ";
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .btn-reveal {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .btn-reveal:hover {
+            background: var(--white);
+            color: var(--navy);
+        }
+        .btn-reveal.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--white);
+        }
+        .answer-box {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--accent);
+            margin-top: 0;
+            padding: 0 1.2rem;
+            border-radius: 0 4px 4px 0;
+        }
+        .answer-box.open {
+            max-height: 500px;
+            margin-top: 1rem;
+            padding: 1.2rem;
+            opacity: 1;
+        }
+        .answer-box p {
+            font-size: 0.95rem;
+            color: #E2E8F0; /* Gris muy claro para contraste */
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Slide 11: Escala de Desempeño */
+        .performance-scale {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.2rem 1.5rem;
+            list-style: none;
+            padding: 0;
+            align-items: baseline;
+        }
+        .performance-scale li { display: contents; }
+        .performance-scale .score {
+            font-weight: 800;
+            color: var(--navy);
+            white-space: nowrap;
+            font-size: 1.1rem;
+        }
+        .performance-scale .desc {
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .performance-scale .score.danger { color: #DC2626; }
+
+        /* Iconografía y Citas */
+        .huge-icon {
+            font-size: clamp(3rem, 4vw, 4rem);
+            margin-bottom: 1rem;
+        }
+
+        blockquote {
+            font-size: clamp(1.4rem, 2vw, 1.8rem);
+            line-height: 1.4;
+            color: var(--navy);
+            border-left: 6px solid var(--accent);
+            padding-left: 2rem;
+            margin-top: 2rem;
+            font-weight: 300;
+        }
+        blockquote footer {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1rem;
             color: var(--text-muted);
         }
 
-        /* ASYMMETRICAL LAYOUTS */
-        .grid-split {
-            display: grid;
-            grid-template-columns: 5fr 6fr;
-            gap: 5vw;
-            align-items: start;
-            margin-top: 2rem;
-        }
-
-        .grid-split-inverse {
-            display: grid;
-            grid-template-columns: 6fr 5fr;
-            gap: 5vw;
-            align-items: start;
-        }
-
-        .col-border-left {
-            border-left: 2px solid var(--text-main);
-            padding-left: 2vw;
-        }
-
-        /* LISTS & POINTS (Sharp, Architectural) */
-        ul {
-            list-style: none;
-            counter-reset: arch-counter;
-        }
-
-        .big-points li {
-            position: relative;
-            margin-bottom: 2.5rem;
-            padding-left: 4rem;
-        }
-
-        .big-points li::before {
-            counter-increment: arch-counter;
-            content: "0" counter(arch-counter);
-            position: absolute;
-            left: 0;
-            top: -0.2rem;
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--accent);
-            line-height: 1;
-        }
-
-        .big-points h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
-
-        /* COMPARISON TABLES / GRIDS */
-        .compare-box {
-            background-color: #FFFFFF;
-            border: 1px solid var(--grid-line);
-            padding: 3rem;
-            box-shadow: 20px 20px 0px rgba(10, 37, 64, 0.05); /* Sharp shadow */
-        }
-        
-        .compare-box h3 {
-            font-size: 1.8rem;
-            border-bottom: 4px solid var(--accent);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-        }
-
-        /* EMPHASIS */
-        strong {
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .highlight-box {
-            background: var(--accent);
-            color: white;
-            padding: 2rem;
-            border-left: 10px solid var(--text-main);
-        }
-        
-        .highlight-box p, .highlight-box h3 {
-            color: white;
-        }
-
-        /* NAVIGATION CONTROLS */
+        /* Controles de navegación */
         .controls {
-            position: absolute;
-            bottom: 5vh;
+            position: fixed;
+            bottom: 4vh;
             right: 5vw;
             display: flex;
-            align-items: center;
             gap: 1rem;
             z-index: 100;
         }
-
-        .controls span {
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-        }
-
-        button {
-            background: none;
-            border: 1px solid var(--text-main);
-            padding: 0.75rem 1.5rem;
+        .btn-nav {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            color: var(--navy);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-family: var(--font-family);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-            color: var(--text-main);
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            font-size: 1.2rem;
+        }
+        .btn-nav:hover {
+            background: var(--navy);
+            color: var(--white);
+            border-color: var(--navy);
         }
 
-        button:hover {
-            background: var(--text-main);
-            color: var(--bg-color);
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+            z-index: 100;
         }
 
+        /* Responsividad */
+        @media (max-width: 1024px) {
+            .grid-asym {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .slide {
+                padding: 12vh 6vw;
+                justify-content: flex-start; 
+            }
+            .slide-content { margin-top: 5vh; }
+            .grid-2, .grid-3, .grid-asym {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .card { padding: 1.5rem; }
+            .controls {
+                bottom: 2vh;
+                right: 5vw;
+            }
+            blockquote { margin-top: 1rem; }
+            .question-header { flex-direction: column; gap: 0.5rem; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="presentation">
+    <!-- DIAPOSITIVA 1 -->
+    <div class="slide active">
+        <div class="top-left-indicator">01. TÍTULO</div>
+        <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+            <p style="text-transform: uppercase; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 1rem;">Actividad Presencial</p>
+            <h1>Planificación y Control de Proyectos</h1>
+            <div style="width: 80px; height: 6px; background-color: var(--accent); margin: 2rem 0;"></div>
+            <p style="font-size: 1.5rem; font-weight: 300; color: var(--navy);">Clase 2, Semana 5</p>
+        </div>
+    </div>
 
-        <!-- SLIDE 1 -->
-        <div class="slide active">
-            <div class="slide-meta">01. INTRODUCCIÓN</div>
-            <div class="grid-split">
+    <!-- DIAPOSITIVA 2 -->
+    <div class="slide">
+        <div class="top-left-indicator">02. CONCEPTOS CLAVE (I)</div>
+        <div class="slide-content">
+            <h2>El ADN del Control: La EDT/WBS</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <span class="big-number">100%</span>
+                    <h3 style="margin-bottom: 1rem; color: var(--navy);">Regla del 100%</h3>
+                    <p>La EDT representa <span class="highlight">todo el alcance</span> del proyecto. No se incluye trabajo fuera de ella, y no se omite nada definido en el contrato.</p>
+                </div>
+                <div class="card">
+                    <span class="big-number">NE</span>
+                    <h3 style="margin-bottom: 1rem; color: var(--navy);">Neguentropía</h3>
+                    <p>El proyecto tiende naturalmente al caos (entropía). La EDT es el mecanismo de orden que estructura el sistema.</p>
+                </div>
+                <div class="card">
+                    <span class="big-number">JS</span>
+                    <h3 style="margin-bottom: 1rem; color: var(--navy);">Jerarquía Sistémica</h3>
+                    <p>Descomposición estructural y lógica desde el nivel de "Proyecto" hasta llegar a los "Paquetes de Trabajo".</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAPOSITIVA 3 -->
+    <div class="slide">
+        <div class="top-left-indicator">03. CONCEPTOS CLAVE (II)</div>
+        <div class="slide-content">
+            <h2 style="margin-bottom: 1rem;">WP vs. Actividad</h2>
+            <p style="margin-bottom: 2.5rem;">Diferenciación crítica en la planificación del alcance.</p>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1.2rem; color: var(--navy);">Paquete de Trabajo (WP)</h3>
+                    <ul class="standard-list" style="list-style-type: square;">
+                        <li>Es el nivel más bajo de la EDT.</li>
+                        <li>Es un <span class="highlight">entregable</span> u objeto físico/documental.</li>
+                        <li>Permite asignar responsabilidad (Matriz RAM).</li>
+                        <li>Es medible y controlable en costo/alcance.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1.2rem; color: var(--navy);">Actividad (Cronograma)</h3>
+                    <ul class="standard-list" style="list-style-type: square;">
+                        <li>Es la <span class="highlight">acción</span> necesaria para producir el WP.</li>
+                        <li>Tiene duración y estimación de recursos.</li>
+                        <li>Tiene precedencias constructivas.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="notice-box">
+                <p>Nota: La EDT no es un listado de acciones, es un listado de entregables.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAPOSITIVA 4 -->
+    <div class="slide">
+        <div class="top-left-indicator">04. ACTIVACIÓN</div>
+        <div class="slide-content">
+            <h2>El Dilema de la Estrategia Técnica</h2>
+            
+            <div class="grid-asym">
                 <div>
-                    <h1>Domina el Control de Tus Proyectos</h1>
-                    <p class="col-border-left">
-                        <strong>Actividad Presencial</strong><br>
-                        Planificación y Control de Proyectos<br>
-                        Clase 2, Semana 5
-                    </p>
+                    <p class="highlight" style="font-weight: 800; font-size: 1.1rem; text-transform: uppercase;">Micro-Desafío (15 min)</p>
+                    <p>Imagina la construcción de un puente atirantado de 400m sobre un río caudaloso. Tienes dos formas de "pensar" el desglose antes de dibujar la EDT:</p>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <p><strong>A. Geográfica:</strong> Dividir en "Acceso Norte", "Pila Central" y "Acceso Sur".</p>
+                        <p><strong>B. Especialidades:</strong> Dividir en "Obras Civiles", "Estructuras Metálicas" e "Instalaciones".</p>
+                    </div>
+                </div>
+                
+                <!-- CARD INTERACTIVA CON ACORDEÓN -->
+                <div class="card accent" style="padding: 2rem;">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Preguntas para el debate:</h3>
+                    <ul class="interactive-list">
+                        <!-- Pregunta 1 -->
+                        <li>
+                            <div class="question-header">
+                                <span class="question-text">¿Cuál de estas opciones facilita el <strong>Fast-Tracking</strong> si el plazo es la restricción crítica?</span>
+                                <button class="btn-reveal" onclick="toggleAnswer('ans1', this)">💡 Ayuda</button>
+                            </div>
+                            <div id="ans1" class="answer-box">
+                                <p><strong>¿Cuál facilita el Fast-Tracking?</strong> La Estrategia A. Al separar por frentes geográficos, las actividades de cada zona pueden avanzar de forma independiente (paralelismo). En la Estrategia B, las instalaciones suelen depender críticamente de que terminen las obras civiles, limitando el traslape.</p>
+                            </div>
+                        </li>
+                        <!-- Pregunta 2 -->
+                        <li>
+                            <div class="question-header">
+                                <span class="question-text">¿Cómo cambia el flujo de información (neguentropía) si el contratista de acero es externo?</span>
+                                <button class="btn-reveal" onclick="toggleAnswer('ans2', this)">💡 Ayuda</button>
+                            </div>
+                            <div id="ans2" class="answer-box">
+                                <p><strong>¿Cómo cambia la Neguentropía?</strong> Un contratista externo es una fuente de entropía (ruido/incertidumbre). Si usamos la Estrategia B, el contratista tiene "dueño" de una rama completa de la EDT, simplificando su alcance pero complicando las interfaces físicas. En la A, el contratista aparece en múltiples ramas, lo que exige una coordinación de información mucho más robusta para evitar el caos.</p>
+                            </div>
+                        </li>
+                        <!-- Pregunta 3 -->
+                        <li>
+                            <div class="question-header">
+                                <span class="question-text">¿Qué esquina del <strong>Triángulo de Hierro</strong> protegemos con cada decisión?</span>
+                                <button class="btn-reveal" onclick="toggleAnswer('ans3', this)">💡 Ayuda</button>
+                            </div>
+                            <div id="ans3" class="answer-box">
+                                <p><strong>¿Qué esquina del Triángulo protegemos?</strong> La Estrategia A protege el Tiempo (aceleración). La Estrategia B suele proteger el Costo y Desempeño, ya que permite economías de escala y una supervisión técnica más especializada por disciplina.</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 2 -->
-        <div class="slide">
-            <div class="slide-meta">02. AGENDA</div>
-            <h1>Conoce la Hoja de Ruta de Hoy</h1>
-            <div class="grid-split">
-                <div></div>
-                <ul class="big-points">
-                    <li>
-                        <h3>Conceptos Clave</h3>
-                        <p>Fundamentos de la EDT/WBS y diferencias con actividades.</p>
-                    </li>
-                    <li>
-                        <h3>Activación Estratégica</h3>
-                        <p>Resolución de dilemas técnicos y Triángulo de Hierro.</p>
-                    </li>
-                    <li>
-                        <h3>Taller Práctico</h3>
-                        <p>Aplicación en el caso de estudio PTAS Valle Central.</p>
-                    </li>
-                </ul>
-            </div>
+    <!-- DIAPOSITIVA 5 -->
+    <div class="slide">
+        <div class="top-left-indicator">05. TALLER</div>
+        <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+            <h1>Consolidación Estratégica</h1>
+            <div style="width: 100px; height: 4px; background-color: var(--accent); margin-bottom: 2.5rem;"></div>
+            <h3 style="font-size: 1.4rem; color: var(--navy); margin-bottom: 1rem;">Objetivo del Taller</h3>
+            <p style="font-size: clamp(1.1rem, 1.5vw, 1.4rem); max-width: 900px; line-height: 1.6;">Aplicar una EDT a un proyecto de infraestructura complejo, garantizando la trazabilidad del alcance y la definición de paquetes de trabajo controlables según los estándares de <strong>Serpell y Kerzner</strong>.</p>
         </div>
+    </div>
 
-        <!-- SLIDE 3 -->
-        <div class="slide">
-            <div class="slide-meta">03. CONCEPTOS I</div>
-            <h1>Estructura el Caos con la EDT</h1>
-            <div class="grid-split-inverse">
-                <ul class="big-points">
-                    <li>
-                        <h3>Regla del 100%</h3>
-                        <p>Representa absolutamente todo el alcance. Sin omisiones ni extras.</p>
-                    </li>
-                    <li>
-                        <h3>Neguentropía</h3>
-                        <p>El mecanismo de orden que estructura el caos del proyecto.</p>
-                    </li>
-                    <li>
-                        <h3>Jerarquía Sistémica</h3>
-                        <p>Descomposición lógica desde el nivel "Proyecto" hasta "Paquetes".</p>
-                    </li>
-                </ul>
-                <div class="compare-box" style="padding: 2rem;">
-                    <p style="font-size: 1.2rem; font-style: italic;">"La EDT es el ADN del control. Estructura el sistema para evitar el colapso entrópico."</p>
+    <!-- DIAPOSITIVA 6 -->
+    <div class="slide">
+        <div class="top-left-indicator">06. METODOLOGÍA</div>
+        <div class="slide-content">
+            <h2>Metodología de Trabajo</h2>
+            <div class="grid-2" style="gap: 1.5rem;">
+                <div class="card" style="padding: 1.5rem 2rem;">
+                    <span class="big-number" style="font-size: 2.5rem;">01</span>
+                    <h3 style="color: var(--navy); margin-bottom: 0.5rem;">Conformación de equipos</h3>
+                    <p style="margin: 0;">Oficinas Técnicas (4-5 integrantes).</p>
+                </div>
+                <div class="card" style="padding: 1.5rem 2rem;">
+                    <span class="big-number" style="font-size: 2.5rem;">02</span>
+                    <h3 style="color: var(--navy); margin-bottom: 0.5rem;">Análisis de Caso</h3>
+                    <p style="margin: 0;">Definir la estrategia de división técnica.</p>
+                </div>
+                <div class="card" style="padding: 1.5rem 2rem;">
+                    <span class="big-number" style="font-size: 2.5rem;">03</span>
+                    <h3 style="color: var(--navy); margin-bottom: 0.5rem;">Desarrollo</h3>
+                    <p style="margin: 0;">Construcción de la EDT (Mínimo 4 niveles).</p>
+                </div>
+                <div class="card" style="padding: 1.5rem 2rem;">
+                    <span class="big-number" style="font-size: 2.5rem;">04</span>
+                    <h3 style="color: var(--navy); margin-bottom: 0.5rem;">Consolidación</h3>
+                    <p style="margin: 0;">Definición de Diccionario para 2 Paquetes de Trabajo Críticos.</p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 4 -->
-        <div class="slide">
-            <div class="slide-meta">04. CONCEPTOS II</div>
-            <h1>Diferencia Entregables de Simples Acciones</h1>
-            <div class="grid-split">
-                <div class="compare-box">
-                    <h3>Paquete de Trabajo (WP)</h3>
-                    <p>• Es un entregable u objeto físico.<br>
-                       • Permite asignar responsabilidad (RAM).<br>
-                       • Es medible y controlable en costo.</p>
-                </div>
-                <div class="compare-box" style="border-color: var(--accent);">
-                    <h3 style="border-bottom-color: var(--text-main);">Actividad</h3>
-                    <p>• Es la acción necesaria para producirlo.<br>
-                       • Contiene duración y precedencias.<br>
-                       • <strong>No van en la EDT.</strong></p>
-                </div>
+    <!-- DIAPOSITIVA 7 -->
+    <div class="slide">
+        <div class="top-left-indicator">07. ACTIVIDAD FORMATIVA</div>
+        <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+            <div class="huge-icon">⏱️</div>
+            <h2 style="font-size: clamp(3rem, 5vw, 4rem); margin-bottom: 1rem;">60 minutos</h2>
+            <div class="notice-box" style="border-left-color: var(--navy); background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <p style="font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 400; color: var(--navy);"><strong>Instrucción:</strong> Los estudiantes deben entregar al final de la sesión su propuesta de EDT y la definición estratégica adoptada.</p>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 5 -->
-        <div class="slide">
-            <div class="slide-meta">05. ACTIVACIÓN</div>
-            <h1>Resuelve el Dilema de la Estrategia</h1>
-            <div class="grid-split-inverse">
-                <div class="col-border-left">
-                    <p><strong>Micro-Desafío (15 min):</strong><br><br>
-                    Puente atirantado de 400m sobre un río caudaloso.<br><br>¿Cómo desglosar antes de dibujar la EDT?</p>
-                </div>
-                <div class="compare-box">
-                    <h3>Opción A: Geográfica</h3>
-                    <p>Dividir en "Acceso Norte", "Pila Central" y "Acceso Sur".</p>
-                    <br><br>
-                    <h3>Opción B: Especialidades</h3>
-                    <p>Dividir en "Obras Civiles", "Estructuras" e "Instalaciones".</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 6 -->
-        <div class="slide">
-            <div class="slide-meta">06. DEBATE</div>
-            <h1>Protege el Triángulo de Hierro</h1>
-            <div class="grid-split">
-                <div></div>
-                <ul class="big-points">
-                    <li>
-                        <h3>Plazo Crítico</h3>
-                        <p>¿Cuál estrategia facilita el Fast-Tracking si el tiempo apremia?</p>
-                    </li>
-                    <li>
-                        <h3>Flujo de Información</h3>
-                        <p>¿Cómo impacta la externalización del acero en la neguentropía?</p>
-                    </li>
-                    <li>
-                        <h3>Decisión Estructural</h3>
-                        <p>¿Qué esquina del Triángulo protegemos con cada decisión?</p>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- SLIDE 7 -->
-        <div class="slide">
-            <div class="slide-meta">07. TALLER</div>
-            <h1>Aplica el Control en Proyectos Complejos</h1>
-            <div class="grid-split">
-                <div class="highlight-box">
-                    <h3>Misión del Taller</h3>
-                    <p style="margin-top: 1rem;">Garantizar la trazabilidad del alcance y definir paquetes de trabajo controlables usando estándares internacionales.</p>
-                </div>
-                <div class="col-border-left">
-                    <p><strong>60 Minutos</strong> de trabajo intensivo en equipos de Oficina Técnica (4-5 integrantes).<br><br>Entrega final requerida al terminar la sesión.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8 -->
-        <div class="slide">
-            <div class="slide-meta">08. EL CASO</div>
-            <h1>Analiza el Caso: PTAS Valle Central</h1>
-            <div class="grid-split-inverse">
-                <ul class="big-points">
-                    <li>
-                        <h3>Obras Civiles</h3>
-                        <p>Estanques de hormigón armado y excavaciones masivas.</p>
-                    </li>
-                    <li>
-                        <h3>Equipamiento & Control</h3>
-                        <p>Bombas, aireadores, sensores e Instalaciones Eléctricas (PLC).</p>
-                    </li>
-                    <li>
-                        <h3>Gestión de Proyecto</h3>
-                        <p>Tramitación de Permisos, Oficina Técnica y Seguridad.</p>
-                    </li>
-                </ul>
-                <div class="col-border-left">
-                    <p><strong>Contexto:</strong><br>Proyecto de infraestructura civil e industrial con alta interdependencia.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 9 -->
-        <div class="slide">
-            <div class="slide-meta">09. DESAFÍO</div>
-            <h1>Supera la Restricción Estratégica del Cliente</h1>
-            <div class="grid-split">
-                <div class="highlight-box" style="background: var(--text-main); border-left-color: var(--accent);">
-                    <h3>Exigencia del Mandante</h3>
-                    <p style="margin-top: 1rem; font-size: 1.5rem;">El sistema de bombeo debe ser entregado <strong>antes</strong> que el resto de la planta para pruebas de red externa.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 10 -->
-        <div class="slide">
-            <div class="slide-meta">10. MÉTODO</div>
-            <h1>Sigue el Método para el Éxito</h1>
-            <div class="grid-split">
-                <div></div>
-                <ul class="big-points">
-                    <li>
-                        <h3>Análisis de Caso</h3>
-                        <p>Definir la estrategia de división inicial.</p>
-                    </li>
-                    <li>
-                        <h3>Desarrollo</h3>
-                        <p>Construcción de la EDT (Mínimo 4 niveles de profundidad).</p>
-                    </li>
-                    <li>
-                        <h3>Consolidación</h3>
-                        <p>Definición de Diccionario para 2 Paquetes de Trabajo críticos.</p>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- SLIDE 11 -->
-        <div class="slide">
-            <div class="slide-meta">11. TAREAS</div>
-            <h1>Completa las Tareas Clave del Taller</h1>
-            <div class="grid-split-inverse">
-                <ul class="big-points">
-                    <li>
-                        <h3>Declaración</h3>
-                        <p>Justificar si la EDT será orientada a procesos o productos físicos.</p>
-                    </li>
-                    <li>
-                        <h3>Verificación 100%</h3>
-                        <p>Asegurar que la suma de los hijos es igual al padre.</p>
-                    </li>
-                    <li>
-                        <h3>Identificación WPs</h3>
-                        <p>Codificar 2 WPs críticos para la entrega anticipada del bombeo.</p>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- SLIDE 12 -->
-        <div class="slide">
-            <div class="slide-meta">12. EVALUACIÓN</div>
-            <h1>Conoce los Criterios de Evaluación</h1>
-            <div class="grid-split">
-                <div class="compare-box">
-                    <p><strong>Rúbrica (100 Puntos)</strong></p><br>
-                    <p>• <strong>Lógica de Desglose:</strong> Jerarquía clara y técnica.<br><br>
-                       • <strong>Regla 100%:</strong> Alcance total sin solapamientos.<br><br>
-                       • <strong>Definición:</strong> WPs medibles y asignables.<br><br>
-                       • <strong>Integración:</strong> Facilita entrega anticipada.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 13 -->
-        <div class="slide">
-            <div class="slide-meta">13. CONCLUSIÓN</div>
-            <h1>Trae el Futuro al Presente Hoy</h1>
-            <div class="grid-split-inverse">
+    <!-- DIAPOSITIVA 8 -->
+    <div class="slide">
+        <div class="top-left-indicator">08. CASO DE ESTUDIO</div>
+        <div class="slide-content">
+            <h2>PTAS "Valle Central"</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Planta de Tratamiento de Aguas Servidas. <br><em>Contexto: Proyecto de infraestructura civil e industrial con alta interdependencia.</em></p>
+            
+            <div class="grid-asym">
                 <div>
-                    <p style="font-size: 2rem; font-weight: 700; color: var(--accent); margin-bottom: 2rem;">
+                    <h3 style="color: var(--navy); margin-bottom: 1rem;">Componentes Principales:</h3>
+                    <ul class="standard-list" style="font-size: 1.05rem;">
+                        <li><strong>Obras Civiles:</strong> Estanques de hormigón armado, excavaciones masivas.</li>
+                        <li><strong>Equipamiento Electromecánico:</strong> Bombas, aireadores.</li>
+                        <li><strong>Instalaciones Eléctricas y Control:</strong> Sensores, PLC.</li>
+                        <li><strong>Gestión de Proyecto:</strong> Permisos, Oficina Técnica, Seguridad.</li>
+                    </ul>
+                </div>
+                <div class="card accent">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">Restricción Estratégica ⚠️</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">El mandante exige que el sistema de bombeo sea entregado antes que el resto de la planta para pruebas de red externa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAPOSITIVA 9 -->
+    <div class="slide">
+        <div class="top-left-indicator">09. TAREAS</div>
+        <div class="slide-content">
+            <h2>Tareas a Realizar</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem;">1. Declaración de Estrategia</h3>
+                    <p>Justificar si la EDT será orientada a procesos o a productos físicos (vinculado a la activación previa).</p>
+                </div>
+                <div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem;">2. Diagrama EDT</h3>
+                    <p>Elaborar el desglose jerárquico (Nivel 1 al 4).</p>
+                </div>
+                <div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem;">3. Verificación Regla 100%</h3>
+                    <p>Asegurar que la suma de los hijos es igual al padre en todo el desglose.</p>
+                </div>
+                <div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem;">4. Paquetes de Trabajo</h3>
+                    <p>Identificar y codificar 2 WPs que sean críticos para la entrega anticipada del sistema de bombeo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAPOSITIVA 10 -->
+    <div class="slide">
+        <div class="top-left-indicator">10. RÚBRICA</div>
+        <div class="slide-content">
+            <h2 style="margin-bottom: 1.5rem;">Rúbrica de Evaluación (100 pts)</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Criterio</th>
+                            <th style="width: 20%;">Excelente (25 pts)</th>
+                            <th style="width: 20%;">Bueno (18 pts)</th>
+                            <th style="width: 20%;">Regular (12 pts)</th>
+                            <th style="width: 20%;">Insuficiente (&lt;10 pts)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: bold; color: var(--navy);">Lógica de Desglose</td>
+                            <td>Jerarquía clara basada en estrategia técnica declarada.</td>
+                            <td>Jerarquía lógica, pero con saltos de nivel menores.</td>
+                            <td>Desglose confuso o mezcla de actividades y entregables.</td>
+                            <td>Sin estructura lógica jerárquica.</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: var(--navy);">Cumplimiento Regla 100%</td>
+                            <td>El alcance total está cubierto sin solapamientos.</td>
+                            <td>Cubre el alcance, pero hay elementos redundantes.</td>
+                            <td>Faltan componentes menores del alcance solicitado.</td>
+                            <td>Omisiones graves de componentes principales.</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: var(--navy);">Definición de WP</td>
+                            <td>WPs son medibles, asignables y claramente controlables.</td>
+                            <td>WPs definidos, pero algunos son demasiado extensos.</td>
+                            <td>WPs se confunden con actividades simples.</td>
+                            <td>No se identifican paquetes de trabajo.</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: var(--navy);">Integración Técnica</td>
+                            <td>La EDT facilita la gestión de la restricción del caso.</td>
+                            <td>La EDT considera la restricción de forma parcial.</td>
+                            <td>La EDT ignora la estrategia de entrega anticipada.</td>
+                            <td>No hay alineación con el caso planteado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAPOSITIVA 11 -->
+    <div class="slide">
+        <div class="top-left-indicator">11. CIERRE</div>
+        <div class="slide-content">
+            <div class="grid-asym">
+                <div>
+                    <h2 style="margin-bottom: 1.5rem;">Escala de Desempeño</h2>
+                    <ul class="performance-scale">
+                        <li>
+                            <span class="score">90 - 100:</span> 
+                            <span class="desc">Nivel Senior de Oficina Técnica.</span>
+                        </li>
+                        <li>
+                            <span class="score">70 - 89:</span> 
+                            <span class="desc">Planificador en formación avanzada.</span>
+                        </li>
+                        <li>
+                            <span class="score">50 - 69:</span> 
+                            <span class="desc">Requiere refuerzo en conceptos sistémicos.</span>
+                        </li>
+                        <li>
+                            <span class="score danger">&lt; 50:</span> 
+                            <span class="desc">Riesgo de entropía crítica en la gestión.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <blockquote>
                         "Planificar es traer el futuro al presente para que puedas hacer algo al respecto ahora."
-                    </p>
-                    <p>— Alan Lakein</p>
-                </div>
-                <div class="col-border-left">
-                    <p><strong>Escala de Desempeño:</strong><br><br>
-                    <strong>90-100:</strong> Senior de Oficina Técnica.<br>
-                    <strong>70-89:</strong> Planificador avanzado.<br>
-                    <strong>&lt;50:</strong> Riesgo de entropía crítica.</p>
+                        <footer>— Alan Lakein</footer>
+                    </blockquote>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 14 -->
-        <div class="slide">
-            <div class="slide-meta">14. REFERENCIAS</div>
-            <h1>Profundiza con Bibliografía Seleccionada</h1>
-            <div class="grid-split">
-                <div></div>
-                <ul class="big-points">
-                    <li>
-                        <h3>Serpell, A. (2002)</h3>
-                        <p>Planificación y Control de Proyectos. Ed. PUC (Caps 2 y 16).</p>
+    <!-- DIAPOSITIVA 12 -->
+    <div class="slide">
+        <div class="top-left-indicator">12. BIBLIOGRAFÍA</div>
+        <div class="slide-content">
+            <h2>Bibliografía y Referencias</h2>
+            <div class="card" style="border-top: none; border-left: 4px solid var(--navy); padding: 2rem;">
+                <ul class="standard-list" style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 1.5rem; padding: 0;">
+                        <strong style="color: var(--navy); font-size: 1.1rem;">Serpell, A. (2002)</strong><br>
+                        Planificación y Control de Proyectos. Ediciones Universidad Católica de Chile. (Capítulos 2 y 16).
                     </li>
-                    <li>
-                        <h3>Kerzner, H. (2017)</h3>
-                        <p>Project Management: A Systems Approach. Wiley (Capítulo 11).</p>
+                    <li style="margin-bottom: 1.5rem; padding: 0;">
+                        <strong style="color: var(--navy); font-size: 1.1rem;">Kerzner, H. (2017)</strong><br>
+                        Project Management: A Systems Approach to Planning, Scheduling, and Controlling. Wiley. (Capítulo 11).
                     </li>
-                    <li>
-                        <h3>Johansen, O. (1992)</h3>
-                        <p>Introducción a la Teoría General de Sistemas. Limusa.</p>
+                    <li style="padding: 0;">
+                        <strong style="color: var(--navy); font-size: 1.1rem;">Johansen, O. (1992)</strong><br>
+                        Introducción a la Teoría General de Sistemas. Editorial Limusa.
                     </li>
                 </ul>
             </div>
         </div>
-
     </div>
 
-    <!-- CONTROLS -->
+    <!-- Controles de Navegación -->
     <div class="controls">
-        <button id="prevBtn" onclick="changeSlide(-1)">Anterior</button>
-        <span id="slideCounter">1 / 14</span>
-        <button id="nextBtn" onclick="changeSlide(1)">Siguiente</button>
+        <button class="btn-nav" id="prevBtn" title="Anterior (Flecha Izquierda)">&#8592;</button>
+        <button class="btn-nav" id="nextBtn" title="Siguiente (Flecha Derecha)">&#8594;</button>
     </div>
+    
+    <!-- Barra de progreso -->
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
 
+    <!-- Lógica Javascript -->
     <script>
-        let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
-        const counter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+        let currentSlide = 0;
 
-        function updateSlides() {
+        // Función para cambiar diapositivas
+        function updateSlide() {
             slides.forEach((slide, index) => {
                 if (index === currentSlide) {
                     slide.classList.add('active');
+                    slide.scrollTop = 0; 
                 } else {
                     slide.classList.remove('active');
+                    // Cerrar acordeones si se sale de la diapositiva 4
+                    if(index === 3) { closeAllAnswers(); } 
                 }
             });
-            counter.innerText = `${currentSlide + 1} / ${slides.length}`;
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
         }
 
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide < 0) currentSlide = 0;
-            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
-            updateSlides();
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
         }
 
-        // Keyboard navigation
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Lógica de los botones de ayuda (Acordeón Slide 04)
+        function toggleAnswer(id, btnElement) {
+            const el = document.getElementById(id);
+            const isOpen = el.classList.contains('open');
+            
+            // Cerrar todos antes de abrir el nuevo (opcional, para mantener el slide limpio)
+            closeAllAnswers();
+
+            // Si no estaba abierto, lo abrimos
+            if (!isOpen) {
+                el.classList.add('open');
+                btnElement.classList.add('active');
+                btnElement.innerHTML = "Ocultar ▴";
+            }
+        }
+
+        function closeAllAnswers() {
+            const answers = document.querySelectorAll('.answer-box');
+            const btns = document.querySelectorAll('.btn-reveal');
+            answers.forEach(a => a.classList.remove('open'));
+            btns.forEach(b => {
+                b.classList.remove('active');
+                b.innerHTML = "💡 Ayuda";
+            });
+        }
+
+        // Eventos de botones de navegación
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        // Eventos de teclado
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === ' ') {
-                changeSlide(1);
+                nextSlide();
             } else if (e.key === 'ArrowLeft') {
-                changeSlide(-1);
+                prevSlide();
             }
         });
 
-        // Initialize
-        updateSlides();
+        // Inicializar
+        updateSlide();
     </script>
 </body>
 </html>
