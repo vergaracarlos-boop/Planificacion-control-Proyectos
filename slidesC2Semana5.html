@@ -117,7 +117,6 @@
         ul { padding-left: 1.5rem; }
         li { margin-bottom: 0.75rem; padding-left: 0.25rem; }
         
-        /* Modificado para que no aplique a la lista interactiva de la slide 4 */
         .standard-list li::marker { color: var(--accent); font-weight: bold; }
 
         .highlight {
@@ -190,6 +189,54 @@
             font-size: 1.05rem;
         }
 
+        /* =========================================
+           ESTILOS PARA IMÁGENES AGREGADAS
+           ========================================= */
+        .img-sharp {
+            border-radius: 0; /* Bordes afilados arquitectónicos */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-light);
+            object-fit: cover;
+        }
+        
+        .img-responsive {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Imagen flotante Slide 1 */
+        .img-floating-br {
+            position: absolute;
+            bottom: 12vh;
+            right: 8vw;
+            width: 30%;
+            max-width: 420px;
+            z-index: 1; /* Detrás del texto si la pantalla es muy chica */
+        }
+
+        /* Margen superior utilitario */
+        .mt-2 { margin-top: 2.5rem; }
+        .mb-2 { margin-bottom: 2rem; }
+
+        /* Restricción específica Slide 8 */
+        .img-constrained-height {
+            max-height: 260px;
+            object-position: center;
+        }
+
+        /* Imagen decorativa Slide 11 */
+        .img-decorative {
+            opacity: 0.15; /* Baja opacidad requerida */
+            width: 75%;
+            max-width: 320px;
+            margin-top: 2.5rem;
+            margin-left: auto; /* Alinear a la derecha por estética (opcional) */
+            display: block;
+            filter: grayscale(100%); /* Refuerza el minimalismo arquitectónico */
+            mix-blend-mode: multiply;
+        }
+
         /* Rúbrica / Tablas */
         .table-container {
             width: 100%;
@@ -223,7 +270,7 @@
         td { color: var(--text-muted); }
         tr:hover td { background-color: #F3F4F6; color: var(--navy); }
 
-        /* Slide 04: Componente Interactivo de Ayuda (Acordeón) */
+        /* Acordeón Slide 04 */
         .interactive-list {
             list-style: none;
             padding: 0;
@@ -298,7 +345,7 @@
         }
         .answer-box p {
             font-size: 0.95rem;
-            color: #E2E8F0; /* Gris muy claro para contraste */
+            color: #E2E8F0; 
             margin: 0;
             line-height: 1.6;
         }
@@ -410,6 +457,15 @@
             }
             blockquote { margin-top: 1rem; }
             .question-header { flex-direction: column; gap: 0.5rem; }
+            
+            /* Ajuste de imagen en móvil para slide 1 */
+            .img-floating-br {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                width: 100%;
+                margin-top: 2rem;
+            }
         }
     </style>
 </head>
@@ -418,7 +474,11 @@
     <!-- DIAPOSITIVA 1 -->
     <div class="slide active">
         <div class="top-left-indicator">01. TÍTULO</div>
-        <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        
+        <!-- Imagen Insertada (Slide 1) -->
+        <img src="assets/img/imgslide1.jpeg" alt="Ilustración de proyecto civil" class="img-floating-br img-sharp">
+        
+        <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%; position: relative; z-index: 2;">
             <p style="text-transform: uppercase; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 1rem;">Actividad Presencial</p>
             <h1>Planificación y Control de Proyectos</h1>
             <div style="width: 80px; height: 6px; background-color: var(--accent); margin: 2rem 0;"></div>
@@ -498,13 +558,15 @@
                         <p><strong>A. Geográfica:</strong> Dividir en "Acceso Norte", "Pila Central" y "Acceso Sur".</p>
                         <p><strong>B. Especialidades:</strong> Dividir en "Obras Civiles", "Estructuras Metálicas" e "Instalaciones".</p>
                     </div>
+
+                    <!-- Imagen Insertada (Slide 4) -->
+                    <img src="assets/img/imgslide_4.jpeg" alt="Esquema puente atirantado" class="img-responsive img-sharp mt-2" style="max-width: 520px;">
                 </div>
                 
                 <!-- CARD INTERACTIVA CON ACORDEÓN -->
                 <div class="card accent" style="padding: 2rem;">
                     <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Preguntas para el debate:</h3>
                     <ul class="interactive-list">
-                        <!-- Pregunta 1 -->
                         <li>
                             <div class="question-header">
                                 <span class="question-text">¿Cuál de estas opciones facilita el <strong>Fast-Tracking</strong> si el plazo es la restricción crítica?</span>
@@ -514,7 +576,6 @@
                                 <p><strong>¿Cuál facilita el Fast-Tracking?</strong> La Estrategia A. Al separar por frentes geográficos, las actividades de cada zona pueden avanzar de forma independiente (paralelismo). En la Estrategia B, las instalaciones suelen depender críticamente de que terminen las obras civiles, limitando el traslape.</p>
                             </div>
                         </li>
-                        <!-- Pregunta 2 -->
                         <li>
                             <div class="question-header">
                                 <span class="question-text">¿Cómo cambia el flujo de información (neguentropía) si el contratista de acero es externo?</span>
@@ -524,7 +585,6 @@
                                 <p><strong>¿Cómo cambia la Neguentropía?</strong> Un contratista externo es una fuente de entropía (ruido/incertidumbre). Si usamos la Estrategia B, el contratista tiene "dueño" de una rama completa de la EDT, simplificando su alcance pero complicando las interfaces físicas. En la A, el contratista aparece en múltiples ramas, lo que exige una coordinación de información mucho más robusta para evitar el caos.</p>
                             </div>
                         </li>
-                        <!-- Pregunta 3 -->
                         <li>
                             <div class="question-header">
                                 <span class="question-text">¿Qué esquina del <strong>Triángulo de Hierro</strong> protegemos con cada decisión?</span>
@@ -610,9 +670,15 @@
                         <li><strong>Gestión de Proyecto:</strong> Permisos, Oficina Técnica, Seguridad.</li>
                     </ul>
                 </div>
-                <div class="card accent">
-                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">Restricción Estratégica ⚠️</h3>
-                    <p style="font-size: 1.1rem; line-height: 1.5;">El mandante exige que el sistema de bombeo sea entregado antes que el resto de la planta para pruebas de red externa.</p>
+                <!-- Contenedor ajustado para respetar la estructura de grilla asimétrica -->
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    <!-- Imagen Insertada (Slide 8) -->
+                    <img src="assets/img/imgslide_8.jpeg" alt="Planta de Tratamiento Valle Central" class="img-responsive img-sharp img-constrained-height mb-2" style="max-width: 440px;">
+                    
+                    <div class="card accent">
+                        <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">Restricción Estratégica ⚠️</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.5;">El mandante exige que el sistema de bombeo sea entregado antes que el resto de la planta para pruebas de red externa.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -721,11 +787,14 @@
                         </li>
                     </ul>
                 </div>
-                <div>
+                <div style="display: flex; flex-direction: column;">
                     <blockquote>
                         "Planificar es traer el futuro al presente para que puedas hacer algo al respecto ahora."
                         <footer>— Alan Lakein</footer>
                     </blockquote>
+                    
+                    <!-- Imagen Insertada (Slide 11) -->
+                    <img src="assets/img/imgslide_11.jpeg" alt="Gráfico decorativo" class="img-responsive img-decorative">
                 </div>
             </div>
         </div>
@@ -807,10 +876,8 @@
             const el = document.getElementById(id);
             const isOpen = el.classList.contains('open');
             
-            // Cerrar todos antes de abrir el nuevo (opcional, para mantener el slide limpio)
             closeAllAnswers();
 
-            // Si no estaba abierto, lo abrimos
             if (!isOpen) {
                 el.classList.add('open');
                 btnElement.classList.add('active');
