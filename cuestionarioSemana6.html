@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Formativa - Semana 6</title>
+    <!-- Fuente Moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Librería jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #F5F7FA;
+            --text-main: #1E2A3A;
+            --text-secondary: #5D7BA0;
+            --accent: #4A6FA5;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.7);
+            --error: #E57373;
+            --success: #81C784;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #F0F3F8 0%, #E2E8F0 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* Pantallas */
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inputs y Botones */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 40px;
+            border: 1px solid #CBD5E0;
+            background: var(--white);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 40px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #3A5A8A;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #A0AEC0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background: rgba(74, 111, 165, 0.1);
+            color: var(--accent);
+        }
+
+        /* Cuestionario */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-label {
+            display: block;
+            padding: 15px 20px;
+            background: var(--white);
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-label:hover {
+            border-color: var(--accent);
+            background: #F8FAFC;
+        }
+
+        input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--accent);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: rgba(129, 199, 132, 0.15);
+            color: #2E7D32;
+            border: 1px solid var(--success);
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background: rgba(229, 115, 115, 0.15);
+            color: #C62828;
+            border: 1px solid var(--error);
+        }
+
+        /* Resumen */
+        .score-display {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 600;
+            margin: 20px 0;
+            color: var(--accent);
+        }
+
+        .recommendation {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #FFC107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- PANTALLA 1: INICIO -->
+        <div id="screen-start" class="screen active">
+            <h1>Lógica de Programación</h1>
+            <p class="subtitle">Evaluación Formativa - Semana 6</p>
+            <div class="input-group">
+                <input type="email" id="user-email" placeholder="correo@alumnos.ulagos.cl" required>
+            </div>
+            <button class="btn" onclick="startQuiz()">Comenzar</button>
+            <p class="footer-note">Usa tu correo institucional para registrar tu progreso.</p>
+        </div>
+
+        <!-- PANTALLA 2: CUESTIONARIO -->
+        <div id="screen-quiz" class="screen">
+            <div class="quiz-header">
+                <span id="display-email"></span>
+                <span id="question-counter">Pregunta 1/10</span>
+            </div>
+            <div id="quiz-content">
+                <p class="question-text" id="question-text">Cargando pregunta...</p>
+                <div class="options-container" id="options-container">
+                    <!-- Opciones dinámicas -->
+                </div>
+            </div>
+            <div id="feedback-area" class="feedback"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" id="btn-prev" onclick="prevQuestion()" disabled>Anterior</button>
+                <button class="btn" id="btn-next" onclick="handleNext()">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: RESUMEN -->
+        <div id="screen-result" class="screen">
+            <h1>Resultado Final</h1>
+            <div class="score-display" id="final-score">0/10</div>
+            <div id="recommendation-box" class="recommendation" style="display: none;">
+                ⚠️ Has respondido correctamente menos de 3 preguntas. Te recomendamos volver a revisar los materiales y realizar la evaluación nuevamente.
+            </div>
+            <button class="btn" onclick="downloadPDF()">📄 Descargar Resumen (PDF)</button>
+            <button class="btn btn-outline" id="btn-retry" onclick="location.reload()">Reintentar</button>
+            <p class="footer-note">Recuerda subir el PDF al chat de la asignatura.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- BASE DE DATOS DE PREGUNTAS ---
+        const questions = [
+            {
+                q: "¿Cuál es la relación de precedencia más utilizada en construcción, donde el sucesor no inicia hasta que el predecesor termina?",
+                options: [
+                    "Fin a Comienzo (FS)",
+                    "Comienzo a Comienzo (SS)",
+                    "Fin a Fin (FF)",
+                    "Comienzo a Fin (SF)"
+                ],
+                correct: 0,
+                explanation: "FS es el estándar industrial para secuencias lineales donde la dependencia es el término físico de la tarea previa."
+            },
+            {
+                q: "En una relación 'Comienzo a Comienzo' (SS) con un retraso (Lag) de 3 días, ¿qué ocurre?",
+                options: [
+                    "El sucesor termina 3 días después que el predecesor.",
+                    "El sucesor inicia 3 días después de que haya iniciado el predecesor.",
+                    "El sucesor solo inicia si el predecesor ya terminó hace 3 días.",
+                    "El sucesor se adelanta 3 días al inicio del predecesor."
+                ],
+                correct: 1,
+                explanation: "La relación SS vincula los hitos de inicio; el Lag suma tiempo de espera desde que el predecesor comienza."
+            },
+            {
+                q: "¿Qué representa técnicamente un 'Adelanto' (Lead) en la programación de una red?",
+                options: [
+                    "Un tiempo de espera obligatorio por razones tecnológicas.",
+                    "El margen de tiempo que una tarea puede retrasarse sin afectar al proyecto.",
+                    "Una aceleración que permite solapar el sucesor antes de que termine el predecesor.",
+                    "La diferencia entre el costo real y el valor ganado de una actividad."
+                ],
+                correct: 2,
+                explanation: "El Lead es un retraso negativo que permite que actividades se ejecuten en paralelo para comprimir el cronograma."
+            },
+            {
+                q: "Durante la 'Pasada hacia Adelante' (Forward Pass), ¿cómo se define el Inicio Temprano (ES) de una tarea con varias predecesoras?",
+                options: [
+                    "Seleccionando el menor de los Términos Tempranos (EF) de sus predecesoras.",
+                    "Sumando la duración de todas las actividades predecesoras.",
+                    "Seleccionando el mayor de los Términos Tempranos (EF) de todas sus predecesoras.",
+                    "Haciendo el promedio de los tiempos EF de la ruta más crítica."
+                ],
+                correct: 2,
+                explanation: "Para asegurar que todos los requisitos previos se cumplan, el sucesor debe esperar a que la ruta más larga de entrada finalice."
+            },
+            {
+                q: "¿Cuál es la definición de 'Holgura Total' (Total Float) de una actividad?",
+                options: [
+                    "El tiempo que una actividad puede retrasarse sin postergar el fin del proyecto.",
+                    "El tiempo que una actividad puede retrasarse sin afectar a sus sucesoras.",
+                    "La duración mínima posible si se aplican recursos extraordinarios.",
+                    "El margen de error permitido en el presupuesto del paquete de trabajo."
+                ],
+                correct: 0,
+                explanation: "La holgura total mide la flexibilidad de una tarea respecto a la meta final del contrato."
+            },
+            {
+                q: "¿Qué caracteriza a las actividades que componen el Camino Crítico?",
+                options: [
+                    "Son las actividades de mayor costo en la EDT.",
+                    "Tienen una holgura total igual a cero y determinan la duración del proyecto.",
+                    "Son hitos de gestión que no consumen recursos físicos.",
+                    "Poseen la duración más extensa de todas las tareas del cronograma."
+                ],
+                correct: 1,
+                explanation: "El camino crítico es la secuencia de actividades sin margen de retraso; si una se atrasa, el proyecto entero se atrasa."
+            },
+            {
+                q: "En una relación Fin a Fin (FF), ¿qué restricción se impone lógicamente?",
+                options: [
+                    "El sucesor no puede finalizar hasta que el predecesor haya terminado.",
+                    "El sucesor debe iniciar exactamente cuando el predecesor termina.",
+                    "El sucesor no puede iniciar hasta que el predecesor comience.",
+                    "El sucesor debe terminar antes de que el predecesor cumpla el 50% de avance."
+                ],
+                correct: 0,
+                explanation: "FF sincroniza los términos; es común en tareas de inspección que deben acompañar el término de la obra."
+            },
+            {
+                q: "¿Cuál es la diferencia entre Holgura Libre y Holgura Total?",
+                options: [
+                    "La total se mide en dinero y la libre se mide en tiempo.",
+                    "La libre no afecta a las sucesoras; la total no afecta al fin del proyecto.",
+                    "La total es siempre negativa y la libre es siempre positiva.",
+                    "La libre solo existe en el camino crítico de la red."
+                ],
+                correct: 1,
+                explanation: "La holgura libre es un buffer local que no impacta en la programación de las tareas inmediatas que siguen."
+            },
+            {
+                q: "En la 'Pasada hacia Atrás' (Backward Pass), ¿cómo se obtiene el Término Tardío (LF) de una predecesora múltiple?",
+                options: [
+                    "Seleccionando el menor de los Inicios Tardíos (LS) de sus sucesoras.",
+                    "Seleccionando el mayor de los Inicios Tardíos (LS) de sus sucesoras.",
+                    "Sumando la holgura libre al término temprano calculado previamente.",
+                    "Restando la duración de la actividad al inicio temprano del proyecto."
+                ],
+                correct: 0,
+                explanation: "Se debe cumplir con el inicio más restrictivo (el más pronto) de las actividades que dependen de ella."
+            },
+            {
+                q: "¿Cuál es el propósito principal de un 'Retraso' (Lag) en una relación Fin a Comienzo (FS)?",
+                options: [
+                    "Reducir artificialmente el plazo para engañar al mandante.",
+                    "Identificar actividades ficticias que no consumen tiempo.",
+                    "Representar tiempos de espera tecnológicos, como el fraguado de hormigón.",
+                    "Compensar errores en el cálculo de la productividad de las cuadrillas."
+                ],
+                correct: 2,
+                explanation: "El Lag modela dependencias físicas o químicas que requieren paso del tiempo sin necesidad de mano de obra activa."
+            }
+        ];
+
+        // --- LÓGICA DE ESTADO ---
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let userEmail = "";
+
+        // --- FUNCIONES DE NAVEGACIÓN ---
+        function startQuiz() {
+            const emailInput = document.getElementById('user-email').value;
+            if (!emailInput || !emailInput.endsWith("@alumnos.ulagos.cl")) {
+                alert("Por favor, ingresa un correo válido de @alumnos.ulagos.cl");
+                return;
+            }
+            userEmail = emailInput;
+            document.getElementById('display-email').innerText = userEmail;
+            showScreen('screen-quiz');
+            loadQuestion();
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('question-counter').innerText = `Pregunta ${currentQuestionIndex + 1}/${questions.length}`;
+            document.getElementById('question-text').innerText = q.q;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            
+            q.options.forEach((opt, index) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz-opt';
+                radio.value = index;
+                
+                // Si ya respondió, marcar y deshabilitar
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    radio.disabled = true;
+                    if (userAnswers[currentQuestionIndex] === index) radio.checked = true;
+                }
+
+                label.appendChild(radio);
+                label.append(opt);
+                container.appendChild(label);
+            });
+
+            // Actualizar botones
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            document.getElementById('btn-next').innerText = currentQuestionIndex === questions.length - 1 ? "Finalizar" : "Siguiente";
+
+            // Mostrar feedback si ya respondió
+            showFeedback();
+        }
+
+        function handleNext() {
+            const selected = document.querySelector('input[name="quiz-opt"]:checked');
+            
+            // Si no ha respondido esta pregunta aún
+            if (userAnswers[currentQuestionIndex] === null) {
+                if (!selected) return; // No hace nada si no selecciona
+                userAnswers[currentQuestionIndex] = parseInt(selected.value);
+                showFeedback();
+                // Pequeña pausa para leer el feedback antes de pasar
+                return; 
+            }
+
+            // Si ya respondió y hace clic en siguiente, avanzar
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function showFeedback() {
+            const area = document.getElementById('feedback-area');
+            const answer = userAnswers[currentQuestionIndex];
+            
+            if (answer === null) {
+                area.style.display = "none";
+                return;
+            }
+
+            const q = questions[currentQuestionIndex];
+            const isCorrect = answer === q.correct;
+            
+            area.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            if (isCorrect) {
+                area.innerHTML = `✅ <strong>Correcto.</strong> ${q.explanation}`;
+            } else {
+                const correctText = q.options[q.correct];
+                area.innerHTML = `❌ <strong>Incorrecto.</strong> La respuesta correcta era: ${correctText}. ${q.explanation}`;
+            }
+            area.style.display = "block";
+        }
+
+        function finishQuiz() {
+            let correctCount = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questions[i].correct) correctCount++;
+            });
+
+            document.getElementById('final-score').innerText = `${correctCount}/${questions.length} correctas`;
+            
+            if (correctCount < 3) {
+                document.getElementById('recommendation-box').style.display = "block";
+            } else {
+                document.getElementById('recommendation-box').style.display = "none";
+            }
+
+            showScreen('screen-result');
+        }
+
+        // --- GENERACIÓN DE PDF ---
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const date = new Date().toLocaleString();
+            
+            let correctCount = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questions[i].correct) correctCount++;
+            });
+
+            doc.setFontSize(18);
+            doc.text("Resumen de Evaluación Formativa", 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Estudiante: ${userEmail}`, 20, 30);
+            doc.text(`Fecha: ${date}`, 20, 37);
+            doc.text(`Puntaje: ${correctCount} / ${questions.length}`, 20, 44);
+            
+            doc.text("--------------------------------------------------", 20, 52);
+            
+            let y = 60;
+            userAnswers.forEach((ans, i) => {
+                const status = (ans === questions[i].correct) ? "[CORRECTA]" : "[INCORRECTA]";
+                const text = `Pregunta ${i+1}: ${status}`;
+                doc.text(text, 20, y);
+                y += 10;
+                if (y > 270) { doc.addPage(); y = 20; }
+            });
+
+            doc.save(`Resumen_Semana6_${userEmail.split('@')[0]}.pdf`);
+        }
+    </script>
+</body>
+</html>
