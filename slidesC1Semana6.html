@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Presencial: Planificación y Control</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+/* 1. CONFIGURACIÓN DE COLORES Y FUENTES MINIMALISTAS */
+:root {
+  --bg-outer: #E5E5E5;
+  --bg-slide: #FAFAFA;
+  --white: #FFFFFF;
+  --black: #000000;
+  --text-main: #1A1A1A;
+  --text-muted: #737373;
+  --border-light: #E5E5E5;
+  --border-dark: #1A1A1A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-outer);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  color: var(--text-main);
+}
+
+/* 2. ESTRUCTURA DE LA DIAPOSITIVA */
+#presentation-viewport {
+  background-color: var(--bg-slide);
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  box-shadow: 0 0 50px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; 
+  flex-direction: column;
+  padding: 100px 120px 80px 120px;
+  background: var(--bg-slide);
+}
+
+.slide.active { display: flex; }
+
+/* Indicador de Sección Top-Left */
+.slide-meta {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* 3. TIPOGRAFÍA */
+h1, h2, h3 { font-family: 'Inter', sans-serif; color: var(--black); font-weight: 300; }
+h1 { font-size: 54px; letter-spacing: -1px; line-height: 1.1; margin-bottom: 20px;}
+.slide-title { 
+  font-size: 28px; 
+  margin-bottom: 50px; 
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 15px;
+}
+
+h3 { font-size: 18px; font-weight: 500; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+p, li, td { font-size: 18px; line-height: 1.8; color: var(--text-muted); font-weight: 300; }
+strong { font-weight: 500; color: var(--black); }
+
+/* 4. COMPONENTES VISUALES (Bordes afilados, sin border-radius) */
+.content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.card {
+  background: var(--white);
+  padding: 40px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+}
+
+.card:hover { border-color: var(--border-dark); }
+
+/* CAJA DE RESPUESTA: Minimalista e Invertida */
+.answer-box {
+  background: var(--black);
+  padding: 20px 30px;
+  margin-top: 20px;
+}
+
+.answer-box p { color: var(--white); margin: 0; font-size: 16px; font-weight: 400; }
+.answer-box h3 { color: var(--white); }
+.answer-box strong { color: var(--white); font-weight: 700; }
+
+/* Tablas */
+table { width: 100%; border-collapse: collapse; }
+th { text-transform: uppercase; font-size: 12px; letter-spacing: 1px; font-weight: 500; color: var(--black); border-bottom: 2px solid var(--black); padding: 15px 0; }
+td { border-bottom: 1px solid var(--border-light); padding: 20px 0; }
+
+/* Animación de pasos (Steps) */
+.step { 
+  opacity: 0; 
+  transform: translateY(10px); 
+  transition: opacity 0.6s ease, transform 0.6s ease; 
+  pointer-events: none;
+}
+.step.visible { 
+  opacity: 1; 
+  transform: translateY(0); 
+  pointer-events: auto;
+}
+
+/* Footer / Navegación */
+#controls {
+  position: absolute;
+  bottom: 40px;
+  right: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.nav-btn {
+  background: var(--white);
+  color: var(--black);
+  border: 1px solid var(--border-light);
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+.nav-btn:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+/* Botones de acción dentro de la slide */
+.action-btn {
+  background: transparent;
+  color: var(--black);
+  border: 1px solid var(--black);
+  padding: 10px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+.action-btn:hover { background: var(--black); color: var(--white); }
+
+#slide-counter { font-weight: 500; color: var(--text-muted); min-width: 60px; text-align: center; font-size: 12px; letter-spacing: 1px; margin-right: 15px;}
+
+/* Modales Arquitectónicos */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+.modal-content {
+  background: var(--white);
+  padding: 60px;
+  max-width: 800px;
+  width: 90%;
+  border: 1px solid var(--border-dark);
+  position: relative;
+  box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
+}
+.close-modal { position: absolute; top: 20px; right: 30px; font-size: 30px; font-weight: 300; cursor: pointer; color: var(--black); }
+    </style>
+</head>
+<body>
+
+<div id="presentation-viewport">
+    
+    <!-- SLIDE 1: Portada -->
+    <div class="slide active" id="slide1">
+        <div class="slide-meta">01. Portada</div>
+        <div class="content-area">
+            <p style="font-size: 14px; font-weight: 500; letter-spacing: 3px; margin-bottom: 20px; color: var(--black); text-transform: uppercase;">Universidad de Los Lagos</p>
+            <h1>Actividad Presencial<br>Planificación y Control de Proyectos</h1>
+            <p style="font-size: 22px; margin-top: 20px; color: var(--text-muted);">Clase 1, Semana 6 / Configuración del Entorno Temporal</p>
+            <div style="margin-top: 80px; border-top: 1px solid var(--border-dark); padding-top: 20px; display: inline-block;">
+                <p style="font-size: 14px; letter-spacing: 1px; color: var(--black);">DOCENTE: CARLOS VERGARA</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: Marco Referencia -->
+    <div class="slide" id="slide2">
+        <div class="slide-meta">02. Marco de Referencia</div>
+        <h2 class="slide-title">Fundamentos del Tiempo</h2>
+        <div class="content-area">
+            <div class="card" style="padding: 60px 40px; border-left: 4px solid var(--black);">
+                <p style="font-size: 26px; font-weight: 300; line-height: 1.5; color: var(--black);">"La planificación no es pensar en decisiones futuras, sino en el futuro de las decisiones presentes."</p>
+            </div>
+            <div class="step" style="margin-top: 40px; margin-left: 40px;">
+                <p style="font-size: 20px;">Configurar correctamente los <strong>calendarios</strong> evita desviaciones estructurales en la carta Gantt y el cronograma general.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: Plan vs Programa -->
+    <div class="slide" id="slide3">
+        <div class="slide-meta">03. Conceptos Base</div>
+        <h2 class="slide-title">Plan vs. Programación</h2>
+        <div class="content-area">
+            <div class="asymmetric-grid">
+                <div class="card">
+                    <h3>El Plan (El "Cómo")</h3>
+                    <p>Establece la <strong>secuencia lógica</strong> espacial y el método constructivo a utilizar.</p>
+                </div>
+                <div class="card">
+                    <h3>El Programa (El "Cuándo")</h3>
+                    <p>Establece el inicio y fin de las tareas en <strong>fechas cronológicas reales</strong>.</p>
+                </div>
+            </div>
+            <div class="card step" style="margin-top: 20px; background: var(--bg-outer); border: none;">
+                <h3>Programación Rítmica</h3>
+                <p>Sincronización de actividades repetitivas en un ritmo común para garantizar un flujo continuo.</p>
+                <button class="action-btn" onclick="openModal('modalRitmo')">Detalles Técnicos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: Calendarios -->
+    <div class="slide" id="slide4">
+        <div class="slide-meta">04. Gestión de Tiempos</div>
+        <h2 class="slide-title">Calendarios Técnicos</h2>
+        <div class="content-area">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
+                <div class="card">
+                    <h3>Base</h3>
+                    <p>Jornada estándar del proyecto estructural (L-V, 08:30 - 18:30).</p>
+                </div>
+                <div class="card">
+                    <h3>Excepciones</h3>
+                    <p>Días inactivos por normativa nacional e imprevistos climáticos.</p>
+                </div>
+                <div class="card">
+                    <h3>Recursos</h3>
+                    <p>Ajustes específicos por cuadrilla (Subcontratos, Turnos 7x7).</p>
+                    <button class="action-btn" onclick="openModal('modalRecursos')">Ver Ajustes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: ACTIVACIÓN -->
+    <div class="slide" id="slide5">
+        <div class="slide-meta">05. Taller Práctico</div>
+        <h2 class="slide-title">Activación: Lógica Rítmica</h2>
+        <div class="content-area">
+            <div class="asymmetric-grid" style="grid-template-columns: 0.8fr 2fr;">
+                <div style="text-align: center;">
+                    <i class="fa-regular fa-clock" style="font-size: 80px; color: var(--border-dark); margin-bottom: 20px;"></i>
+                    <p style="font-weight: 500; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;">5 Minutos</p>
+                </div>
+                <div>
+                    <div class="card" style="margin-bottom: 30px;">
+                        <p><strong>RETO 1:</strong> Enfierradura (2 días/losa) vs Moldaje (3 días/losa).</p>
+                        <div class="step answer-box">
+                            <p>RESOLUCIÓN: El ritmo restrictivo es de <strong>3 días</strong> (la actividad más lenta dicta el flujo global).</p>
+                        </div>
+                    </div>
+                    <div class="card step">
+                        <p><strong>RETO 2:</strong> Excavación (4 días/tramo) vs Relleno (2 días/tramo).</p>
+                        <div class="step answer-box">
+                            <p>RESOLUCIÓN: El ritmo base es de <strong>4 días</strong> (el relleno está subordinado a la excavación).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: TALLER EDIFICIO 10 PISOS -->
+    <div class="slide" id="slide6">
+        <div class="slide-meta">06. Caso Práctico</div>
+        <h2 class="slide-title">Taller: Ciclo de Hormigonado Edificio</h2>
+        <div class="content-area">
+            <div class="asymmetric-grid">
+                <div class="card">
+                    <h3>Objetivo</h3>
+                    <p>Programar un edificio de 10 pisos con secuencia rítmica.</p>
+                    <p style="margin-top: 20px; font-weight: 500; color: var(--black); text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Unidad de Producción: 1 Piso completo.</p>
+                </div>
+                <div class="answer-box" style="padding: 40px; margin-top: 0;">
+                    <h3 style="border-bottom: 1px solid #333; padding-bottom: 15px;">Misión del Estudiante</h3>
+                    <p style="font-size: 20px; margin-top: 15px; font-weight: 300;">Utilizar Excel o Google Sheets para modelar la secuencia lógica y encontrar la <strong>Fecha de Término</strong> del Piso 10.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: LA SECUENCIA POR PISO -->
+    <div class="slide" id="slide7">
+        <div class="slide-meta">07. Secuencia Lógica</div>
+        <h2 class="slide-title">La Lógica del Ciclo (Piso X)</h2>
+        <div class="content-area">
+            <p style="margin-bottom: 30px;">Para cada nivel (desde el 1 hasta el 10) se deben programar las siguientes tareas vinculadas linealmente (Fin a Inicio):</p>
+            <div class="asymmetric-grid" style="grid-template-columns: 1.2fr 1fr; align-items: stretch;">
+                <div class="card" style="margin-bottom: 0;">
+                    <h3 style="margin-bottom: 15px;">Fase A: Verticales (Muros)</h3>
+                    <p style="margin-bottom: 30px;">1. Moldaje Muros<br>2. Enfierradura Muros<br>3. Hormigón Muros</p>
+                    
+                    <h3 style="margin-bottom: 15px;">Fase B: Horizontales (Losa)</h3>
+                    <p>4. Moldaje Losa<br>5. Enfierradura Losa<br>6. Hormigón Losa</p>
+                </div>
+                <div class="card step" style="border-left: 4px solid var(--black); display: flex; flex-direction: column; justify-content: center; margin-bottom: 0;">
+                    <h3 style="color: var(--black);">¡Importante!</h3>
+                    <p style="font-size: 18px; line-height: 1.6;">Al terminar el Hormigón Losa del Piso N, recién puede comenzar el Moldaje Muros del Piso N+1.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: DATOS TÉCNICOS DEL TALLER -->
+    <div class="slide" id="slide8">
+        <div class="slide-meta">08. Parametrización</div>
+        <h2 class="slide-title">Parámetros de Programación</h2>
+        <div class="content-area">
+            <div class="asymmetric-grid">
+                <div class="card">
+                    <h3>Duraciones por Piso</h3>
+                    <p>• Moldaje (V y H): 2 días c/u.<br>• Enfierradura (V y H): 2 días c/u.<br>• Hormigonado (V y H): 1 día c/u.</p>
+                    <p style="margin-top: 20px; color: var(--black); font-weight: 500; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">Fraguado Crítico</p>
+                    <p>7 días de rezago (Lag) después de Hormigón Losa para desmolde.</p>
+                </div>
+                <div class="card">
+                    <h3>Restricciones de Entorno</h3>
+                    <p>• <strong>Inicio Obra:</strong> 05 de Mayo de 2025.</p>
+                    <p>• <strong>Feriados:</strong> 21 May, 20 Jun, 29 Jun.</p>
+                    <p>• <strong>Clima:</strong> 15-16 May (Lluvia, veda de hormigón).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: ENTREGABLES (ACTUALIZADA) -->
+    <div class="slide" id="slide9">
+        <div class="slide-meta">09. Requisitos</div>
+        <h2 class="slide-title">¿Qué deben entregar hoy?</h2>
+        <div class="content-area">
+            <div class="card" style="padding: 60px;">
+                <ul style="list-style: none; margin: 0;">
+                    <li style="margin-bottom: 25px;"><strong style="font-size: 20px;">01. Estructura WBS (EDT):</strong><br>Claramente dividida por pisos (del 1 al 10).</li>
+                    <li style="margin-bottom: 25px;"><strong style="font-size: 20px;">02. Fecha de Término:</strong><br>Día exacto en que finaliza el hormigón del Piso 10.</li>
+                    <li>
+                        <strong style="font-size: 20px;">03. Análisis de Holgura:</strong><br>Identificar la Ruta Crítica del ciclo.
+                        <br>
+                        <!-- BOTÓN NUEVO -->
+                        <button class="action-btn" style="margin-top: 15px;" onclick="openModal('modalHolgura')">
+                            <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Repaso de Conceptos
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: RÚBRICA DE EVALUACIÓN -->
+    <div class="slide" id="slide10">
+        <div class="slide-meta">10. Evaluación</div>
+        <h2 class="slide-title">Rúbrica de Observación (100 pts)</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Criterio</th>
+                        <th style="text-align: left;">Estándar Requerido (100%)</th>
+                        <th style="text-align: right;">Pts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lógica Secuencial</td>
+                        <td>Modeló correctamente el ciclo Enf-Mold-Horm para 10 pisos.</td>
+                        <td style="text-align: right;">30</td>
+                    </tr>
+                    <tr>
+                        <td>Config. Calendario</td>
+                        <td>Incluyó todos los feriados y los 2 días climáticos.</td>
+                        <td style="text-align: right;">25</td>
+                    </tr>
+                    <tr>
+                        <td>Uso de Lags</td>
+                        <td>Aplicó el tiempo de fraguado como restricción técnica.</td>
+                        <td style="text-align: right;">25</td>
+                    </tr>
+                    <tr>
+                        <td>Precisión Fecha</td>
+                        <td>La fecha de término coincide con el cálculo matemático.</td>
+                        <td style="text-align: right;">20</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: CIERRE -->
+    <div class="slide" id="slide11">
+        <div class="slide-meta">11. Conclusión</div>
+        <div class="content-area" style="text-align: center; justify-content: center;">
+            <h1 style="margin-bottom: 20px; font-weight: 300;">¡Manos a la obra!</h1>
+            <p style="font-size: 24px; font-weight: 300; margin-bottom: 60px;">La planificación rítmica es el arte de hacer que lo complejo sea predecible.</p>
+            
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <div class="card" style="flex:1; padding: 20px;">
+                    <h3 style="margin: 0;">90 - 100</h3>
+                    <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Planificador Experto</p>
+                </div>
+                <div class="card" style="flex:1; padding: 20px;">
+                    <h3 style="margin: 0;">70 - 89</h3>
+                    <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Competente</p>
+                </div>
+                <div class="card" style="flex:1; padding: 20px;">
+                    <h3 style="margin: 0;">&lt; 70</h3>
+                    <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Requiere Refuerzo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: BIBLIOGRAFÍA -->
+    <div class="slide" id="slide12">
+        <div class="slide-meta">12. Referencias</div>
+        <h2 class="slide-title">Bibliografía Recomendada</h2>
+        <div class="content-area">
+            <div class="card" style="padding: 60px;">
+                <ul style="list-style: none; margin: 0;">
+                    <li style="margin-bottom: 25px;"><strong>Serpell, A. & Alarcón, L. F. (2002).</strong><br>Planificación y Control de Proyectos. Ediciones UC.</li>
+                    <li style="margin-bottom: 25px;"><strong>Kerzner, H. (2009).</strong><br>Project Management: A Systems Approach. Wiley.</li>
+                    <li><strong>Universidad de Los Lagos (2025).</strong><br>Guía de Referencia Semana 6 - Cátedra Planificación.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALES -->
+<div id="modalRitmo" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('modalRitmo')">&times;</span>
+        <h3>Programación Rítmica (Líneas de Balance)</h3>
+        <p style="margin-top: 20px;">Metodología basada en mantener una tasa de producción constante a lo largo de unidades repetitivas.</p>
+        <div style="border: 1px solid var(--border-dark); padding: 30px; margin: 30px 0; text-align: center;">
+            <p style="font-family: 'Inter', monospace; color: var(--black); font-size: 18px; margin: 0;">RITMO (R) = DURACIÓN / N° CUADRILLAS</p>
+        </div>
+        <p>El propósito estructural es que las actividades secuenciales operen bajo el mismo ritmo, previniendo cuellos de botella e inventario en proceso.</p>
+    </div>
+</div>
+
+<div id="modalRecursos" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('modalRecursos')">&times;</span>
+        <h3>Ajustes de Recursos</h3>
+        <p style="margin-top: 20px;"><strong>Variaciones Singulares:</strong> Modificaciones de la disponibilidad por vacaciones, ventanas de mantenimiento de maquinaria o negociaciones sindicales.</p>
+        <p style="margin-top: 30px;"><strong>Sistemas Excepcionales (Ej. 7x7):</strong> Turnos rotativos continuos. Estrategia crítica para la programación logística en obras de infraestructura aislada (puentes, presas, minería).</p>
+    </div>
+</div>
+
+<!-- NUEVO MODAL: Conceptos Clave (Ruta Crítica y Holgura) -->
+<div id="modalHolgura" class="modal-overlay">
+    <div class="modal-content" style="max-width: 900px; padding: 50px 70px;">
+        <span class="close-modal" onclick="closeModal('modalHolgura')">&times;</span>
+        <h3 style="margin-bottom: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px;">Conceptos Clave del Cronograma</h3>
+        
+        <div style="margin-bottom: 25px;">
+            <p style="color: var(--black); font-weight: 500; font-size: 18px;">1. La Ruta Crítica (Cero margen de error)</p>
+            <p style="margin-top: 10px; font-size: 16px;">Matemáticamente, es el camino continuo más largo medido en tiempo desde el inicio hasta el fin del proyecto. Las tareas que lo componen se llaman <em>"actividades críticas"</em> y tienen una regla de oro: <strong>¡si una de ellas se atrasa un solo día, la entrega de todo el proyecto se atrasará un día!</strong></p>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <p style="color: var(--black); font-weight: 500; font-size: 18px;">2. Análisis de Holgura (El "colchón" de tiempo)</p>
+            <p style="margin-top: 10px; font-size: 16px;">La holgura es el tiempo de resguardo adicional. Es la cantidad máxima de días que una actividad puede retrasarse sin afectar la fecha final del proyecto. Por definición de cálculo, <strong>las actividades en la ruta crítica siempre tienen cero holgura</strong>.</p>
+        </div>
+
+        <div style="background: var(--bg-outer); padding: 25px; border-left: 4px solid var(--black);">
+            <p style="color: var(--black); font-weight: 500; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Ejemplo Práctico: Hormigonado de Muro</p>
+            <p style="font-size: 16px;">Imagina que para poder vaciar el hormigón tienes dos frentes de trabajo paralelos:</p>
+            <ul style="font-size: 16px; margin-left: 20px; margin-top: 10px; margin-bottom: 15px; color: var(--black);">
+                <li><strong>Frente A:</strong> Moldaje (2 días) + Enfierradura (2 días) = <strong>4 días (Ruta Crítica)</strong>.</li>
+                <li><strong>Frente B:</strong> Instalar tuberías eléctricas interiores = <strong>1 día (Holgura de 3 días)</strong>.</li>
+            </ul>
+            <p style="font-size: 14px; font-style: italic;">Resultado: El hormigón ("Hito final") solo podrá realizarse el día 5. El Frente B puede demorarse hasta 3 días extras y el proyecto no sufrirá retrasos.</p>
+        </div>
+    </div>
+</div>
+
+<!-- CONTROLES -->
+<div id="controls">
+    <span id="slide-counter">01 / 12</span>
+    <button class="nav-btn" onclick="changeSlide(-1)"><i class="fa-solid fa-arrow-left"></i></button>
+    <button class="nav-btn" onclick="changeSlide(1)"><i class="fa-solid fa-arrow-right"></i></button>
+</div>
+
+<script>
+    let currentSlide = 1;
+    const totalSlides = 12;
+    let currentStep = 0;
+
+    function changeSlide(dir) {
+        const activeSlide = document.getElementById('slide' + currentSlide);
+        const steps = activeSlide.querySelectorAll('.step');
+
+        if (dir === 1 && currentStep < steps.length) {
+            steps[currentStep].classList.add('visible');
+            currentStep++;
+        } else {
+            const next = currentSlide + dir;
+            if (next >= 1 && next <= totalSlides) {
+                activeSlide.classList.remove('active');
+                currentSlide = next;
+                currentStep = 0;
+                
+                const newSlide = document.getElementById('slide' + currentSlide);
+                newSlide.classList.add('active');
+                
+                if (dir === -1) {
+                    newSlide.querySelectorAll('.step').forEach(s => s.classList.remove('visible'));
+                }
+
+                let slideStr = currentSlide < 10 ? '0' + currentSlide : currentSlide;
+                let totalStr = totalSlides < 10 ? '0' + totalSlides : totalSlides;
+                document.getElementById('slide-counter').innerText = `${slideStr} / ${totalStr}`;
+            }
+        }
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+        if (e.key === 'ArrowLeft') changeSlide(-1);
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+    });
+
+    // Inicializar contador
+    document.getElementById('slide-counter').innerText = `01 / ${totalSlides}`;
+</script>
+
+</body>
+</html>
