@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solución Técnica y Automatización - Taller Excel</title>
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #555555;
+            --accent: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border: #e2e8f0;
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font); line-height: 1.6; padding: 2rem; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header { margin-bottom: 3rem; border-left: 5px solid var(--accent); padding-left: 1.5rem; }
+        header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
+        header p { color: var(--text-muted); font-size: 1.1rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+
+        .card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .card h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        /* Estilo Hoja Excel */
+        .excel-table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-bottom: 1rem; }
+        .excel-table th, .excel-table td { border: 1px solid var(--border); padding: 0.5rem; text-align: left; }
+        .excel-table th { background: #f8fafc; color: #94a3b8; font-weight: normal; text-align: center; width: 30px; }
+        .excel-header { background: #f1f5f9 !important; font-weight: bold !important; color: var(--text-main) !important; }
+
+        .formula-box { background: #0f172a; color: #94a3b8; padding: 1rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-top: 1rem; border-left: 4px solid var(--info); }
+        .formula-box b { color: #38bdf8; }
+
+        /* Checklist Auditoría */
+        .audit-list { list-style: none; }
+        .audit-item { display: flex; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px dashed var(--border); }
+        .audit-icon { min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; color: white; }
+        .icon-check { background: var(--success); }
+        .icon-warn { background: var(--warning); }
+        .audit-text b { display: block; font-size: 1rem; margin-bottom: 0.2rem; }
+        .audit-text span { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Sección de Automatización */
+        .automation-alert { 
+            grid-column: 1 / -1; 
+            background: linear-gradient(to right, #1e293b, #334155); 
+            color: white; 
+            padding: 2rem; 
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .automation-alert h3 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #38bdf8; }
+        .automation-alert p { font-size: 0.95rem; opacity: 0.9; }
+
+        .result-highlight { background: #ecfdf5; padding: 1.5rem; border: 1px solid #10b981; border-radius: 8px; margin-top: 2rem; text-align: center; }
+        .result-highlight h3 { color: #065f46; font-size: 1.4rem; margin-bottom: 0.5rem; }
+
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .automation-alert { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SOLUCIÓN MODELO Y FOCO EN AUTOMATIZACIÓN</h1>
+        <p>Edificio Centenario: Validación de lógica dinámica vs. digitación estática.</p>
+    </header>
+
+    <div class="automation-alert">
+        <div style="flex: 1;">
+            <h3>La Regla de Oro: "Zero Manual Input"</h3>
+            <p>El valor de la planilla no está en el resultado final, sino en su <b>capacidad de respuesta</b>. Una entrega sin fórmulas vinculadas entre Inicio y Fin debe ser calificada como "Insuficiente" (Riesgo Técnico).</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem;">
+            TEST DE ESTRÉS:<br>
+            Cambie Duración Tarea 1 de 4 a 10.<br>
+            ¿Se movió todo el proyecto?<br>
+            SI: ✓ Aprobado | NO: ✗ Falla
+        </div>
+    </div>
+
+    <div class="grid" style="margin-top: 2rem;">
+        <!-- SECCIÓN 1: CONFIGURACIÓN -->
+        <div class="card">
+            <h2>01. Matriz de Parámetros (Hoja CONFIG)</h2>
+            <table class="excel-table">
+                <thead>
+                    <tr><th></th><th class="excel-header">A (Excepción)</th><th class="excel-header">B (Fecha)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>1</th><td>Asunción Virgen</td><td>15-08-2025</td></tr>
+                    <tr><th>2</th><td>Restricción Clima</td><td>25-08-2025</td></tr>
+                    <tr><th>3</th><td>Fiestas Patrias</td><td>18-09-2025</td></tr>
+                    <tr><th>4</th><td>Fiestas Patrias</td><td>19-09-2025</td></tr>
+                </tbody>
+            </table>
+            <div class="formula-box">
+                <b>Auditoría:</b> El rango de feriados debe ser una referencia absoluta <code>CONFIG!$B$1:$B$4</code> o un Rango Nombrado.
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: MOTOR DE FECHAS -->
+        <div class="card">
+            <h2>02. Lógica de Red (Hoja PLAN)</h2>
+            <table class="excel-table">
+                <thead>
+                    <tr><th></th><th class="excel-header">Actividad</th><th class="excel-header">Dur</th><th class="excel-header">Fin</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>2</th><td>Inst. Faena</td><td>4</td><td>14-08-25</td></tr>
+                    <tr><th>3</th><td>Excavación</td><td>12</td><td>30-08-25</td></tr>
+                    <tr><th>4</th><td>Cimientos</td><td>3</td><td>03-09-25</td></tr>
+                </tbody>
+            </table>
+            <div class="formula-box">
+                <b>Cálculo del Fin (Celda D3):</b><br>
+                =DIA.LAB.INTL(C3; B3-1; "0000001"; Feriados)
+            </div>
+            <p style="font-size: 0.75rem; margin-top: 0.5rem; color: var(--text-muted);">*Note el <b>D3-1</b>. Es vital para que la tarea de 1 día termine el mismo día que empieza.</p>
+        </div>
+
+        <!-- SECCIÓN 3: PAUTA DE AUDITORÍA -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>03. Checklist de Automatización para el Docente</h2>
+            <div class="grid" style="gap: 1rem;">
+                <div class="audit-list">
+                    <div class="audit-item">
+                        <div class="audit-icon icon-check">1</div>
+                        <div class="audit-text">
+                            <b>Vínculo de Precedencia (FS)</b>
+                            <span>El Inicio de la Tarea B <u>debe</u> ser una fórmula: <code>=DIA.LAB.INTL(Fin_Tarea_A; 1; "0000001"; Feriados)</code>. No se aceptan fechas escritas.</span>
+                        </div>
+                    </div>
+                    <div class="audit-item">
+                        <div class="audit-icon icon-check">2</div>
+                        <div class="audit-text">
+                            <b>Argumento de Fin de Semana</b>
+                            <span>Uso estricto del código <code>11</code> (Domingo único no laborable). Si el Sábado no se cuenta, el proyecto se desfasa.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="audit-list">
+                    <div class="audit-item">
+                        <div class="audit-icon icon-warn">3</div>
+                        <div class="audit-text">
+                            <b>Referencia a Feriados</b>
+                            <span>¿La lista de feriados está fuera de la fórmula? (Celda externa). Las fechas "hardcoded" dentro de la función restan puntaje.</span>
+                        </div>
+                    </div>
+                    <div class="audit-item">
+                        <div class="audit-icon icon-check">4</div>
+                        <div class="audit-text">
+                            <b>Consistencia Climática</b>
+                            <span>El 25 de agosto (Lunes) debe retrasar el cronograma. Es la prueba de fuego de la matriz de configuración.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-highlight">
+        <h3>Resultado Crítico: Miércoles 03 de Septiembre de 2025</h3>
+        <p>Si la planilla entrega esta fecha y sobrevive al cambio de duraciones, el estudiante domina el motor de cálculo.</p>
+    </div>
+
+    <footer style="margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+        <p>© 2025 - Planificación y Control de Proyectos | Guía de Resolución Técnica y Automatización</p>
+    </footer>
+</div>
+
+</body>
+</html>

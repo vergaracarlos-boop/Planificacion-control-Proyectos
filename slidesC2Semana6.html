@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Presencial - Programación Técnica en Hojas de Cálculo</title>
+    
+    <!-- Fuentes de Google agregadas para un diseño moderno -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. VARIABLES DEL SISTEMA (TEMA)
+           ========================================= */
+        :root {
+            /* Paleta de Colores */
+            --bg-color: #ffffff;
+            --bg-offset: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #2563eb; /* Azul técnico profesional */
+            --accent-light: #eff6ff;
+            --border-color: #e2e8f0;
+            
+            /* Tipografía */
+            --font-headers: 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Espaciado y Layout */
+            --grid-gap: 2rem;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        /* =========================================
+           2. RESET Y BASE
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: #0f172a; /* Fondo oscuro detrás de la presentación */
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* =========================================
+           3. LAYOUT PRINCIPAL Y SLIDES
+           ========================================= */
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 1600px;
+            background-color: var(--bg-color);
+            position: relative;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 4rem 5rem;
+            display: none;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: var(--grid-gap);
+            background: var(--bg-color);
+            
+            /* Animación de entrada mejorada */
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            display: grid;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* =========================================
+           4. TIPOGRAFÍA Y ESTRUCTURA INTERNA
+           ========================================= */
+        .section-tag {
+            grid-column: 1 / 6;
+            grid-row: 1;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            align-self: start;
+            justify-self: start;
+        }
+
+        .slide-title {
+            grid-column: 1 / 11;
+            grid-row: 2 / 4;
+            font-family: var(--font-headers);
+            font-size: clamp(2.5rem, 4vw, 3.8rem); /* Texto responsivo orgánico */
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            align-self: end;
+            color: #0f172a;
+        }
+
+        .slide-content {
+            grid-column: 1 / 9;
+            grid-row: 4 / 9;
+            font-size: clamp(1rem, 1.2vw, 1.25rem);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .slide-aside {
+            grid-column: 9 / 13;
+            grid-row: 2 / 9;
+            background: var(--bg-offset);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* =========================================
+           5. COMPONENTES ESPECÍFICOS
+           ========================================= */
+        .bullet-point {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            list-style: none;
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .bullet-point::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 12px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .bullet-point.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .highlight-box {
+            background: var(--accent-light);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-top: 1rem;
+        }
+
+        .code-snippet {
+            font-family: var(--font-mono);
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .data-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .big-number {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--accent-light);
+            line-height: 1;
+            text-shadow: 2px 2px 0px var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Elementos del botón revelar (Slide 6) */
+        .reveal-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: fit-content;
+            margin-top: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .reveal-btn:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .reveal-btn:active {
+            transform: translateY(0);
+        }
+
+        .hidden-answer {
+            display: none;
+            animation: fadeInReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInReveal {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background: var(--bg-offset);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+        tr:last-child td { border-bottom: none; }
+
+        .icon, .icon-box {
+            width: 32px;
+            height: 32px;
+            stroke: var(--accent);
+            stroke-width: 2;
+            fill: none;
+            margin-bottom: 1rem;
+        }
+
+        /* =========================================
+           6. UI DE LA PRESENTACIÓN
+           ========================================= */
+        .presentation-ui {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            pointer-events: none; /* Permite clic a través del contenedor */
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            pointer-events: auto; /* Reactiva clicks para la barra */
+        }
+
+        .slide-counter {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--bg-offset);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .ui-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ui-btn {
+            background: var(--bg-offset);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .ui-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* =========================================
+           7. RESPONSIVIDAD (Media Queries)
+           ========================================= */
+        @media (max-width: 1024px) {
+            .slide { padding: 3rem; }
+            .slide-aside { padding: 1.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            .slide { 
+                display: flex; 
+                flex-direction: column; 
+                overflow-y: auto; 
+                padding: 2rem 1.5rem 6rem 1.5rem; 
+            }
+            .section-tag { margin-bottom: 1rem; align-self: flex-start; }
+            .slide-title { margin-bottom: 1.5rem; }
+            .slide-aside { margin-top: 2rem; }
+            .bottom-bar { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-container">
+    
+    <!-- SLIDE 1: PORTADA -->
+    <div class="slide active" id="slide-1">
+        <div class="section-tag">01. Introducción</div>
+        <div class="slide-title"><b>Actividad Presencial:</b><br>Programación Técnica en Excel</div>
+        <div class="slide-content">
+            <p style="font-size: 1.6rem; margin-bottom: 0.5rem; font-weight: 300;">Planificación y Control de Proyectos</p>
+            <p style="color: var(--text-muted)">Unidad 2: Herramientas de Programación de Obras</p>
+        </div>
+        <div class="slide-aside">
+            <div class="highlight-box">
+                <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Referencia</p>
+                <p><b>Clase 2, Semana 6</b></p>
+                <p style="margin-top: 1rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Docente</p>
+                <p><b>Carlos Vergara</b></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: RIESGO TÉCNICO -->
+    <div class="slide" id="slide-2">
+        <div class="section-tag">02. CONCEPTOS</div>
+        <div class="slide-title"><b>Riesgo Técnico:</b><br>La Falacia del Dibujo</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>Ausencia de Motor CPM:</b> A diferencia de MS Project, Excel no "entiende" precedencias ni calcula la ruta crítica de forma nativa.</div>
+            <div class="bullet-point"><b>Schedules Estáticos:</b> Sin fórmulas dinámicas, cualquier cambio en una partida obliga a la reescritura manual de todas sus sucesoras.</div>
+            <div class="bullet-point"><b>Inercia de Datos:</b> El mayor riesgo es crear una "imagen" de Gantt que no reacciona ante los atrasos reales de la obra.</div>
+        </div>
+        <div class="slide-aside">
+            <div class="big-number">!</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">"En Excel, si no hay fórmula de red, no tienes un programa; tienes un dibujo inerte."</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: TRANSICIÓN 1 -->
+    <div class="slide" id="slide-3">
+        <div class="section-tag">03. LÓGICA DE RED</div>
+        <div class="slide-title"><b>Del Dibujo al Algoritmo:</b><br>El Gantt como Estructura</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>La Barra es una Consecuencia:</b> El gráfico de barras solo debe ser la visualización de una red matemática subyacente.</div>
+            <div class="bullet-point"><b>Vectores de Tiempo:</b> Cada partida es un vector definido por <code class="code-snippet">F_Termino = F_Inicio + Duración</code>.</div>
+            <div class="bullet-point"><b>Puentes Lógicos:</b> El desafío es traducir la "flecha" de precedencia en una suma lógica de celdas referenciadas.</div>
+        </div>
+        <div class="slide-aside">
+            <svg viewBox="0 0 100 60" style="width: 100%; opacity: 0.2;">
+                <rect x="10" y="10" width="30" height="8" fill="black" />
+                <rect x="45" y="25" width="40" height="8" fill="black" />
+                <line x1="40" y1="14" x2="45" y2="25" stroke="black" stroke-width="2" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: TRANSICIÓN 2 -->
+    <div class="slide" id="slide-4">
+        <div class="section-tag">03. LÓGICA DE RED</div>
+        <div class="slide-title"><b>El Motor de Cálculo:</b><br>Simulación de Escenarios</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>Automatización Estricta:</b> La planilla debe permitir que al cambiar la duración de la Tarea 1, la Tarea 100 se mueva sola.</div>
+            <div class="bullet-point"><b>Gestión de la Incertidumbre:</b> Una planilla bien construida funciona como un simulador de "Qué pasa si...".</div>
+            <div class="bullet-point"><b>Independencia de Formato:</b> La lógica debe ser tan robusta que funcione incluso sin colores ni gráficos adicionales.</div>
+        </div>
+        <div class="slide-aside">
+            <div class="highlight-box">
+                <p><b>Meta del Ingeniero:</b><br>Reducir el tiempo de "digitación" para aumentar el tiempo de "análisis".</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: ARQUITECTURA DE DATOS -->
+    <div class="slide" id="slide-5">
+        <div class="section-tag">04. ARQUITECTURA</div>
+        <div class="slide-title"><b>Arquitectura de Datos:</b><br>Estructura para la Robustez</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>Capa 1: INPUTS (Variables):</b> Duraciones y nombres de partidas. Son las únicas celdas que el planificador debe intervenir.</div>
+            <div class="bullet-point"><b>Capa 2: CONFIG (Entorno):</b> Matriz de feriados, jornada (L-V o L-S) y días climáticos. Centraliza las reglas de negocio.</div>
+            <div class="bullet-point"><b>Capa 3: OUTPUTS (Resultados):</b> Fechas calculadas por fórmulas. Deben estar bloqueadas para evitar errores humanos.</div>
+        </div>
+        <div class="slide-aside">
+            <div style="font-family: var(--font-mono); font-size: 0.7rem; border: 1px solid #eee; padding: 1rem;">
+                INPUT -> [ FÓRMULA + CONFIG ] -> OUTPUT
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: ACTIVACIÓN (MODIFICADO CON BOTÓN) -->
+    <div class="slide" id="slide-6">
+        <div class="section-tag">05. ACTIVACIÓN</div>
+        <div class="slide-title"><b>Pregunta de Control:</b><br>Sintaxis Profesional</div>
+        <div class="slide-content">
+            <p style="margin-bottom: 1rem; font-size: 1.2rem;">"Si una partida dura 4 días, inicia un Jueves, y se trabaja de Lunes a Sábado, ¿qué argumento de <code class="code-snippet">DIA.LAB.INTL</code> garantiza que el Domingo sea el único día no laborable?"</p>
+            
+            <!-- Botón Revelar -->
+            <button class="reveal-btn" id="btn-reveal-6" onclick="document.getElementById('answer-6').style.display='block'; this.style.display='none';">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Revelar Respuesta
+            </button>
+
+            <!-- Contenedor oculto de la respuesta -->
+            <div id="answer-6" class="hidden-answer">
+                <div class="highlight-box">
+                    <p><b>Respuesta Técnica:</b> Código <b>"11"</b> o la cadena <b>"0000001"</b>.</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Esto asegura que el cálculo se salte el domingo pero mantenga la productividad del sábado en la ruta crítica.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: DESCRIPCIÓN TALLER -->
+    <div class="slide" id="slide-7">
+        <div class="section-tag">06. ACTIVIDAD</div>
+        <div class="slide-title"><b>Taller Práctico:</b><br>Programador Automatizado</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>Fase 1: Configuración.</b> Creación de la matriz de feriados 2025 y excepciones climáticas.</div>
+            <div class="bullet-point"><b>Fase 2: Motor de Fechas.</b> Vinculación dinámica de tareas consecutivas (Fin-Inicio).</div>
+            <div class="bullet-point"><b>Fase 3: Visualización.</b> Aplicación de formato condicional para Gantt automático.</div>
+        </div>
+        <div class="slide-aside">
+            <p><b>Objetivo:</b> Generar una herramienta que resista cambios de duración sin intervención manual.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: EVALUACIÓN SUMATIVA -->
+    <div class="slide" id="slide-8">
+        <div class="section-tag">07. EVALUACIÓN</div>
+        <div class="slide-title"><b>Actividad Sumativa:</b><br>Entorno Temporal 2025</div>
+        <div class="slide-content">
+            <div style="display: flex; align-items: center; gap: 3rem;">
+                <div>
+                    <svg class="icon-box" style="width: 80px; height: 80px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <p><b>60 Minutos</b></p>
+                </div>
+                <div class="highlight-box">
+                    <p class="big-number" style="font-size: 3rem; color: var(--accent);">100 pts</p>
+                    <p>Evaluación Indiv./Grupal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: EL CASO -->
+    <div class="slide" id="slide-9">
+        <div class="section-tag">08. CASO DE ESTUDIO</div>
+        <div class="slide-title"><b>Edificio Centenario:</b><br>Etapa Obra Gruesa</div>
+        <div class="slide-content">
+            <div class="highlight-box">
+                <p><b>Inicio de Obra:</b> Lunes 11 de Agosto, 2025</p>
+                <p><b>Régimen:</b> Lunes a Viernes (Full) / Sábados (Medio)</p>
+                <p><b>Feriados Oblig.:</b> 15 de Agosto, 18 y 19 de Septiembre</p>
+                <p style="color: #d00; font-weight: bold; margin-top: 0.5rem;">Restricción Técnica: 25 de Agosto se declara NO LABORABLE (Clima).</p>
+            </div>
+        </div>
+        <div class="slide-aside">
+            <p style="font-size: 0.8rem;">Trate los días climáticos como feriados adicionales en su tabla de configuración.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: REQUERIMIENTOS -->
+    <div class="slide" id="slide-10">
+        <div class="section-tag">09. REQUERIMIENTOS</div>
+        <div class="slide-title"><b>¿Qué deben hacer?</b><br>Entregables y Tareas</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>Tarea 1: Hoja "CONFIG".</b> Matriz con feriados oficiales 2025 y el día climático (25 de agosto).</div>
+            <div class="bullet-point"><b>Tarea 2: Hoja "PLAN".</b> Lista de 3 tareas (Instalación, Excavación, Cimientos) y sus duraciones.</div>
+            <div class="bullet-point"><b>Tarea 3: Automatización.</b> Uso obligatorio de <code class="code-snippet">DIA.LAB.INTL</code> vinculando la celda de feriados.</div>
+            <div class="bullet-point"><b>ENTREGABLE:</b> Archivo Excel o link a Sheets con permisos de edición para auditoría de fórmulas.</div>
+        </div>
+        <div class="slide-aside">
+            <p><b>Cálculo Crítico:</b><br>Fecha exacta de término del hito "Cimientos".</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: RÚBRICA 1 -->
+    <div class="slide" id="slide-11">
+        <div class="section-tag">10. RÚBRICA</div>
+        <div class="slide-title"><b>Evaluación Técnica:</b><br>Criterios de Calidad (1/2)</div>
+        <div class="slide-content">
+            <table>
+                <thead>
+                    <tr><th>Criterio</th><th>Excelente (100%)</th><th>Pts</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Funciones de Tiempo</td><td>Argumento personalizado para Sábado laborable (Código 11 o binary).</td><td>30</td></tr>
+                    <tr><td>Gestión de Excepciones</td><td>Matriz dinámica de feriados + día climático integrada vía rango.</td><td>25</td></tr>
+                    <tr><td>Vínculos Lógicos</td><td>Inicio de sucesora = Día Laborable posterior al Fin de antecesora.</td><td>25</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: RÚBRICA 2 -->
+    <div class="slide" id="slide-12">
+        <div class="section-tag">10. RÚBRICA</div>
+        <div class="slide-title"><b>Auditoría y Precisión:</b><br>Criterios de Calidad (2/2)</div>
+        <div class="slide-content">
+            <table>
+                <thead>
+                    <tr><th>Criterio</th><th>Excelente (100%)</th><th>Pts</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Precisión Matemática</td><td>La fecha del hito final es exacta según el calendario 2025.</td><td>10</td></tr>
+                    <tr><td>Orden y Estructura</td><td>Pestañas CONFIG y PLAN separadas y debidamente protegidas.</td><td>10</td></tr>
+                </tbody>
+            </table>
+            <div class="highlight-box" style="margin-top: 1rem; border-left: 3px solid black;">
+                <p><i>"Un programa robusto no necesita que le digas qué día es hoy, sino que sepas decirle cómo trabajar mañana."</i></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: BIBLIOGRAFÍA -->
+    <div class="slide" id="slide-13">
+        <div class="section-tag">11. REFERENCIAS</div>
+        <div class="slide-title"><b>Bibliografía Técnica:</b><br>Fuentes Consultadas</div>
+        <div class="slide-content">
+            <div class="bullet-point"><b>Serpell, A. (2018).</b> Gestión de Operaciones de Construcción. Cap. 3.</div>
+            <div class="bullet-point"><b>Kerzner, H. (2009).</b> Project Management: A Systems Approach. 10th Ed. Cap. 13.</div>
+            <div class="bullet-point"><b>Baeza, F. (2020).</b> Manual de Planificación: Plantillas de Control de Obra.</div>
+        </div>
+    </div>
+
+    <!-- CONTROLES UI DE LA PRESENTACIÓN -->
+    <div class="presentation-ui">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        <div class="bottom-bar">
+            <div class="slide-counter">
+                <span id="current-page">1</span> / <span id="total-pages">13</span>
+            </div>
+            <div class="ui-controls">
+                <button class="ui-btn" onclick="showSlide(currentSlide - 1)" title="Anterior">←</button>
+                <button class="ui-btn" onclick="showSlide(currentSlide + 1)" title="Siguiente">→</button>
+                <button class="ui-btn" onclick="toggleFullScreen()" title="Pantalla Completa" style="margin-left:10px;">⛶</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // =========================================
+    // LÓGICA DE CONTROL
+    // =========================================
+    let currentSlide = 1;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    // Inicializar UI
+    document.getElementById('total-pages').textContent = totalSlides;
+
+    function showSlide(n) {
+        // Validación circular
+        if (n > totalSlides) n = 1;
+        if (n < 1) n = totalSlides;
+        
+        // Quitar estado activo
+        slides.forEach(s => s.classList.remove('active'));
+        
+        // Activar slide actual
+        const activeSlide = document.getElementById(`slide-${n}`);
+        activeSlide.classList.add('active');
+
+        // REINICIO DE ESTADOS INTERACTIVOS (Slide 6)
+        // Al cambiar de diapositiva vuelve a ocultar la respuesta
+        const btn6 = document.getElementById('btn-reveal-6');
+        const ans6 = document.getElementById('answer-6');
+        if(btn6 && ans6) {
+            btn6.style.display = 'inline-flex';
+            ans6.style.display = 'none';
+        }
+        
+        // Animar lista de bullets con reseteo previo
+        const bullets = activeSlide.querySelectorAll('.bullet-point');
+        bullets.forEach(b => b.classList.remove('visible'));
+        
+        setTimeout(() => {
+            bullets.forEach((b, index) => {
+                setTimeout(() => {
+                    b.classList.add('visible');
+                }, (index + 1) * 150);
+            });
+        }, 100);
+
+        // Actualizar UI
+        currentSlide = n;
+        document.getElementById('current-page').textContent = currentSlide;
+        document.getElementById('progress').style.width = `${((currentSlide - 1) / (totalSlides - 1)) * 100}%`;
+    }
+
+    // Navegación con Teclado
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+            e.preventDefault(); 
+            showSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            showSlide(currentSlide - 1);
+        } else if (e.key.toLowerCase() === 'f') {
+            toggleFullScreen();
+        } else if (!isNaN(e.key)) {
+            const num = parseInt(e.key);
+            if (num > 0 && num <= totalSlides && num < 10) showSlide(num);
+        }
+    });
+
+    // Navegación Táctil
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, {passive: true});
+
+    function handleSwipe() {
+        const minSwipeDistance = 50;
+        if (touchEndX < touchStartX - minSwipeDistance) showSlide(currentSlide + 1); 
+        if (touchEndX > touchStartX + minSwipeDistance) showSlide(currentSlide - 1); 
+    }
+
+    // Control de Pantalla Completa
+    function toggleFullScreen() {
+        const elem = document.documentElement;
+        if (!document.fullscreenElement) {
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+    }
+
+    // Auto-Inicializar presentación
+    document.addEventListener('DOMContentLoaded', () => showSlide(1));
+</script>
+
+</body>
+</html>
