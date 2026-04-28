@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Aula Invertida - Gestión en Ingeniería</title>
+    <style>
+        /* TAREA 2: ESTILOS CSS */
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #3498DB;
+            --bg-tertiary: #ECF0F1;
+            --success-color: #27AE60;
+            --text-main: #2C3E50;
+            --text-secondary: #7F8C8D;
+            --white: #FFFFFF;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-tertiary);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1000px; /* Ajustado para mejor lectura vertical */
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* TAREA 3: ENCABEZADO */
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Secciones de Fases */
+        section {
+            padding: 40px 30px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
+        .phase-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+        }
+
+        .phase-title span {
+            margin-right: 10px;
+        }
+
+        .objective-box {
+            background: #f9fbfc;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .instruction {
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Tarjetas de Recursos - ORDEN VERTICAL SOLICITADO */
+        .resource-vertical-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TAREA 8: INTERACTIVIDAD */
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+
+        .card:hover::after {
+            content: "✓";
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: var(--success-color);
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        .card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            padding-right: 30px;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--white);
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: 600;
+            transition: background 0.3s;
+            align-self: flex-start;
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-color);
+        }
+
+        .iframe-container {
+            margin-top: 15px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid #ddd;
+            background: #eee;
+        }
+
+        iframe {
+            width: 100%;
+            border: none;
+        }
+
+        /* TAREA 5: DISEÑO DOS COLUMNAS (PRESENCIAL) */
+        .days-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .day-box {
+            background: #f4f7f6;
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .day-box h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .activity-item {
+            margin-bottom: 15px;
+        }
+
+        .activity-item strong {
+            display: block;
+            color: var(--secondary-color);
+            margin-bottom: 4px;
+        }
+
+        /* TAREA 6: FASE 3 */
+        .note-highlight {
+            background-color: #fff9e6;
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .status-wait {
+            color: var(--text-secondary);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* TAREA 7: PIE DE PÁGINA */
+        footer {
+            padding: 40px 20px;
+            background: #fcfcfc;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-links {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .credits {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 15px;
+        }
+
+        hr.decorator {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+            margin-bottom: 25px;
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .days-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-container {
+                margin: 0;
+                border-radius: 0;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .card h3 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- TAREA 3: ENCABEZADO -->
+        <header>
+            <h1>Semana 7: CPM (Método de la Ruta Crítica)</h1>
+            <p>Planificación del 27 de abril al 30 de abril</p>
+        </header>
+
+        <!-- TAREA 4: FASE 1 - PREPARACIÓN (ORDEN VERTICAL) -->
+        <section id="fase1">
+            <h2 class="phase-title"><span>📖</span> FASE 1: PREPARACIÓN · Trabajo autónomo previo</h2>
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Introducir a los estudiantes en los conceptos fundamentales de la gestión en ingeniería.
+            </div>
+            <span class="instruction">Completa las siguientes actividades de forma secuencial ANTES de nuestras sesiones presenciales.</span>
+            
+            <div class="resource-vertical-stack">
+                <!-- Tarjeta 1 - Lectura PDF -->
+                <div class="card">
+                    <h3>1. Guía Técnica: Optimización de Redes y CPM</h3>
+                    <p>Documento base que detalla el algoritmo de la ruta crítica en proyectos de construcción.</p>
+                    <div class="iframe-container">
+                        <iframe src="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Resumen Semana 7.pdf" height="500"></iframe>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2 - Video YouTube -->
+                <div class="card">
+                    <h3>2. 🎥 Video: Programación de Construcción</h3>
+                    <p>Ejemplos prácticos y visualización de la lógica de redes aplicada a la programación de obras.</p>
+                    <a href="https://youtu.be/vwAA1zjibKY" target="_blank" class="btn-action">Ver video en YouTube</a>
+                </div>
+
+                <!-- Tarjeta 3 - Cuestionario -->
+                <div class="card">
+                    <h3>3. 📝 Cuestionario de Autoevaluación</h3>
+                    <p>Valida tu comprensión inicial. Es requisito completar este paso para la sesión del martes.</p>
+                    <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/cuestionarioSemana7.html" target="_blank" class="btn-action">Ir al cuestionario interactivo</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 5: FASE 2 - SESIONES PRESENCIALES -->
+        <section id="fase2">
+            <h2 class="phase-title"><span>👥</span> FASE 2: SESIONES PRESENCIALES · Práctica guiada</h2>
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Profundizar en los conceptos y aplicarlos en actividades prácticas y colaboración.
+            </div>
+            <span class="instruction">Asiste y participa activamente en ambas sesiones presenciales.</span>
+
+            <div class="days-grid">
+                <!-- MARTES -->
+                <div class="day-box">
+                    <h3>MARTES</h3>
+                    <div class="activity-item">
+                        <strong>Activación:</strong>
+                        Cálculo manual de fechas tempranas, tardías y holguras sobre diagramas de red.
+                    </div>
+                    <div class="activity-item">
+                        <strong>Actividad Principal:</strong>
+                        Identificación y trazado de la Ruta Crítica en una red de actividades real.
+                    </div>
+                </div>
+
+                <!-- JUEVES -->
+                <div class="day-box">
+                    <h3>JUEVES</h3>
+                    <div class="activity-item">
+                        <strong>Activación:</strong>
+                        Análisis de relaciones lógicas complejas (Final-Inicio, Inicio-Inicio) y sus efectos.
+                    </div>
+                    <div class="activity-item">
+                        <strong>Actividad Principal:</strong>
+                        Simulación: Ajuste de mallas y recalculación ante cambios constructivos imprevistos.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 6: FASE 3 - INTEGRACIÓN -->
+        <section id="fase3">
+            <h2 class="phase-title"><span>🚀</span> FASE 3: INTEGRACIÓN · Trabajo autónomo post-clase</h2>
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Consolidar el aprendizaje mediante la práctica avanzada.
+            </div>
+            <span class="instruction">Realiza esta lectura después de las sesiones presenciales para afianzar conceptos clave.</span>
+
+            <div class="card">
+                <h3>Aplicación práctica</h3>
+                <p>Práctica autónoma: Ejercicios CPM avanzados orientados a la optimización de recursos.</p>
+                <span class="status-wait">En espera...</span>
+            </div>
+
+            <div class="note-highlight">
+                <strong>Nota Importante:</strong> El enlace al documento será proporcionado por el/la docente en clase o a través de la plataforma institucional.
+            </div>
+        </section>
+
+        <!-- TAREA 7: PIE DE PÁGINA -->
+        <footer>
+            <hr class="decorator">
+            <p><strong>La preparación previa es fundamental para el éxito de la dinámica en clase.</strong></p>
+            
+            <div class="footer-links">
+                <a href="https://poe.com/IngProyectosBot" target="_blank">🤖 Chatbot de Apoyo (Poe)</a>
+                <a href="https://chat.google.com/room/AAQAx5IqQps?cls=7" target="_blank">💬 Sala de Chat de la Asignatura</a>
+            </div>
+
+            <p class="credits">Planificación diseñada para curso de Ingeniería · Formato Aula Invertida</p>
+        </footer>
+    </div>
+
+</body>
+</html>
