@@ -52,7 +52,8 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: var(--font-main);
-            font-size: 18px;
+            /* Tipografía fluida: escala entre 14px y 18px según el ancho de la pantalla */
+            font-size: clamp(14px, 1.2vw, 18px);
             line-height: 1.6;
         }
 
@@ -73,10 +74,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            padding: clamp(2rem, 5vw, 4rem) clamp(2rem, 8vw, 6rem);
+            /* Padding ajustado para evitar que el texto suba demasiado y choque con el indicador */
+            padding: clamp(5rem, 8vw, 7rem) clamp(2rem, 8vw, 6rem) clamp(2rem, 5vw, 4rem);
             display: flex;
             flex-direction: column;
             justify-content: center;
+            /* Permite scroll interno si el contenido supera el alto de la pantalla */
+            overflow-y: auto; 
+            overflow-x: hidden;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -92,8 +97,8 @@
 
         /* Indicador de Sección Top-Left */
         .section-label {
-            position: absolute;
-            top: clamp(1.5rem, 4vw, 3rem);
+            position: fixed; /* Fijo para que no se mueva al hacer scroll */
+            top: clamp(1.5rem, 4vw, 2.5rem);
             left: clamp(2rem, 8vw, 6rem);
             font-size: 0.8rem;
             font-weight: 800;
@@ -103,6 +108,9 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            z-index: 20;
+            background-color: var(--bg-color);
+            padding-right: 1rem;
         }
 
         .section-label::before {
@@ -115,36 +123,37 @@
 
         /* Tipografía */
         h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            /* Tamaño máximo reducido para evitar desbordes */
+            font-size: clamp(2rem, 4vw, 3.2rem);
             font-weight: 800;
             letter-spacing: -0.03em;
-            line-height: 1.1;
+            line-height: 1.2;
             margin-bottom: var(--spacing-unit);
             color: var(--accent);
-            max-width: 90%;
+            max-width: 100%;
         }
 
         h2 {
-            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
             font-weight: 300;
             color: var(--text-muted);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             border-left: 4px solid var(--accent);
             padding-left: 1rem;
         }
 
         p {
             margin-bottom: 1rem;
-            max-width: 800px;
+            max-width: 100%;
         }
 
         /* Rejillas y Maquetación Asimétrica */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: clamp(2rem, 4vw, 4rem);
             width: 100%;
-            align-items: start;
+            align-items: center;
         }
 
         .grid-asym-right {
@@ -158,13 +167,14 @@
         /* Listas y Elementos Animados (Steps) */
         ul {
             list-style: none;
+            width: 100%;
         }
 
         li {
             position: relative;
             padding-left: 2rem;
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
         }
 
         li::before {
@@ -191,14 +201,15 @@
         /* Tarjetas / Cards */
         .card {
             background-color: var(--gray-light);
-            padding: 2rem;
+            padding: clamp(1.5rem, 3vw, 2rem);
             border: 1px solid var(--gray-border);
             border-left: 4px solid var(--accent);
             margin-bottom: 1rem;
+            height: 100%;
         }
 
         .card-big-number {
-            font-size: 5rem;
+            font-size: clamp(3rem, 6vw, 5rem);
             font-weight: 800;
             line-height: 1;
             margin-bottom: 0.5rem;
@@ -215,11 +226,11 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         th, td {
-            padding: 1.2rem;
+            padding: clamp(0.8rem, 1vw, 1.2rem);
             text-align: left;
             border-bottom: 1px solid var(--gray-border);
         }
@@ -243,16 +254,17 @@
 
         .formula-box {
             background-color: var(--gray-light);
-            padding: 1.5rem;
+            padding: clamp(1rem, 2vw, 1.5rem);
             text-align: center;
-            font-size: 1.5rem;
+            font-size: clamp(1.1rem, 1.5vw, 1.5rem);
             border: 1px solid var(--gray-border);
             margin-bottom: 1rem;
+            word-wrap: break-word;
         }
 
         /* Blockquote */
         blockquote {
-            font-size: 2rem;
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
             font-weight: 300;
             font-style: italic;
             border-left: 8px solid var(--accent);
@@ -261,22 +273,31 @@
             color: var(--text-muted);
         }
 
-        /* Media Queries para Responsive */
+        /* Imagen en Slides */
+        .slide-image {
+            width: 100%;
+            height: auto;
+            max-height: 60vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid var(--gray-border);
+        }
+
+        /* Media Queries para Responsive (Smartphones / Tablets pequeñas) */
         @media (max-width: 900px) {
             .grid-2, .grid-asym-right, .grid-asym-left {
                 grid-template-columns: 1fr;
-                gap: 2rem;
+                gap: 1.5rem;
             }
             .section-label {
                 top: 1rem;
                 left: 2rem;
             }
             .slide {
-                padding: 4rem 2rem 2rem 2rem;
+                padding: 5rem 2rem 2rem 2rem;
                 justify-content: flex-start;
-                overflow-y: auto;
             }
-            h1 { margin-top: 1rem; }
         }
 
         /* Progress Bar */
@@ -291,24 +312,8 @@
             z-index: 100;
         }
 
-        /* Image Placeholders / SVGs */
-        .image-placeholder {
-            width: 100%;
-            height: 100%;
-            min-height: 300px;
-            background-color: var(--gray-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--gray-border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
         .icon-large {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
             display: block;
         }
@@ -328,8 +333,9 @@
                     <h1>Actividad Presencial: Redes y Ruta Crítica (CPM)</h1>
                     <h2>Planificación y Control de Proyectos<br>Clase 1, Semana 7</h2>
                 </div>
-                <div class="image-placeholder">
-                    [Imagen Arquitectónica Conceptual]
+                <div>
+                    <!-- Imagen insertada y ajustada -->
+                    <img src="assets/img/imagen_1_slidesC1Semana7.png" alt="Esquema Redes y Ruta Crítica" class="slide-image">
                 </div>
             </div>
         </section>
@@ -338,7 +344,7 @@
         <section class="slide">
             <div class="section-label">02. Conceptos Fundamentales (1/2)</div>
             <h1>¿Qué recordamos de la preparación previa?</h1>
-            <ul style="max-width: 800px; margin-top: 2rem;">
+            <ul style="max-width: 800px; margin-top: 1rem;">
                 <li class="step"><strong>Red de Actividades (AON):</strong> Representación lógica donde el nodo es la tarea.</li>
                 <li class="step"><strong>Pasada hacia Adelante:</strong> Determina lo más temprano que puede ocurrir una tarea (\(\max\) predecesores).</li>
                 <li class="step"><strong>Pasada hacia Atrás:</strong> Determina lo más tarde que puede ocurrir sin retrasar (\(\min\) sucesores).</li>
@@ -388,7 +394,7 @@
                 <div class="step">
                     <div class="card">
                         <span class="icon-large">💡</span>
-                        <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 2rem;">¿Cuánta holgura total tiene la actividad de "Traslado"?</p>
+                        <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem;">¿Cuánta holgura total tiene la actividad de "Traslado"?</p>
                         <div class="step">
                             <div class="card-big-number">1 día</div>
                             <p style="color: var(--text-muted);">Duración total = 9 días. Holgura = \(10 - 9\).</p>
@@ -413,9 +419,9 @@
                     </ul>
                 </div>
                 <div class="step">
-                    <div class="card" style="text-align: center;">
+                    <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                         <span class="icon-large">⏱️</span>
-                        <div class="card-big-number" style="font-size: 4rem;">15</div>
+                        <div class="card-big-number">15</div>
                         <p style="text-transform: uppercase; letter-spacing: 2px;">Minutos asignados</p>
                     </div>
                 </div>
@@ -429,11 +435,11 @@
             <div class="grid-2">
                 <div>
                     <h2>Taller Semana 7 📝</h2>
-                    <p class="step" style="font-size: 1.4rem;"><strong>Objetivo Principal:</strong></p>
+                    <p class="step" style="font-size: 1.2rem; margin-bottom: 0.5rem;"><strong>Objetivo Principal:</strong></p>
                     <p class="step">Determinar la programación técnica de la etapa de "Subestructura y Muros" para fundamentar una decisión gerencial ante un imprevisto.</p>
                 </div>
                 <div class="step">
-                    <div class="card" style="text-align: center; background-color: var(--text-main); color: var(--bg-color);">
+                    <div class="card" style="text-align: center; background-color: var(--text-main); color: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center;">
                         <span class="icon-large">⌛</span>
                         <div class="card-big-number" style="color: white;">60</div>
                         <p style="text-transform: uppercase; letter-spacing: 2px; color: #aaa;">Minutos de Ejecución</p>
@@ -616,6 +622,9 @@
                 const steps = slides[currentSlide].querySelectorAll('.step');
                 steps.forEach(step => step.classList.remove('visible'));
                 
+                // Hacer scroll al principio de la diapositiva si era larga
+                slides[currentSlide].scrollTop = 0;
+                
                 updateProgress();
                 triggerMathJax();
             }
@@ -686,7 +695,9 @@
         window.addEventListener('keydown', (e) => {
             // Teclas de Navegación
             if (e.key === 'ArrowRight' || e.key === ' ') {
-                e.preventDefault();
+                // Si el usuario presiona espacio pero está scrolleando, no prevenir por defecto a menos que se quiera
+                // Comentado prevent default del espacio para permitir bajar si el slide es largo
+                if (e.key === 'ArrowRight') e.preventDefault(); 
                 nextAction();
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
@@ -706,7 +717,7 @@
         // Click para avanzar
         document.getElementById('presentation').addEventListener('click', (e) => {
             // Evitar avanzar si se hace clic en enlaces o código para copiar
-            if (e.target.tagName !== 'A' && e.target.tagName !== 'CODE') {
+            if (e.target.tagName !== 'A' && e.target.tagName !== 'CODE' && e.target.tagName !== 'TD') {
                 nextAction();
             }
         });
