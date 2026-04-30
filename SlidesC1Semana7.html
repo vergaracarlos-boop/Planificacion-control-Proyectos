@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación y Control de Proyectos - Presentación</title>
+    
+    <!-- Fuentes: Inter para un estilo minimalista, arquitectónico y afilado -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Configuración de MathJax para renders matemáticos -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            },
+            startup: {
+                typeset: true
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* Variables Globales - Paleta Minimalista Arquitectónica */
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --accent: #000000;
+            --gray-light: #f4f4f4;
+            --gray-border: #e0e0e0;
+            --spacing-unit: 2rem;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        /* Reseteo y Estilos Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        /* Contenedor Principal de Presentación */
+        #presentation {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Estructura de la Diapositiva */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: clamp(2rem, 5vw, 4rem) clamp(2rem, 8vw, 6rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            background-color: var(--bg-color);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Indicador de Sección Top-Left */
+        .section-label {
+            position: absolute;
+            top: clamp(1.5rem, 4vw, 3rem);
+            left: clamp(2rem, 8vw, 6rem);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-label::before {
+            content: '';
+            display: block;
+            width: 2rem;
+            height: 2px;
+            background-color: var(--accent);
+        }
+
+        /* Tipografía */
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: var(--spacing-unit);
+            color: var(--accent);
+            max-width: 90%;
+        }
+
+        h2 {
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            font-weight: 300;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--accent);
+            padding-left: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            max-width: 800px;
+        }
+
+        /* Rejillas y Maquetación Asimétrica */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            width: 100%;
+            align-items: start;
+        }
+
+        .grid-asym-right {
+            grid-template-columns: 1fr 1.5fr;
+        }
+
+        .grid-asym-left {
+            grid-template-columns: 1.5fr 1fr;
+        }
+
+        /* Listas y Elementos Animados (Steps) */
+        ul {
+            list-style: none;
+        }
+
+        li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+        }
+
+        .step {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tarjetas / Cards */
+        .card {
+            background-color: var(--gray-light);
+            padding: 2rem;
+            border: 1px solid var(--gray-border);
+            border-left: 4px solid var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .card-big-number {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        /* Tablas */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        th, td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-border);
+        }
+
+        th {
+            font-weight: 800;
+            background-color: var(--gray-light);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Código y Fórmulas */
+        code {
+            font-family: var(--font-code);
+            background-color: var(--gray-light);
+            padding: 0.2rem 0.5rem;
+            border-radius: 2px;
+            font-size: 0.9em;
+        }
+
+        .formula-box {
+            background-color: var(--gray-light);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 1px solid var(--gray-border);
+            margin-bottom: 1rem;
+        }
+
+        /* Blockquote */
+        blockquote {
+            font-size: 2rem;
+            font-weight: 300;
+            font-style: italic;
+            border-left: 8px solid var(--accent);
+            padding-left: 2rem;
+            margin: 2rem 0;
+            color: var(--text-muted);
+        }
+
+        /* Media Queries para Responsive */
+        @media (max-width: 900px) {
+            .grid-2, .grid-asym-right, .grid-asym-left {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .section-label {
+                top: 1rem;
+                left: 2rem;
+            }
+            .slide {
+                padding: 4rem 2rem 2rem 2rem;
+                justify-content: flex-start;
+                overflow-y: auto;
+            }
+            h1 { margin-top: 1rem; }
+        }
+
+        /* Progress Bar */
+        #progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        /* Image Placeholders / SVGs */
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+            background-color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gray-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .icon-large {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <div id="presentation">
+
+        <!-- SLIDE 1: PORTADA -->
+        <section class="slide active">
+            <div class="section-label">01. Introducción</div>
+            <div class="grid-2 grid-asym-left">
+                <div>
+                    <h1>Actividad Presencial: Redes y Ruta Crítica (CPM)</h1>
+                    <h2>Planificación y Control de Proyectos<br>Clase 1, Semana 7</h2>
+                </div>
+                <div class="image-placeholder">
+                    [Imagen Arquitectónica Conceptual]
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: CONCEPTOS FUNDAMENTALES (1/2) -->
+        <section class="slide">
+            <div class="section-label">02. Conceptos Fundamentales (1/2)</div>
+            <h1>¿Qué recordamos de la preparación previa?</h1>
+            <ul style="max-width: 800px; margin-top: 2rem;">
+                <li class="step"><strong>Red de Actividades (AON):</strong> Representación lógica donde el nodo es la tarea.</li>
+                <li class="step"><strong>Pasada hacia Adelante:</strong> Determina lo más temprano que puede ocurrir una tarea (\(\max\) predecesores).</li>
+                <li class="step"><strong>Pasada hacia Atrás:</strong> Determina lo más tarde que puede ocurrir sin retrasar (\(\min\) sucesores).</li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 3: CONCEPTOS FUNDAMENTALES (2/2) -->
+        <section class="slide">
+            <div class="section-label">03. Conceptos Fundamentales (2/2)</div>
+            <h1>La Holgura y la Ruta Crítica</h1>
+            <div class="grid-2 grid-asym-right">
+                <div>
+                    <ul>
+                        <li class="step"><strong>Holgura Total (\(HT\)):</strong> Margen de maniobra de una actividad.</li>
+                        <li class="step"><strong>Ruta Crítica:</strong> Camino desde inicio a fin con \(HT = 0\).</li>
+                        <li class="step"><strong>Estrategia:</strong> Un retraso en la ruta crítica retrasa todo el edificio.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="step">
+                        <div class="card">
+                            <p style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Fórmulas Clave</p>
+                            <div class="formula-box">\(HT = LS - ES\) ó \(HT = LF - EF\)</div>
+                            <div class="formula-box">\(EF = ES + \text{Duración}\)</div>
+                            <div class="formula-box">\(LS = LF - \text{Duración}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: ACTIVACIÓN -->
+        <section class="slide">
+            <div class="section-label">04. Activación</div>
+            <h1>Reto Rápido: La Cadena de Suministro</h1>
+            <div class="grid-2">
+                <div>
+                    <h2>Contexto Contractual</h2>
+                    <p class="step">Tenemos 3 actividades secuenciales para un proyecto:</p>
+                    <ul>
+                        <li class="step">Compra de Materiales (3 días)</li>
+                        <li class="step">Traslado a Obra (2 días)</li>
+                        <li class="step">Instalación (4 días)</li>
+                    </ul>
+                    <p class="step" style="font-weight: 600; margin-top: 1rem;">Si el plazo contractual es de 10 días...</p>
+                </div>
+                <div class="step">
+                    <div class="card">
+                        <span class="icon-large">💡</span>
+                        <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 2rem;">¿Cuánta holgura total tiene la actividad de "Traslado"?</p>
+                        <div class="step">
+                            <div class="card-big-number">1 día</div>
+                            <p style="color: var(--text-muted);">Duración total = 9 días. Holgura = \(10 - 9\).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: DESCRIPCIÓN DE LA ACTIVIDAD INICIAL -->
+        <section class="slide">
+            <div class="section-label">05. Taller Inicial</div>
+            <h1>Taller de Activación: Cálculo Manual</h1>
+            <div class="grid-2 grid-asym-left">
+                <div>
+                    <h2>Instrucciones de la dinámica</h2>
+                    <ul>
+                        <li class="step">Formar equipos en parejas.</li>
+                        <li class="step">Analizar el diagrama de red (6 nodos) impreso.</li>
+                        <li class="step">Realizar cálculos de pasadas (hacia adelante y atrás).</li>
+                        <li class="step">Identificar visualmente el camino crítico del proyecto.</li>
+                    </ul>
+                </div>
+                <div class="step">
+                    <div class="card" style="text-align: center;">
+                        <span class="icon-large">⏱️</span>
+                        <div class="card-big-number" style="font-size: 4rem;">15</div>
+                        <p style="text-transform: uppercase; letter-spacing: 2px;">Minutos asignados</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: ACTIVIDAD SUMATIVA -->
+        <section class="slide">
+            <div class="section-label">06. Actividad Sumativa</div>
+            <h1>Caso de Estudio: Edificio Mirador</h1>
+            <div class="grid-2">
+                <div>
+                    <h2>Taller Semana 7 📝</h2>
+                    <p class="step" style="font-size: 1.4rem;"><strong>Objetivo Principal:</strong></p>
+                    <p class="step">Determinar la programación técnica de la etapa de "Subestructura y Muros" para fundamentar una decisión gerencial ante un imprevisto.</p>
+                </div>
+                <div class="step">
+                    <div class="card" style="text-align: center; background-color: var(--text-main); color: var(--bg-color);">
+                        <span class="icon-large">⌛</span>
+                        <div class="card-big-number" style="color: white;">60</div>
+                        <p style="text-transform: uppercase; letter-spacing: 2px; color: #aaa;">Minutos de Ejecución</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: CASO EDIFICIO MIRADOR - DATOS -->
+        <section class="slide">
+            <div class="section-label">07. Datos del Proyecto</div>
+            <h1>Datos de Actividades - Edificio Mirador</h1>
+            <div class="table-container step">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Actividad</th>
+                            <th>Predecesor</th>
+                            <th>Duración (Días)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A</td><td>Trazado y Niveles</td><td>---</td><td>2</td></tr>
+                        <tr><td>B</td><td>Excavación Masiva</td><td>A</td><td>5</td></tr>
+                        <tr><td>C</td><td>Enfierradura Fundaciones</td><td>B</td><td>3</td></tr>
+                        <tr><td>D</td><td>Moldajes Fundaciones</td><td>B</td><td>4</td></tr>
+                        <tr><td>E</td><td>Hormigonado Fundaciones</td><td>C, D</td><td>2</td></tr>
+                        <tr><td>F</td><td>Curado y Desmolde</td><td>E</td><td>2</td></tr>
+                        <tr><td>G</td><td>Muros de Hormigón (1er Nivel)</td><td>F</td><td>6</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: TAREAS A REALIZAR -->
+        <section class="slide">
+            <div class="section-label">08. Misiones del Equipo</div>
+            <h1>Instrucciones y Tareas a Realizar</h1>
+            <div class="grid-2">
+                <div class="step">
+                    <div class="card">
+                        <h3>1. Modelamiento</h3>
+                        <p>Dibujar el diagrama de red AON (Activity on Node) de manera clara.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="card">
+                        <h3>2. Cálculo Técnico</h3>
+                        <p>Determinar variables clave: \(ES, EF, LS, LF\) y \(HT\) para cada actividad.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="card">
+                        <h3>3. Identificación</h3>
+                        <p>Trazar la Ruta Crítica con una línea doble o color destacado.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="card" style="border-left-color: #d32f2f;">
+                        <h3 style="color: #d32f2f;">4. Análisis de Riesgo</h3>
+                        <p>Geotecnia informa un retraso de 4 días en Excavación (B). ¿Cambia la fecha de término o la ruta crítica? Justifique técnicamente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: RÚBRICA DE EVALUACIÓN -->
+        <section class="slide">
+            <div class="section-label">09. Instrumento de Medición</div>
+            <h1>Rúbrica de Evaluación Sumativa</h1>
+            <div class="table-container step">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Criterio</th>
+                            <th>Excelente (25 pts)</th>
+                            <th>Competente (15 pts)</th>
+                            <th>Inicial (5 pts)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Lógica de Red</strong></td>
+                            <td>Red AON sin errores lógicos, dependencias correctas.</td>
+                            <td>Red con 1 error de conexión o lógica menor.</td>
+                            <td>Red incompleta o múltiples errores lógicos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cálculo Fechas</strong></td>
+                            <td>Todos los valores (adelante/atrás) son exactos.</td>
+                            <td>Errores menores de cálculo en 1 o 2 nodos.</td>
+                            <td>Cálculos incoherentes o incompletos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ruta Crítica</strong></td>
+                            <td>Identifica camino y calcula \(HT=0\) con precisión.</td>
+                            <td>Identifica ruta pero con errores en holguras.</td>
+                            <td>No identifica la ruta crítica.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Análisis Estratégico</strong></td>
+                            <td>Justifica impacto del retraso usando datos técnicos.</td>
+                            <td>Concluye impacto sin sustento técnico claro.</td>
+                            <td>Respuesta errónea o sin justificación.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: ESCALA DE DESEMPEÑO Y CIERRE -->
+        <section class="slide">
+            <div class="section-label">10. Conclusión</div>
+            <h1>Escala de Desempeño y Reflexión</h1>
+            <div class="grid-2 grid-asym-left">
+                <div class="step">
+                    <div class="card">
+                        <p style="font-weight: 800; margin-bottom: 1rem;">Escala de Calificación (100 puntos):</p>
+                        <ul style="font-size: 1rem;">
+                            <li><strong>90 - 100:</strong> Experto (Aprobación Destacada)</li>
+                            <li><strong>70 - 89:</strong> Profesional (Aprobación Estándar)</li>
+                            <li><strong>40 - 69:</strong> En Desarrollo (Requiere Revisión)</li>
+                            <li><strong>< 40:</strong> Insuficiente (Reforzamiento Urgente)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step">
+                    <blockquote>
+                        "En un proyecto de construcción, la holgura no es tiempo desperdiciado; es el seguro de vida del Ingeniero Civil ante la incertidumbre."
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: BIBLIOGRAFÍA -->
+        <section class="slide">
+            <div class="section-label">11. Referencias</div>
+            <h1>Bibliografía Utilizada</h1>
+            <ul class="step">
+                <li>Serpell, A. y Alarcón, L. F. (2000). <em>Planificación y Control de Proyectos.</em> Ediciones Universidad Católica de Chile.</li>
+                <li>Project Management Institute. (2021). <em>A Guide to the Project Management Body of Knowledge (PMBOK® Guide)</em> – 7ma Edición.</li>
+                <li>Kerzner, H. (2017). <em>Project Management: A Systems Approach to Planning, Scheduling, and Controlling.</em> John Wiley & Sons.</li>
+                <li>Material de apoyo Semana 7: <em>"Determinación de Ruta Crítica y Holguras".</em></li>
+            </ul>
+        </section>
+
+    </div>
+
+    <script>
+        // Lógica de Presentación
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Timer input buffer para ir a slides de 2 digitos (ej. 10, 11)
+        let numberBuffer = "";
+        let numberTimeout;
+
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        function triggerMathJax() {
+            // Asegura que MathJax renderice en slides que estaban ocultos
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        function goToSlide(index) {
+            if (index >= 0 && index < totalSlides) {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = index;
+                slides[currentSlide].classList.add('active');
+                
+                // Resetear steps del nuevo slide si avanzamos
+                const steps = slides[currentSlide].querySelectorAll('.step');
+                steps.forEach(step => step.classList.remove('visible'));
+                
+                updateProgress();
+                triggerMathJax();
+            }
+        }
+
+        function nextAction() {
+            const currentSlideEl = slides[currentSlide];
+            const hiddenSteps = currentSlideEl.querySelectorAll('.step:not(.visible)');
+            
+            if (hiddenSteps.length > 0) {
+                // Mostrar el siguiente step
+                hiddenSteps[0].classList.add('visible');
+            } else {
+                // Ir a la siguiente diapositiva
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevAction() {
+            // Al retroceder, ocultamos steps actuales o vamos a la diapositiva anterior
+            const currentSlideEl = slides[currentSlide];
+            const visibleSteps = currentSlideEl.querySelectorAll('.step.visible');
+            
+            if (visibleSteps.length > 0) {
+                visibleSteps[visibleSteps.length - 1].classList.remove('visible');
+            } else {
+                if (currentSlide > 0) {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide--;
+                    slides[currentSlide].classList.add('active');
+                    
+                    // Al retroceder, mostramos todos los steps del slide anterior
+                    const steps = slides[currentSlide].querySelectorAll('.step');
+                    steps.forEach(step => step.classList.add('visible'));
+                    
+                    updateProgress();
+                    triggerMathJax();
+                }
+            }
+        }
+
+        function handleNumberInput(key) {
+            numberBuffer += key;
+            clearTimeout(numberTimeout);
+            
+            numberTimeout = setTimeout(() => {
+                const targetSlide = parseInt(numberBuffer) - 1;
+                if (!isNaN(targetSlide) && targetSlide >= 0 && targetSlide < totalSlides) {
+                    goToSlide(targetSlide);
+                }
+                numberBuffer = ""; // Reset buffer
+            }, 400); // 400ms window para escribir numeros de 2 digitos
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Event Listeners
+        window.addEventListener('keydown', (e) => {
+            // Teclas de Navegación
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextAction();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevAction();
+            } 
+            // Tecla Fullscreen
+            else if (e.key.toLowerCase() === 'f') {
+                e.preventDefault();
+                toggleFullScreen();
+            }
+            // Navegación por números
+            else if (e.key >= '0' && e.key <= '9') {
+                handleNumberInput(e.key);
+            }
+        });
+
+        // Click para avanzar
+        document.getElementById('presentation').addEventListener('click', (e) => {
+            // Evitar avanzar si se hace clic en enlaces o código para copiar
+            if (e.target.tagName !== 'A' && e.target.tagName !== 'CODE') {
+                nextAction();
+            }
+        });
+
+        // Inicialización
+        updateProgress();
+
+    </script>
+</body>
+</html>
