@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Redes y Simulación - Portafolio Minimalista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           DIRECCIÓN DE ARTE: MINIMALISMO ARQUITECTÓNICO
+           ========================================= */
+        :root {
+            --bg-color: #fcfcfc; /* Blanco roto / gris ultra claro */
+            --text-main: #111111; /* Negro casi puro */
+            --text-muted: #666666; /* Gris oscuro para cuerpo de texto */
+            --border-color: #e5e5e5; /* Gris claro para líneas divisorias */
+            --border-dark: #111111;
+            --font-main: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            
+            /* Tipografía refinada */
+            --text-title: 4.5vw;
+            --text-subtitle: 1.5vw;
+            --text-body: 1.1vw;
+            --line-height-body: 1.8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* =========================================
+           SISTEMA DE REJILLA Y SLIDES
+           ========================================= */
+        #presentation {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: translateY(10px);
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
+            gap: 2rem;
+            padding: 6vw; /* Espacio negativo generoso */
+            background-color: var(--bg-color);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            z-index: 10;
+        }
+
+        /* =========================================
+           INDICADORES Y CONTROLES (UI)
+           ========================================= */
+        .section-indicator {
+            position: absolute;
+            top: 3vw;
+            left: 3vw;
+            font-size: 0.75vw;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            z-index: 20;
+        }
+
+        #ui-bottom {
+            position: fixed;
+            bottom: 3vw;
+            left: 3vw;
+            right: 3vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 100;
+            pointer-events: none; /* Permite hacer clic a través del contenedor */
+        }
+
+        #slide-counter {
+            font-size: 0.85vw;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        #slide-counter span.current {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        #controls {
+            display: flex;
+            gap: 1.5rem;
+            pointer-events: auto;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.2vw;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .nav-btn:hover {
+            opacity: 0.5;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background-color: var(--text-main);
+            z-index: 100;
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* =========================================
+           TIPOGRAFÍA Y CONTENIDO
+           ========================================= */
+        h1 {
+            font-size: var(--text-title);
+            font-weight: 300;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            grid-column: 1 / 10;
+            grid-row: 2 / 5;
+            align-self: end;
+        }
+
+        h2 {
+            font-size: var(--text-subtitle);
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        p, li {
+            font-size: var(--text-body);
+            line-height: var(--line-height-body);
+            font-weight: 300;
+            color: var(--text-muted);
+        }
+
+        strong {
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .content-block {
+            grid-column: 1 / 7;
+            grid-row: 6 / 12;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .content-block.right {
+            grid-column: 7 / 13;
+        }
+
+        .content-block.wide {
+            grid-column: 1 / 10;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* =========================================
+           TABLAS Y ELEMENTOS INTERACTIVOS
+           ========================================= */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.2rem 0.5rem;
+            text-align: left;
+        }
+
+        th {
+            font-weight: 500;
+            font-size: 0.85vw;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--text-main);
+        }
+
+        .interactive-btn {
+            background: transparent;
+            border: 1px solid var(--border-dark);
+            color: var(--text-main);
+            padding: 0.8rem 1.5rem;
+            font-size: 0.85vw;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            font-family: var(--font-main);
+        }
+
+        .interactive-btn:hover {
+            background: var(--text-main);
+            color: var(--bg-color);
+        }
+
+        .hidden-content {
+            display: none;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-left: 2px solid var(--text-main);
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .formula-box {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5vw;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: var(--text-main);
+            display: inline-block;
+        }
+
+        .grid-3-cols {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            grid-column: 1 / 13;
+            grid-row: 6 / 12;
+        }
+
+        .grid-item {
+            border-top: 1px solid var(--text-main);
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de progreso superior -->
+    <div id="progress-bar" style="width: 0%;"></div>
+
+    <!-- UI Inferior (Contador y Controles) -->
+    <div id="ui-bottom">
+        <div id="slide-counter">
+            <span class="current" id="current-slide-num">01</span> / <span id="total-slide-num">13</span>
+        </div>
+        <div id="controls">
+            <button class="nav-btn" onclick="prevSlide()">&#8592; ANT</button>
+            <button class="nav-btn" onclick="nextSlide()">SIG &#8594;</button>
+        </div>
+    </div>
+
+    <div id="presentation">
+
+        <!-- SLIDE 1: PORTADA -->
+        <section class="slide active">
+            <div class="section-indicator">01. Introducción</div>
+            <h1>Gestión de Redes y Simulación</h1>
+            <div class="content-block">
+                <p><strong>Actividad Presencial</strong><br>Planificación y Control de Proyectos</p>
+                <p style="font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2rem;">Clase 2 — Semana 8</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: VÍNCULOS COMPLEJOS -->
+        <section class="slide">
+            <div class="section-indicator">02. Conceptos</div>
+            <h1>Vínculos Complejos</h1>
+            <div class="content-block wide">
+                <h2>Relaciones más allá del Fin-Inicio (FS)</h2>
+                <ul>
+                    <li><strong>Comienzo a Comienzo (SS + d):</strong> La actividad B puede iniciar <i>d</i> días después de que inició la A.</li>
+                    <li><strong>Fin a Fin (FF + d):</strong> La actividad B debe terminar <i>d</i> días después de que terminó la A.</li>
+                </ul>
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                    <p><strong>Impacto en el Cálculo:</strong> El ES y EF ahora dependen del tipo de vínculo y su retardo (lag).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: RUTAS CRÍTICAS MÚLTIPLES -->
+        <section class="slide">
+            <div class="section-indicator">03. Caso Especial</div>
+            <h1>Rutas Críticas Múltiples</h1>
+            <div class="content-block">
+                <p><strong>¿Qué sucede cuando el cálculo arroja dos caminos con HT = 0?</strong></p>
+                <ul>
+                    <li>Es un escenario común en proyectos simétricos o altamente paralelizados.</li>
+                    <li><strong>Implicancia Técnica:</strong> El riesgo del proyecto se duplica. Un retraso en <i>cualquiera</i> de las dos rutas impactará la fecha final.</li>
+                </ul>
+                <button class="interactive-btn" style="margin-top: 1rem;" onclick="toggleVisibility('ejemplo-slide3')">Ver Ejemplo Rápido</button>
+                <div id="ejemplo-slide3" class="hidden-content">
+                    <p>Ruta 1: Fundaciones A → Muros A (Total 20 días).</p>
+                    <p>Ruta 2: Fundaciones B → Muros B (Total 20 días).</p>
+                    <p style="margin-top: 1rem;"><strong>Conclusión:</strong> Si ambas terminan el mismo día, ambas son Rutas Críticas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: GESTIONAR MULTICRITICIDAD -->
+        <section class="slide">
+            <div class="section-indicator">04. Gestión</div>
+            <h1 style="grid-row: 2/4;">Resolución de Multicriticidad</h1>
+            <div class="grid-3-cols">
+                <div class="grid-item">
+                    <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em;">01. Recursos Críticos</h2>
+                    <p>Si ambas rutas comparten la misma maquinaria (ej. una sola grúa torre), el conflicto debe resolverse priorizando la ruta con mayor variabilidad.</p>
+                </div>
+                <div class="grid-item">
+                    <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em;">02. Análisis de Riesgo</h2>
+                    <p>Se debe priorizar el control en la ruta que contenga actividades con mayor incertidumbre técnica o climática.</p>
+                </div>
+                <div class="grid-item">
+                    <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em;">03. Compresión (Crashing)</h2>
+                    <p>Para acortar el proyecto, <strong>debes intervenir ambas rutas simultáneamente</strong>. Acortar solo una no reducirá la duración total.</p>
+                </div>
+            </div>
+            <div style="grid-column: 1/13; grid-row: 12/13; align-self: end;">
+                <p style="font-size: 0.9vw; letter-spacing: 0.05em;"><strong>PRINCIPIO:</strong> "La ruta crítica más importante es aquella que tiene el recurso más escaso".</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: SENSIBILIDAD DE RED -->
+        <section class="slide">
+            <div class="section-indicator">05. Sensibilidad</div>
+            <h1>Sensibilidad de Red</h1>
+            
+            <div class="content-block" style="grid-column: 1 / 7; grid-row: 5 / 12; gap: 2rem;">
+                <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Diferencia Crítica de Holguras</h2>
+                
+                <div>
+                    <p style="color: var(--text-main); font-weight: 500; margin-bottom: 0.5rem;">Holgura Total (HT)</p>
+                    <p>Es la flexibilidad respecto al <strong>Proyecto</strong>. Es cuánto tiempo puede retrasarse una tarea sin postergar la fecha de entrega final pactada con el cliente.</p>
+                    <p style="font-family: 'Courier New', monospace; font-size: 0.9vw; margin-top: 0.8rem; background: #f0f0f0; padding: 0.4rem 0.8rem; display: inline-block; color: var(--text-main);">HT = LS - ES</p>
+                </div>
+
+                <div>
+                    <p style="color: var(--text-main); font-weight: 500; margin-bottom: 0.5rem;">Holgura Libre (HL)</p>
+                    <p>Es la flexibilidad respecto al <strong>Sucesor</strong>. Es cuánto puede retrasarse una tarea sin afectar el inicio temprano (ES) de la actividad que viene inmediatamente después.</p>
+                    <p style="font-family: 'Courier New', monospace; font-size: 0.9vw; margin-top: 0.8rem; background: #f0f0f0; padding: 0.4rem 0.8rem; display: inline-block; color: var(--text-main);">HL = ES<sub>sucesora</sub> - EF<sub>actual</sub></p>
+                </div>
+            </div>
+
+            <div class="content-block right" style="grid-column: 7 / 13; grid-row: 5 / 12; gap: 2rem;">
+                <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Ejemplo en Obra</h2>
+                
+                <div style="padding: 1.5rem; border: 1px solid var(--border-color); background: #fff;">
+                    <ul style="list-style: none; padding: 0; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <li><strong>Actividad A</strong> (Colocación de Moldajes): Termina el día 10.</li>
+                        <li><strong>Actividad B</strong> (Hormigonado): Programada para iniciar el día 14.</li>
+                    </ul>
+                    <p style="font-size: 0.95vw;"><strong>Análisis:</strong> La tarea A tiene <strong>4 días de HL</strong>. Puedo retrasar los moldajes 4 días sin que la cuadrilla de hormigón tenga que esperar. Sin embargo, si el proyecto termina en el día 50 y esta ruta tiene margen hasta el día 20, su <strong>HT sería de 10 días</strong>.</p>
+                </div>
+
+                <div style="padding-left: 1.5rem; border-left: 2px solid var(--text-main);">
+                    <p style="color: var(--text-main); font-weight: 500; margin-bottom: 0.5rem;">Ruta Crítica Dinámica</p>
+                    <p style="font-style: italic;">Un retraso imprevisto mayor a la holgura desplaza el fin del proyecto.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: ACTIVACIÓN -->
+        <section class="slide">
+            <div class="section-indicator">06. Desafío Flash</div>
+            <h1>Lógica con Retardo</h1>
+            <div class="content-block">
+                <div style="padding: 2rem; border: 1px solid var(--border-color); background: #fff;">
+                    <p style="margin-bottom: 1rem; font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em;"><strong>Caso de Estudio</strong></p>
+                    <ul>
+                        <li>Actividad A: Duración 6 días.</li>
+                        <li>Actividad B: Duración 4 días. Vínculo: <strong>SS + 2</strong> con A.</li>
+                    </ul>
+                    <p style="margin-top: 2rem; color: var(--text-main); font-weight: 500;">¿En qué día termina la Actividad B?</p>
+                </div>
+                <button class="interactive-btn" onclick="toggleVisibility('ans-slide6')">Revelar Respuesta</button>
+                <div id="ans-slide6" class="hidden-content">
+                    <p>Día 6 (ES<sub>B</sub> = 2 | EF<sub>B</sub> = 2 + 4 = 6).</p>
+                    <p style="margin-top: 1rem; font-size: 0.9vw;"><strong>Nota:</strong> B termina antes que A, aunque dependa de ella.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: DESCRIPCIÓN DE ACTIVIDAD (ACTUALIZADA) -->
+        <section class="slide">
+            <div class="section-indicator">07. Actividad</div>
+            <h1>Taller Rápido</h1>
+            
+            <!-- Columna Izquierda: Tabla de Datos -->
+            <div class="content-block" style="grid-column: 1 / 8; grid-row: 5 / 12;">
+                <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">Datos del Ejercicio</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Actividad</th>
+                            <th>Predecesor</th>
+                            <th>Tipo Vínculo</th>
+                            <th>Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>Instalación Faenas</td><td>---</td><td>---</td><td>2</td></tr>
+                        <tr><td>2</td><td>Excavación Mecánica</td><td>1</td><td>FS</td><td>4</td></tr>
+                        <tr><td>3</td><td>Enfierradura</td><td>2</td><td>SS + 2</td><td>5</td></tr>
+                        <tr><td>4</td><td>Moldajes</td><td>2</td><td>FS</td><td>3</td></tr>
+                        <tr><td>5</td><td>Hormigonado</td><td>3, 4</td><td>FF + 1</td><td>2</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Columna Derecha: Instrucciones -->
+            <div class="content-block right" style="grid-column: 9 / 13; grid-row: 5 / 12;">
+                <h2 style="color: var(--text-main); font-weight: 500; font-size: 1vw; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">Instrucciones</h2>
+                <ol style="margin-bottom: 2rem; padding-left: 1.2rem;">
+                    <li>En parejas, dibujen la red AON.</li>
+                    <li>Calculen <span style="font-family: 'Courier New', monospace; font-weight: 600;">ES, EF, LS, LF</span> y <span style="font-family: 'Courier New', monospace; font-weight: 600;">HT</span>.</li>
+                    <li>Identifiquen la Ruta Crítica inicial.</li>
+                </ol>
+                <div style="padding: 1.5rem; border: 1px solid var(--border-color); background: #fff;">
+                    <p style="font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-main);"><strong>Tiempo asignado</strong></p>
+                    <p style="font-size: 2vw; font-weight: 300; margin-top: 0.5rem;">15 Minutos ⏱️</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: ACTIVIDAD SUMATIVA -->
+        <section class="slide">
+            <div class="section-indicator">08. Taller Sumativo</div>
+            <h1>Planta Bio-Cel</h1>
+            <div class="content-block wide">
+                <h2>Simulación de Montaje Industrial</h2>
+                <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+                    <div>
+                        <p style="font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-main);">Objetivo</p>
+                        <p>Ajustar la programación técnica de un montaje industrial tras un fallo en la cadena de suministros.</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-main);">Dificultad</p>
+                        <p>Alta (Malla compleja de 8 actividades con múltiples convergencias).</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-main);">Tiempo</p>
+                        <p>60 Minutos</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: DATOS DE INGENIERÍA -->
+        <section class="slide">
+            <div class="section-indicator">09. Datos</div>
+            <h1 style="grid-row: 1/3;">Datos de Ingeniería</h1>
+            <div style="grid-column: 1/13; grid-row: 3/12;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Actividad</th>
+                            <th>Predecesor(es)</th>
+                            <th>Tipo Vínculo</th>
+                            <th>Duración (Días)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A</td><td>Mov. Tierras y Emplantillado</td><td>---</td><td>---</td><td>10</td></tr>
+                        <tr><td>B</td><td>Armadura y Moldajes Fundac.</td><td>A</td><td>FS</td><td>12</td></tr>
+                        <tr><td>C</td><td>Hormigonado Pedestales</td><td>B</td><td>SS + 4</td><td>8</td></tr>
+                        <tr><td>D</td><td>Montaje de Pilares Metálicos</td><td>B</td><td>FS</td><td>15</td></tr>
+                        <tr><td>E</td><td>Instalación Equipos Mecánicos</td><td>C, D</td><td>FS</td><td>10</td></tr>
+                        <tr><td>F</td><td>Red de Cañerías e Incendio</td><td>E, C</td><td>SS + 3 (E) / FS (C)</td><td>12</td></tr>
+                        <tr><td>G</td><td>Sistema Control y Electricidad</td><td>E, F</td><td>FF + 2 (E y F)</td><td>9</td></tr>
+                        <tr><td>H</td><td>Comisionamiento y Entrega</td><td>G</td><td>FS</td><td>5</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: EL PROBLEMA -->
+        <section class="slide">
+            <div class="section-indicator">10. Simulación</div>
+            <h1>El Problema</h1>
+            <div class="content-block wide">
+                <div style="padding: 2rem; border-left: 2px solid var(--text-main); background: #fff;">
+                    <p style="font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Evento Inesperado</p>
+                    <p>El proveedor de acero estructural informa un retraso crítico. El <strong>Montaje de Pilares Metálicos (D)</strong> no durará 15 días, sino <strong>25 días</strong>.</p>
+                </div>
+                
+                <p style="margin-top: 2rem; font-size: 0.85vw; text-transform: uppercase; letter-spacing: 0.05em;">Tareas a realizar (Seleccione para expandir):</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="interactive-btn" onclick="toggleVisibility('task1')">01. Red Base</button>
+                    <button class="interactive-btn" onclick="toggleVisibility('task2')">02. Simulación</button>
+                    <button class="interactive-btn" onclick="toggleVisibility('task3')">03. Análisis</button>
+                    <button class="interactive-btn" onclick="toggleVisibility('task4')">04. Propuesta</button>
+                </div>
+
+                <div id="task1" class="hidden-content"><p>Dibujar red y calcular ruta crítica original.</p></div>
+                <div id="task2" class="hidden-content"><p>Recalcular la red con la nueva duración de D (25 días).</p></div>
+                <div id="task3" class="hidden-content"><p>¿Se desplaza la fecha de término? ¿Cuántos días? ¿Se activó una nueva ruta crítica o hay rutas paralelas ahora?</p></div>
+                <div id="task4" class="hidden-content"><p>Sugerir un cambio de vínculo en F o G para mitigar el retraso.</p></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: RÚBRICA -->
+        <section class="slide">
+            <div class="section-indicator">11. Evaluación</div>
+            <h1 style="grid-row: 1/3;">Rúbrica (100 pts)</h1>
+            <div style="grid-column: 1/13; grid-row: 3/12;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Criterio</th>
+                            <th>Excelente (25 pts)</th>
+                            <th>Competente (15 pts)</th>
+                            <th>Inicial (5 pts)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Precisión Matemática</strong></td>
+                            <td>Cálculos de fechas y holguras sin errores en ambos escenarios.</td>
+                            <td>Errores menores en 1 o 2 nodos.</td>
+                            <td>Cálculos incoherentes o incompletos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Simulación de Retraso</strong></td>
+                            <td>Identifica exactamente el impacto y el nuevo camino crítico.</td>
+                            <td>Identifica el retraso pero no el cambio de ruta.</td>
+                            <td>No logra simular el retraso en la red.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Propuesta de Mejora</strong></td>
+                            <td>Propone cambios de vínculos lógicos y factibles técnicamente.</td>
+                            <td>Propone acelerar tareas sin justificar el cambio lógico.</td>
+                            <td>No propone solución de recuperación.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Presentación Técnica</strong></td>
+                            <td>Diagramas claros, uso correcto de simbología de red AON.</td>
+                            <td>Diagramas legibles pero con omisiones de formato.</td>
+                            <td>Entrega desordenada o sin lógica AON.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: CIERRE -->
+        <section class="slide">
+            <div class="section-indicator">12. Desempeño</div>
+            <h1>Escala de Calificación</h1>
+            <div class="content-block wide">
+                <ul style="list-style: none; padding-left: 0; gap: 1.5rem;">
+                    <li style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;"><strong>90 - 100:</strong> Ingeniero de Planificación Senior.</li>
+                    <li style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;"><strong>70 - 89:</strong> Jefe de Oficina Técnica.</li>
+                    <li style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;"><strong>40 - 69:</strong> Asistente de Programación.</li>
+                    <li style="padding-bottom: 1rem;"><strong>&lt; 40:</strong> Nivel de Reforzamiento Requerido.</li>
+                </ul>
+                <div style="margin-top: 3rem; padding-left: 2rem; border-left: 2px solid var(--text-main);">
+                    <p style="font-size: 1.2vw; font-style: italic; color: var(--text-main); line-height: 1.6;">"Planificar con relaciones complejas es modelar la realidad; simular cambios es dominar la incertidumbre."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 13: BIBLIOGRAFÍA -->
+        <section class="slide">
+            <div class="section-indicator">13. Referencias</div>
+            <h1>Bibliografía</h1>
+            <div class="content-block wide">
+                <ul style="list-style: none; padding-left: 0; gap: 1.5rem;">
+                    <li>Serpell, A. y Alarcón, L. F. (2000). <i>Planificación y Control de Proyectos</i>. Ediciones UC.</li>
+                    <li>Project Management Institute. (2021). <i>Guía del PMBOK</i>. 7ma Ed.</li>
+                    <li>Kerzner, H. (2017). <i>Project Management: A Systems Approach to Planning, Scheduling, and Controlling</i>.</li>
+                    <li>Universidad San Sebastián. <i>Effective Teaching at USS: Pillars and Practices</i>.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Lógica de Presentación
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress-bar');
+        const currentSlideNumEl = document.getElementById('current-slide-num');
+        const totalSlideNumEl = document.getElementById('total-slide-num');
+
+        // Inicializar total de slides en el contador
+        totalSlideNumEl.textContent = slides.length.toString().padStart(2, '0');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            
+            // Actualizar barra de progreso
+            const progress = ((currentSlide) / (slides.length - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Actualizar contador de slides (formato 01, 02...)
+            currentSlideNumEl.textContent = (currentSlide + 1).toString().padStart(2, '0');
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Navegación por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Lógica de Interactividad (Revelar contenido)
+        function toggleVisibility(id) {
+            // Ocultar todos los demás primero (comportamiento acordeón minimalista)
+            const allHidden = document.querySelectorAll('.hidden-content');
+            allHidden.forEach(el => {
+                if(el.id !== id) el.style.display = 'none';
+            });
+
+            const el = document.getElementById(id);
+            if (el.style.display === 'block') {
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'block';
+            }
+        }
+
+        // Inicializar
+        updateSlide();
+    </script>
+</body>
+</html>
