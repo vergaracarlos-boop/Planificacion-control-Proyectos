@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Presencial - PDM y Actividades Continuas</title>
+    <style>
+        /* === ESTILOS BASE Y VARIABLES === */
+        :root {
+            --bg-color: #fcfcfc;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --accent: #2c3e50;
+            --border-color: #e0e0e0;
+            --code-bg: #f4f4f4;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* === MAQUETACIÓN DE DIAPOSITIVAS === */
+        #presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 4rem;
+            padding: 4rem;
+            box-sizing: border-box;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            background: var(--bg-color);
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+            animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(40px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .slide-meta {
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-top: 3px solid var(--accent);
+            padding-top: 1rem;
+            color: var(--text-muted);
+            align-self: start;
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 1000px;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 4vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin: 0 0 2rem 0;
+            color: var(--text-main);
+        }
+
+        p, .bullet {
+            font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+            line-height: 1.5;
+            color: var(--text-muted);
+            margin: 0 0 1.2rem 0;
+            max-width: 850px;
+        }
+
+        .bullet {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.4s ease;
+        }
+
+        .bullet.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bullet strong {
+            color: var(--text-main);
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 0.2rem;
+        }
+
+        /* === COMPONENTES ESPECIALES === */
+        .image-placeholder {
+            width: 100%;
+            height: 250px;
+            background: #f0f0f0;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-activities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .card-activity {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border-radius: 4px;
+        }
+
+        .card-activity .tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .card-activity .duration {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .logic-text {
+            font-size: 0.75rem; 
+            margin: 5px 0 0 0;
+            color: #d35400;
+            font-weight: 600;
+        }
+
+        /* Tabla Rúbrica */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { color: var(--text-main); font-weight: 800; }
+
+        .controls-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: #aaa;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @media (max-width: 900px) {
+            .slide { grid-template-columns: 1fr; padding: 2rem; }
+            .grid-activities { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="presentation-container">
+
+        <!-- SLIDE 1: PORTADA -->
+        <section class="slide active">
+            <div class="slide-meta">01. INTRODUCCIÓN</div>
+            <div class="slide-content">
+                <h1>Actividad Presencial</h1>
+                <div class="bullet"><strong>Planificación y Control de Proyectos</strong></div>
+                <div class="bullet">Semana 8: Modelamiento Complejo PDM</div>
+                <div class="bullet"><em>Gestión avanzada de frentes de trabajo en obra gruesa.</em></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: RECORDATORIO -->
+        <section class="slide">
+            <div class="slide-meta">02. CONCEPTOS</div>
+            <div class="slide-content">
+                <h1>Redes de Precedencia</h1>
+                <div class="bullet">
+                    <strong>Traslapes Inteligentes</strong>
+                    El método PDM permite que tareas inicien sin esperar el 100% de la anterior.
+                </div>
+                <div class="bullet">
+                    <strong>Lags Técnicos</strong>
+                    Sincronizan puntos de control (ej. desmoldar sólo tras 7 días de curado).
+                </div>
+                <div class="bullet">
+                    <strong>Actividad Continua</strong>
+                    Evitamos la fragmentación de equipos para mantener el ritmo de producción.
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: ACTIVACIÓN -->
+        <section class="slide">
+            <div class="slide-meta">03. ACTIVACIÓN</div>
+            <div class="slide-content">
+                <h1>El Caos de la Simultaneidad</h1>
+                <div class="image-placeholder">
+                    
+                </div>
+                <div class="bullet">
+                    ¿Cómo calculas el impacto de un retraso en enfierradura sobre el hormigón?
+                </div>
+                <div class="bullet">
+                    Sin software, una red de 12 actividades con traslapes es una apuesta arriesgada.
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: EL TALLER -->
+        <section class="slide">
+            <div class="slide-meta">04. ACTIVIDAD</div>
+            <div class="slide-content">
+                <h1>Taller de Simulación PDM</h1>
+                <div class="bullet"><strong>Herramienta Obligatoria:</strong> ProjectFree o Excel.</div>
+                <div class="bullet"><strong>Configuración:</strong> Ingreso de predecesoras con Lags.</div>
+                <div class="bullet"><strong>Objetivo:</strong> Hallar Ruta Crítica y Holgura Libre.</div>
+                <div class="bullet"><strong>Tiempo:</strong> 60 minutos.</div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: EL CASO EXPANDIDO (12 ACTIVIDADES) -->
+        <section class="slide">
+            <div class="slide-meta">05. CASO TÉCNICO</div>
+            <div class="slide-content">
+                <h1>Losa Nivel +4 (Tipo)</h1>
+                <p>Modela el ciclo rítmico para optimizar el uso de moldajes:</p>
+                <div class="grid-activities">
+                    <div class="card-activity bullet">
+                        <span class="tag">A: Trazado y Niveles</span>
+                        <span class="duration">2 Días</span>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">B: Cimbrado Losa</span>
+                        <span class="duration">4 Días</span>
+                        <p class="logic-text">Lógica: A SS+1</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">C: Moldaje Vigas</span>
+                        <span class="duration">5 Días</span>
+                        <p class="logic-text">Lógica: B SS+2</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">D: Enfierradura Vigas</span>
+                        <span class="duration">4 Días</span>
+                        <p class="logic-text">Lógica: C SS+2</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">E: Enfierradura Losa Inf.</span>
+                        <span class="duration">3 Días</span>
+                        <p class="logic-text">Lógica: D SS+2</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">F: Ductos Eléctricos</span>
+                        <span class="duration">3 Días</span>
+                        <p class="logic-text">Lógica: E SS+1</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">G: Ductos Sanitarios</span>
+                        <span class="duration">2 Días</span>
+                        <p class="logic-text">Lógica: F SS+1</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">H: Enfierradura Losa Sup.</span>
+                        <span class="duration">3 Días</span>
+                        <p class="logic-text">Lógica: G SS+1</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">I: Recepción ITO</span>
+                        <span class="duration">1 Día</span>
+                        <p class="logic-text">Lógica: H FS+0</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">J: Hormigonado</span>
+                        <span class="duration">1 Día</span>
+                        <p class="logic-text">Lógica: I FS+0</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">K: Curado Crítico</span>
+                        <span class="duration">7 Días</span>
+                        <p class="logic-text">Lógica: J FS+0</p>
+                    </div>
+                    <div class="card-activity bullet">
+                        <span class="tag">L: Desmolde y Puntales</span>
+                        <span class="duration">2 Días</span>
+                        <p class="logic-text">Lógica: K FF+0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: DESAFÍO TÉCNICO -->
+        <section class="slide">
+            <div class="slide-meta">06. DESAFÍO</div>
+            <div class="slide-content">
+                <h1>Análisis de Sensibilidad</h1>
+                <div class="bullet">
+                    <strong>01.</strong> Determina la duración mínima del ciclo total.
+                </div>
+                <div class="bullet">
+                    <strong>02.</strong> Si la Recepción ITO (I) se atrasa 1 día, ¿se mueve el hormigón?
+                </div>
+                <div class="bullet">
+                    <strong>03.</strong> Identifica qué actividades tienen holgura total > 2 días.
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: RÚBRICA -->
+        <section class="slide">
+            <div class="slide-meta">07. EVALUACIÓN</div>
+            <div class="slide-content">
+                <h1>Criterios de Logro</h1>
+                <table>
+                    <tr class="bullet">
+                        <th>Dimensiones</th>
+                        <th>Nivel Destacado</th>
+                    </tr>
+                    <tr class="bullet">
+                        <td><strong>Modelamiento</strong></td>
+                        <td>Uso correcto de relaciones SS y FF en el software.</td>
+                    </tr>
+                    <tr class="bullet">
+                        <td><strong>Cálculo</strong></td>
+                        <td>Determinación exacta de la fecha de término temprana.</td>
+                    </tr>
+                    <tr class="bullet">
+                        <td><strong>Análisis</strong></td>
+                        <td>Interpretación precisa de la ruta crítica y holguras.</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: CIERRE -->
+        <section class="slide">
+            <div class="slide-meta">08. CONCLUSIÓN</div>
+            <div class="slide-content">
+                <h1>Visión de Ingeniero</h1>
+                <div class="image-placeholder">
+                    
+                </div>
+                <div class="bullet">
+                    <em>Un buen cronograma no predice el futuro; permite reaccionar a él con fundamentos.</em>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: REFERENCIAS -->
+        <section class="slide">
+            <div class="slide-meta">09. REFERENCIAS</div>
+            <div class="slide-content">
+                <h1>Bibliografía</h1>
+                <div class="bullet"><strong>Serpell, A. y Alarcón, L. F. (2002).</strong> Planificación y Control de Proyectos. Ediciones UC.</div>
+                <div class="bullet"><strong>Kerzner, H. (2009).</strong> Project Management: A Systems Approach. John Wiley.</div>
+                <div class="bullet"><strong>Baeza, F. (2020).</strong> Manual de Programación aplicado a Proyectos.</div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="controls-info">FLECHAS / ESPACIO: Navegar | 1-9: Ir a diapositiva | F: Pantalla completa</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((s, index) => {
+                if (index === currentSlide) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        function nextAction() {
+            const current = slides[currentSlide];
+            const hiddenBullets = Array.from(current.querySelectorAll('.bullet')).filter(b => !b.classList.contains('visible'));
+            
+            if (hiddenBullets.length > 0) {
+                hiddenBullets[0].classList.add('visible');
+            } else if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevAction() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                const prev = slides[currentSlide];
+                prev.querySelectorAll('.bullet').forEach(b => b.classList.add('visible'));
+                updateSlide();
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextAction();
+            } else if (e.key === 'ArrowLeft') {
+                prevAction();
+            } else if (e.key === 'f' || e.key === 'F') {
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                else document.exitFullscreen();
+            } else if (!isNaN(e.key) && e.key.trim() !== '') {
+                const num = parseInt(e.key);
+                if (num > 0 && num <= slides.length) {
+                    currentSlide = num - 1;
+                    slides[currentSlide].querySelectorAll('.bullet').forEach(b => b.classList.add('visible'));
+                    updateSlide();
+                }
+            }
+        });
+
+        window.addEventListener('click', (e) => {
+            if(e.target.tagName.toLowerCase() !== 'a' && e.target.tagName.toLowerCase() !== 'button') nextAction();
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>
