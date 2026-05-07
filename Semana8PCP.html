@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Aula Invertida - Gestión en Ingeniería</title>
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #3498DB;
+            --bg-color: #ECF0F1;
+            --success-color: #27AE60;
+            --text-main: #2C3E50;
+            --text-secondary: #7F8C8D;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .phase-section {
+            margin-bottom: 40px;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .phase-header h2 {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .objective-box {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .instruction-highlight {
+            background-color: #fcf3cf;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            color: #9c640c;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .card:hover::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: var(--success-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 40px;
+            text-align: center;
+            font-weight: bold;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .pdf-container {
+            width: 100%;
+            height: 500px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .session-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .day-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .day-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .activity-item {
+            margin-bottom: 15px;
+        }
+
+        .activity-label {
+            font-weight: bold;
+            color: var(--secondary-color);
+            display: block;
+        }
+
+        .status-waiting {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: #eee;
+            color: #888;
+            border-radius: 4px;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .note-important {
+            background-color: #ebf5fb;
+            color: var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--secondary-color);
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 40px 0;
+            border-top: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .footer-links {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .credits {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .session-grid {
+                grid-template-columns: 1fr;
+            }
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Semana 8: PDM actividades continuas</h1>
+            <p>Planificación del 04 al 08 de mayo</p>
+        </header>
+
+        <!-- FASE 1 -->
+        <section class="phase-section">
+            <div class="phase-header">
+                <h2>📖 FASE 1: PREPARACIÓN · Trabajo autónomo previo</h2>
+            </div>
+            
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Introducir a los estudiantes en los conceptos fundamentales de la gestión en ingeniería.
+            </div>
+
+            <div class="instruction-highlight">
+                Completa las siguientes actividades ANTES de nuestras sesiones presenciales. Prepara tus apuntes y dudas.
+            </div>
+
+            <div class="resource-grid">
+                <!-- Tarjeta PDF -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <div>
+                        <h3>Informe Técnico: Metodología PDM y Modelamiento de Actividades Continuas en Obra Gruesa</h3>
+                        <p>Revisa este documento base antes de continuar.</p>
+                        <iframe class="pdf-container" src="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Resumen%20Semana%208.pdf"></iframe>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Video -->
+                <div class="card">
+                    <div>
+                        <h3>🎥 Video: Programación de Construcción</h3>
+                        <p>Este video complementa la lectura con ejemplos prácticos.</p>
+                    </div>
+                    <a href="https://youtu.be/jpU6rGTXdLY" target="_blank" class="btn">Ver video en YouTube</a>
+                </div>
+
+                <!-- Tarjeta Cuestionario -->
+                <div class="card">
+                    <div>
+                        <h3>📝 Cuestionario de Autoevaluación</h3>
+                        <p>Verifica tu comprensión con este breve cuestionario interactivo.</p>
+                    </div>
+                    <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/cuestionarioSemana8.html" target="_blank" class="btn">Ir al cuestionario</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FASE 2 -->
+        <section class="phase-section">
+            <div class="phase-header">
+                <h2>👥 FASE 2: SESIONES PRESENCIALES · Práctica guiada y colaboración</h2>
+            </div>
+
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Profundizar en los conceptos y aplicarlos en actividades prácticas.
+            </div>
+
+            <div class="instruction-highlight">
+                Asiste y participa activamente en ambas sesiones.
+            </div>
+
+            <div class="session-grid">
+                <div class="day-card">
+                    <div class="day-title">MARTES</div>
+                    <div class="activity-item">
+                        <span class="activity-label">Activación:</span>
+                        <p>Uso estratégico de Lags.</p>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-label">Actividad:</span>
+                        <p>Programación con actividades continuas y traslapes lógicos.</p>
+                    </div>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-title">JUEVES</div>
+                    <div class="activity-item">
+                        <span class="activity-label">Activación:</span>
+                        <p>Diagramas de precedencia técnica.</p>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-label">Actividad:</span>
+                        <p>Modelamiento PDM para etapa de obra gruesa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FASE 3 -->
+        <section class="phase-section">
+            <div class="phase-header">
+                <h2>🚀 FASE 3: INTEGRACIÓN · Trabajo autónomo post-clase</h2>
+            </div>
+
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Consolidar el aprendizaje mediante la lectura autónoma.
+            </div>
+
+            <div class="instruction-highlight">
+                Realiza esta lectura después de las sesiones presenciales para afianzar conceptos.
+            </div>
+
+            <div class="card">
+                <h3>Aplicación práctica</h3>
+                <p>Lectura complementaria: Variabilidad y Buffering.</p>
+                <div class="status-waiting">En espera...</div>
+                <div class="note-important">
+                    <strong>Nota:</strong> El enlace al documento será proporcionado por el/la docente en clase o a través de la plataforma institucional.
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Recordatorio: La preparación previa es clave para el aprovechamiento de las sesiones presenciales.</p>
+            <div class="footer-links">
+                <a href="https://poe.com/IngProyectosBot" target="_blank" class="footer-link">🤖 Chatbot Proyectos</a>
+                <a href="https://chat.google.com/room/AAQAx5IqQps?cls=7" target="_blank" class="footer-link">💬 Chat de Google</a>
+            </div>
+            <p class="credits">Planificación diseñada para curso de Ingeniería · Formato Aula Invertida</p>
+        </footer>
+    </div>
+
+</body>
+</html>
