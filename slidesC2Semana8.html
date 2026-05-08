@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación y Control de Proyectos - Instalación ProjectLibre</title>
+    
+    <!-- Fuentes Minimalistas Sans-Serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Configuración MathJax requerida -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']]
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent-color: #0f172a;
+            --grid-border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Helvetica, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Estructura principal de la diapositiva */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 4rem 6rem;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background: var(--bg-color);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+
+        /* Etiqueta superior izquierda */
+        .section-tag {
+            position: absolute;
+            top: 3rem;
+            left: 4rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Títulos */
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-top: 4rem;
+            margin-bottom: 2rem;
+            max-width: 80%;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        /* Maquetación asimétrica */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .grid-layout-reverse {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        /* Viñetas animadas */
+        .bullet-list {
+            list-style: none;
+            font-size: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .bullet-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+        }
+
+        .bullet-list li.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Tarjetas para datos numéricos y conceptos */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--surface-color);
+            padding: 2rem;
+            border: 1px solid var(--grid-border);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        /* Tablas / Rúbricas */
+        .table-container {
+            width: 100%;
+            margin-top: 2rem;
+            border-collapse: collapse;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .table-container.visible {
+            opacity: 1;
+        }
+
+        .rubric {
+            width: 100%;
+            border-top: 2px solid var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .rubric th, .rubric td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--grid-border);
+        }
+
+        .rubric th {
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* Imágenes y placeholders */
+        .image-box {
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-align: center;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .image-box.visible {
+            opacity: 1;
+        }
+
+        /* Diapositiva especial interactiva/formativa */
+        .slide-formativa {
+            background-color: var(--accent-color);
+            color: var(--surface-color);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .slide-formativa h1 {
+            font-size: 5rem;
+            margin: 0 0 1rem 0;
+            max-width: 100%;
+        }
+
+        .clock-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 2rem;
+            stroke: var(--surface-color);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        /* Tipografía Monospace para código/rutas */
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: #e5e7eb;
+            padding: 0.2rem 0.5rem;
+            font-size: 1.2rem;
+            color: #b91c1c;
+        }
+
+        /* Pie de página de cierre */
+        .closing-phrase {
+            font-size: 2rem;
+            font-weight: 300;
+            font-style: italic;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        /* Indicador de progreso */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-layout, .grid-layout-reverse {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 2.5rem; max-width: 100%; margin-top: 3rem; }
+            .slide { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progreso -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- SLIDE 1: PORTADA -->
+    <div class="slide active">
+        <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; max-width: 800px;">
+            <div style="font-weight: 800; font-size: 1rem; letter-spacing: 0.2em; color: var(--text-muted); margin-bottom: 2rem;">ACTIVIDAD PRESENCIAL</div>
+            <h1 style="font-size: 5rem; margin-top: 0;">Planificación y Control de Proyectos</h1>
+            <h2 style="font-size: 2rem; color: var(--accent-color); font-weight: 600;">Clase 3, Semana 3</h2>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: CONCEPTOS 1 -->
+    <div class="slide">
+        <div class="section-tag">01. Introducción</div>
+        <h1>Gestión de Proyectos con Software</h1>
+        <div class="grid-layout">
+            <div>
+                <ul class="bullet-list">
+                    <li class="anim-item">Optimiza recursos y reduce tiempos de ejecución.</li>
+                    <li class="anim-item">Facilita el cálculo automático de la ruta crítica.</li>
+                    <li class="anim-item">Centraliza la información de costos y plazos.</li>
+                    <li class="anim-item">Permite escenarios dinámicos ante cambios imprevistos.</li>
+                </ul>
+            </div>
+            <div class="image-box anim-item">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <line x1="8" y1="14" x2="16" y2="14"></line>
+                        <line x1="12" y1="18" x2="20" y2="18"></line>
+                        <line x1="3" y1="14" x2="5" y2="14"></line>
+                        <line x1="3" y1="18" x2="9" y2="18"></line>
+                    </svg>
+                    <span>[Imagen conceptual: Carta Gantt o Plano]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: CONCEPTOS 2 -->
+    <div class="slide">
+        <div class="section-tag">02. Herramienta</div>
+        <h1>¿Qué es ProjectLibre?</h1>
+        <div class="grid-layout-reverse">
+            <div class="image-box anim-item">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span>[Captura de pantalla de ProjectLibre]</span>
+                </div>
+            </div>
+            <div>
+                <ul class="bullet-list">
+                    <li class="anim-item">Alternativa Open Source líder mundial a MS Project.</li>
+                    <li class="anim-item">Creación estructurada de Cartas Gantt y WBS.</li>
+                    <li class="anim-item">Compatibilidad bidireccional con archivos de Microsoft.</li>
+                    <li class="anim-item">Control riguroso de costos mediante Valor Ganado.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: ACTIVACIÓN -->
+    <div class="slide">
+        <div class="section-tag">03. Activación</div>
+        <h1>Activación: Preparando el Entorno</h1>
+        <div class="cards-container">
+            <div class="card anim-item">
+                <div class="card-number">01</div>
+                <h3 style="margin-bottom: 1rem;">Navegador</h3>
+                <p>Abre el navegador web de tu equipo de trabajo.</p>
+            </div>
+            <div class="card anim-item">
+                <div class="card-number">02</div>
+                <h3 style="margin-bottom: 1rem;">Búsqueda</h3>
+                <p>Escribe <span class="code-block">ProjectLibre SourceForge</span> en Google.</p>
+            </div>
+            <div class="card anim-item">
+                <div class="card-number">03</div>
+                <h3 style="margin-bottom: 1rem;">Identificación</h3>
+                <p>Localiza la página oficial para garantizar seguridad.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: DESCRIPCIÓN ACTIVIDAD 1 -->
+    <div class="slide">
+        <div class="section-tag">04. Procedimiento</div>
+        <h1>Descarga Segura del Software</h1>
+        <div class="grid-layout">
+            <div>
+                <ul class="bullet-list">
+                    <li class="anim-item">Ingresa al enlace verificado de SourceForge.</li>
+                    <li class="anim-item">Haz clic en el botón verde "Download Latest Version".</li>
+                    <li class="anim-item">Espera 5 segundos sin hacer clic en publicidad.</li>
+                    <li class="anim-item">Guarda el instalador en tu carpeta "Descargas".</li>
+                </ul>
+            </div>
+            <div style="font-size: 6rem; text-align: center; color: var(--accent-color);" class="anim-item">
+                <!-- Icono de descarga -->
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: DESCRIPCIÓN ACTIVIDAD 2 -->
+    <div class="slide">
+        <div class="section-tag">04. Procedimiento</div>
+        <h1>Instalación Paso a Paso en Windows</h1>
+        <div class="grid-layout-reverse">
+            <div class="image-box anim-item" style="min-height: 200px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    <span>[Captura: Asistente de instalación .exe]</span>
+                </div>
+            </div>
+            <div>
+                <ul class="bullet-list">
+                    <li class="anim-item">Ejecuta el archivo descargado <span class="code-block">.exe</span>.</li>
+                    <li class="anim-item">Otorga permisos de administrador si el sistema lo requiere.</li>
+                    <li class="anim-item">Acepta los términos de la licencia pública.</li>
+                    <li class="anim-item">Completa el asistente haciendo clic en "Next".</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: DESCRIPCIÓN ACTIVIDAD 3 -->
+    <div class="slide">
+        <div class="section-tag">04. Procedimiento</div>
+        <h1>Configuración Inicial Lista</h1>
+        <ul class="bullet-list" style="margin-top: 2rem;">
+            <li class="anim-item">Inicia ProjectLibre desde el menú principal.</li>
+            <li class="anim-item">Acepta la validación del correo electrónico (opcional).</li>
+            <li class="anim-item">Selecciona el idioma español en configuraciones si es necesario.</li>
+            <li class="anim-item">El área de trabajo debe mostrar un diagrama Gantt vacío.</li>
+        </ul>
+    </div>
+
+    <!-- SLIDE 8: ACTIVIDAD FORMATIVA (J+1) -->
+    <div class="slide slide-formativa">
+        <!-- Icono de Reloj -->
+        <svg class="clock-icon anim-item" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <div class="anim-item">
+            <h2 style="color: rgba(255,255,255,0.8); letter-spacing: 0.2em; text-transform: uppercase;">Actividad Formativa</h2>
+            <h1>Configuración y Primer Proyecto</h1>
+            <p style="font-size: 1.5rem; margin-top: 2rem;">Tiempo estimado: 20 minutos</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: EXPLICACIÓN DEL CASO -->
+    <div class="slide">
+        <div class="section-tag">05. Caso de Estudio</div>
+        <h1>Proyecto: Radier Base</h1>
+        <div class="grid-layout">
+            <div class="anim-item">
+                <div style="background: #f1f5f9; padding: 2rem; border-left: 4px solid var(--accent-color);">
+                    <h3 style="margin-bottom: 1rem;">Definición de Datos</h3>
+                    <p style="margin-bottom: 0.5rem;"><strong>Nombre:</strong> Radier Base Sector A</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Inicio:</strong> Próximo lunes hábil</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Gerente:</strong> Tu nombre completo</p>
+                </div>
+            </div>
+            <div>
+                <ul class="bullet-list">
+                    <li class="anim-item">Haz clic en "Crear Nuevo Proyecto".</li>
+                    <li class="anim-item">Ingresa los datos definidos en el recuadro.</li>
+                    <li class="anim-item">Crea tarea: "Excavación" (Duración: 3 días).</li>
+                    <li class="anim-item">Crea tarea: "Moldaje" (Duración: 2 días, predecesora: Excavación).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: RÚBRICA Y CIERRE -->
+    <div class="slide">
+        <div class="section-tag">06. Evaluación</div>
+        <h1>Rúbrica de Desempeño</h1>
+        
+        <table class="rubric table-container anim-item">
+            <thead>
+                <tr>
+                    <th>Escala</th>
+                    <th>Criterio de Desempeño Operativo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Excelente</strong></td>
+                    <td>Software instalado. Proyecto creado con 2 tareas vinculadas correctamente.</td>
+                </tr>
+                <tr>
+                    <td><strong>Satisfactorio</strong></td>
+                    <td>Software instalado. Proyecto creado pero existen errores en la vinculación.</td>
+                </tr>
+                <tr>
+                    <td><strong>Insuficiente</strong></td>
+                    <td>No logró instalar el software o no pudo crear el proyecto base.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="closing-phrase anim-item">
+            "La planificación rigurosa es el cimiento de la construcción exitosa."
+            <div style="display: flex; justify-content: center; margin-top: 2rem;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M2 20h20"></path>
+                    <path d="M5 20v-8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"></path>
+                    <path d="M9 10V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: BIBLIOGRAFÍA -->
+    <div class="slide">
+        <div class="section-tag">07. Referencias</div>
+        <h1>Bibliografía Utilizada</h1>
+        <ul class="bullet-list">
+            <li class="anim-item">Serpell, A. y Alarcón, L. F. (2000). <em>Planificación y Control de Proyectos</em>. Ediciones UC.</li>
+            <li class="anim-item">Project Management Institute. (2021). <em>Guía de los Fundamentos para la Dirección de Proyectos (PMBOK)</em>.</li>
+            <li class="anim-item">Documentación oficial de ProjectLibre Open Source. Recuperado de sourceforge.net.</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const progressBar = document.getElementById('progressBar');
+            let currentSlide = 0;
+            let keySequence = '';
+            let keyTimer;
+
+            // Inicializar diapositiva y barra de progreso
+            function updatePresentation() {
+                slides.forEach((slide, index) => {
+                    slide.classList.remove('active');
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                        // Renderizar MathJax por si hay ecuaciones ocultas que ahora se muestran
+                        if(window.MathJax && window.MathJax.typesetPromise) {
+                            window.MathJax.typesetPromise([slide]).catch((err) => console.log(err.message));
+                        }
+                    } else {
+                        // Resetear animaciones en diapositivas ocultas
+                        const items = slide.querySelectorAll('.anim-item');
+                        items.forEach(item => item.classList.remove('visible'));
+                    }
+                });
+                
+                // Actualizar barra de progreso
+                const progress = ((currentSlide + 1) / slides.length) * 100;
+                progressBar.style.width = progress + '%';
+            }
+
+            // Manejar avance (animaciones internas o siguiente diapositiva)
+            function advance() {
+                const currentSlideEl = slides[currentSlide];
+                const hiddenItems = currentSlideEl.querySelectorAll('.anim-item:not(.visible)');
+                
+                if (hiddenItems.length > 0) {
+                    // Revelar siguiente elemento
+                    hiddenItems[0].classList.add('visible');
+                } else if (currentSlide < slides.length - 1) {
+                    // Siguiente diapositiva
+                    currentSlide++;
+                    updatePresentation();
+                }
+            }
+
+            // Manejar retroceso
+            function retreat() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updatePresentation();
+                    // Al retroceder, mostrar todos los elementos animados de la diapositiva
+                    const items = slides[currentSlide].querySelectorAll('.anim-item');
+                    items.forEach(item => item.classList.add('visible'));
+                }
+            }
+
+            // Escucha de teclado
+            window.addEventListener('keydown', (e) => {
+                // Siguiente: Flecha Derecha, Espacio, Enter
+                if (['ArrowRight', ' ', 'Enter'].includes(e.key)) {
+                    e.preventDefault();
+                    advance();
+                }
+                
+                // Anterior: Flecha Izquierda, Retroceso
+                if (['ArrowLeft', 'Backspace'].includes(e.key)) {
+                    e.preventDefault();
+                    retreat();
+                }
+
+                // Pantalla completa: Tecla F
+                if (e.key.toLowerCase() === 'f') {
+                    e.preventDefault();
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen().catch(err => {
+                            console.log(`Error al intentar iniciar pantalla completa: ${err.message}`);
+                        });
+                    } else {
+                        document.exitFullscreen();
+                    }
+                }
+
+                // Ir a diapositiva específica por número (1, 2, 3...)
+                if (/^[0-9]$/.test(e.key)) {
+                    clearTimeout(keyTimer);
+                    keySequence += e.key;
+                    
+                    keyTimer = setTimeout(() => {
+                        const targetSlide = parseInt(keySequence) - 1;
+                        if (targetSlide >= 0 && targetSlide < slides.length) {
+                            currentSlide = targetSlide;
+                            updatePresentation();
+                            
+                            // Autocompletar animaciones al saltar
+                            const items = slides[currentSlide].querySelectorAll('.anim-item');
+                            items.forEach(item => item.classList.add('visible'));
+                        }
+                        keySequence = '';
+                    }, 300); // 300ms para permitir tipear dos dígitos si hubieran más de 9 slides
+                }
+            });
+
+            // Iniciar
+            updatePresentation();
+        });
+    </script>
+</body>
+</html>
