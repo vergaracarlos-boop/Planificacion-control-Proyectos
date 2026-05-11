@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1 - Semana 8 | Planificación y Control</title>
+    
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    
+    <!-- MathJax para ecuaciones matemáticas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --color-bg: #f8f9fa;
+            --color-surface: #ffffff;
+            --color-text: #111111;
+            --color-text-mut: #6c757d;
+            --color-accent: #d90429;
+            --border-width: 3px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            overflow: hidden; /* Previene scroll global, controlado por slides */
+            line-height: 1.6;
+        }
+
+        /* Contenedor principal de diapositivas */
+        #deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Estilo base de cada diapositiva usando opacidad para no quebrar MathJax */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            z-index: 0;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* Columna Izquierda: Marcador Arquitectónico */
+        .sidebar {
+            background-color: var(--color-surface);
+            border-right: var(--border-width) solid var(--color-text);
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .section-marker {
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-top: var(--border-width) solid var(--color-text);
+            padding-top: 1rem;
+            color: var(--color-text);
+        }
+
+        .nav-hints {
+            font-size: 0.75rem;
+            color: var(--color-text-mut);
+            font-weight: 500;
+        }
+
+        /* Columna Derecha: Contenido Principal */
+        .content {
+            padding: 4rem 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 2.5rem;
+            max-width: 900px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        ul.points {
+            list-style: none;
+            width: 100%;
+            max-width: 850px;
+        }
+
+        ul.points li {
+            font-size: 1.75rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            padding-left: 1.5rem;
+            border-left: var(--border-width) solid var(--color-accent);
+            color: var(--color-text);
+        }
+
+        /* Componentes de Interacción y Tablas */
+        .btn {
+            background: var(--color-text);
+            color: var(--color-surface);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover {
+            background: var(--color-accent);
+        }
+
+        .hidden-content {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--color-surface);
+            border: var(--border-width) solid var(--color-text);
+            font-size: 1.5rem;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--color-surface);
+        }
+
+        th, td {
+            border: var(--border-width) solid var(--color-text);
+            padding: 1.25rem;
+            text-align: left;
+            font-size: 1.25rem;
+        }
+
+        th {
+            background: var(--color-text);
+            color: var(--color-surface);
+            font-weight: 800;
+        }
+
+        .icon-large {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 800;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        a:hover {
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        /* Grillas y diseño específico */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .rubric-box {
+            border: var(--border-width) solid var(--color-text);
+            padding: 1.5rem;
+            background: var(--color-surface);
+        }
+
+        .rubric-box h3 {
+            font-size: 1.2rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .rubric-box p {
+            font-size: 1.1rem;
+        }
+
+        /* Responsividad */
+        @media (max-width: 1024px) {
+            h1 { font-size: 3.5rem; }
+            ul.points li { font-size: 1.4rem; }
+            .content { padding: 3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .slide { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow-y: auto;}
+            .sidebar { border-right: none; border-bottom: var(--border-width) solid var(--color-text); padding: 1.5rem; flex-direction: row; align-items: center;}
+            .section-marker { border-top: none; padding-top: 0; border-left: var(--border-width) solid var(--color-text); padding-left: 1rem;}
+            .content { padding: 2rem; }
+            h1 { font-size: 2.5rem; }
+            .grid-2 { grid-template-columns: 1fr; gap: 1.5rem; }
+        }
+        
+        /* Progress Bar */
+        #progress {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: var(--color-accent);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress" style="width: 0%;"></div>
+
+    <div id="deck">
+
+        <!-- SLIDE 1: PORTADA -->
+        <div class="slide active">
+            <div class="sidebar">
+                <div class="section-marker">01. INICIO</div>
+                <div class="nav-hints">
+                    → Flecha Der / Espacio<br>
+                    ← Flecha Izq<br>
+                    [F] Pantalla Completa
+                </div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Actividad Presencial</div>
+                <h1>Optimiza Proyectos con Redes PDM Avanzadas</h1>
+                <ul class="points" style="border:none; padding:0; margin-top:2rem;">
+                    <li style="border:none; padding:0; font-weight:500;">Planificación y Control de Proyectos</li>
+                    <li style="border:none; padding:0; font-size:1.2rem; color:var(--color-text-mut);">Clase 1, Semana 8</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: RECORDATORIO 1 -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">02. RECORDATORIO</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Conceptos Clave</div>
+                <h1>Domina Tareas Discontinuas en Redes PDM</h1>
+                <ul class="points">
+                    <li>Las interrupciones exigen posposiciones (lags) exactas.</li>
+                    <li>Mantienen intacta la integridad técnica del proyecto.</li>
+                    <li>La duración física difiere del plazo del calendario.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: RECORDATORIO 2 -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">03. INCERTIDUMBRE</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Análisis Crítico</div>
+                <h1>Gestiona la Variabilidad y Protege Holguras</h1>
+                <ul class="points">
+                    <li>Las holguras pequeñas son altamente volátiles.</li>
+                    <li>Simular escenarios previene graves fallos sistémicos.</li>
+                    <li>El algoritmo recalcula rutas críticas dinámicas instantáneamente.</li>
+                </ul>
+                <p style="margin-top: 2rem; font-size: 1.1rem; color: var(--color-text-mut);">
+                    *Asumimos revisión de <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Resumen_Semana_8.pdf" target="_blank">Material</a>, <a href="https://youtu.be/NKWenoqP0WI" target="_blank">Video</a> y <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/cuestionarioSemana8.html" target="_blank">Cuestionario</a>.
+                </p>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: ACTIVACIÓN -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">04. ACTIVACIÓN</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Dinámica Rápida</div>
+                <h1>Resuelve: Modelamiento de Paradas Reales</h1>
+                <div style="font-size: 2rem; font-weight: 300; margin-bottom: 2rem;">
+                    "Durante la faena, un equipo crítico falla y detiene una partida por 3 días."
+                </div>
+                <button class="btn" onclick="toggleAnswer('ans1')">Desvelar Solución Técnica</button>
+                <div id="ans1" class="hidden-content">
+                    <strong>Respuesta:</strong> Ajustar calendario o insertar posposición (lag).<br><br>
+                    Se recalcula manteniendo la duración neta:<br>
+                    <span style="color:var(--color-accent); font-weight:800;">\( EF = ES + Duraci\acute{o}n \)</span> (operativa).
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: DESCRIPCIÓN ACTIVIDAD -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">05. CONTEXTO</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Preparación</div>
+                <h1>Programa Partidas con Interrupciones Lógicas</h1>
+                <ul class="points">
+                    <li>Integraremos restricciones externas en software real.</li>
+                    <li>Simularemos escenarios de falla y retraso directo.</li>
+                    <li>Evaluaremos el impacto en plazos finales críticamente.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: ACTIVIDAD FORMATIVA -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">06. PRÁCTICA</div>
+            </div>
+            <div class="content">
+                <div class="icon-large">⏱️</div>
+                <div class="subtitle">45 Minutos</div>
+                <h1>ACTIVIDAD FORMATIVA: Modelado Estructural</h1>
+                <div style="font-size: 1.5rem; font-weight: 500;">
+                    Herramientas permitidas:<br>
+                    <span style="color:var(--color-accent);">ProjectLibre</span> o <span style="color:var(--color-accent);">Google Sheets</span>.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: DATOS DEL CASO -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">07. CASO PRÁCTICO</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Especificaciones</div>
+                <h1>Parámetros del Proyecto "Ruta 5"</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Actividad</th>
+                            <th>Duración</th>
+                            <th>Predecesora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A</td><td>Excavación Zanjas</td><td>4 días</td><td>-</td></tr>
+                        <tr><td>B</td><td>Colocación Tuberías</td><td>3 días</td><td>A (FS)</td></tr>
+                        <tr><td>C</td><td>Relleno Base</td><td>2 días</td><td>B (SS + 1d)</td></tr>
+                        <tr><td>D</td><td>Compactación Final</td><td>1 día</td><td>C (FS)</td></tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 2rem; font-size: 1.4rem; border-left: 5px solid var(--color-accent); padding-left: 1rem; font-weight: 800;">
+                    EVENTO: Suspensión obligatoria de 2 días en actividad B (mantenimiento).
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: TAREAS -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">08. TAREAS</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Entregables</div>
+                <h1>Ejecuta las Siguientes Fases Técnicas</h1>
+                <ul class="points">
+                    <li>Construye la red PDM base sin alteraciones.</li>
+                    <li>Inserta la detención operativa de 2 días.</li>
+                    <li>Identifica la nueva ruta crítica y holguras.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: RUBRICA -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">09. EVALUACIÓN</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Observación Directa</div>
+                <h1>Rúbrica y Escala de Desempeño</h1>
+                <div class="grid-2">
+                    <div class="rubric-box">
+                        <h3>Lógica PDM (30 pts)</h3>
+                        <p>Conexiones y posposiciones (lags) implementadas con absoluta precisión.</p>
+                    </div>
+                    <div class="rubric-box">
+                        <h3>Modelado Paradas (30 pts)</h3>
+                        <p>Interrupción modelada sin alterar la duración neta del trabajo.</p>
+                    </div>
+                    <div class="rubric-box">
+                        <h3>Holguras (30 pts)</h3>
+                        <p>Cálculo de tiempos tempranos y tardíos matemáticamente correctos.</p>
+                    </div>
+                    <div class="rubric-box">
+                        <h3>Herramienta (10 pts)</h3>
+                        <p>Uso eficiente y estructurado del software digital seleccionado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: CIERRE -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">10. REFLEXIÓN</div>
+            </div>
+            <div class="content">
+                <div class="icon-large">📐</div>
+                <div class="subtitle">Conclusión</div>
+                <h1>La Planificación Sistémica Absorbe Entropía</h1>
+                <div style="font-size: 2.5rem; font-weight: 300; margin-top: 2rem; line-height: 1.3;">
+                    "El mapa no es el territorio, pero te guía con precisión en la tormenta operativa."
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: BIBLIOGRAFIA -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">11. REFERENCIAS</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Fuentes y Documentos</div>
+                <h1>Fundamentos Técnicos Consultados</h1>
+                <ul class="points">
+                    <li>A. Serpell (2002). Planificación y Control de Proyectos.</li>
+                    <li>H. Kerzner (2009). Project Management: A Systems Approach.</li>
+                    <li>Documentos del Curso y Taller Formativo Semana 8.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Lógica de Presentación -->
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if(index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            // Actualizar barra de progreso
+            const progressPercent = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = progressPercent + '%';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            if (num >= 0 && num < slides.length) {
+                currentSlide = num;
+                updateSlide();
+            }
+        }
+
+        // Mostrar / Ocultar respuestas en slide interactiva
+        function toggleAnswer(id) {
+            const el = document.getElementById(id);
+            if(el.style.display === 'block') {
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'block';
+            }
+        }
+
+        // Navegación por Teclado
+        document.addEventListener('keydown', (e) => {
+            // Siguiente: Flecha Derecha o Espacio
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            // Anterior: Flecha Izquierda
+            else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+            // Pantalla Completa: Letra 'f' o 'F'
+            else if (e.key.toLowerCase() === 'f') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Error intentando activar pantalla completa: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            // Navegación por números (1-9)
+            else if (e.key >= '1' && e.key <= '9') {
+                const target = parseInt(e.key) - 1;
+                goToSlide(target);
+            }
+        });
+
+        // Inicializar
+        updateSlide();
+    </script>
+</body>
+</html>
