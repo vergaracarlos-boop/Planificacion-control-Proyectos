@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Formativa: PDM e Incertidumbre</title>
+    <!-- Fuente Inter para un aspecto moderno y minimalista -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF para generación de reportes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #F0F3F8;
+            --text-main: #1E2A3A;
+            --text-light: #5D7BA0;
+            --accent-color: #4A6FA5;
+            --accent-hover: #3b5a86;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(255, 255, 255, 0.5);
+            --success: #2e7d32;
+            --success-bg: #e8f5e9;
+            --error: #c62828;
+            --error-bg: #ffebee;
+            --warning-bg: #fff3e0;
+            --warning-text: #e65100;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at top left, rgba(74, 111, 165, 0.05), transparent 40%),
+                              radial-gradient(circle at bottom right, rgba(74, 111, 165, 0.08), transparent 40%);
+        }
+
+        /* Glassmorphism Container */
+        .glass-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(30, 42, 58, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        /* Input Group for Email */
+        .input-wrapper {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .input-wrapper label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e0e5ec;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--accent-color);
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .input-group .domain {
+            padding: 15px 20px;
+            background: #eef2f7;
+            color: var(--text-light);
+            font-weight: 600;
+            border-left: 2px solid #e0e5ec;
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 2px solid #cbd5e1;
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: var(--text-light);
+        }
+
+        /* Quiz Layout */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .user-badge {
+            font-size: 0.85rem;
+            background: rgba(74, 111, 165, 0.1);
+            color: var(--accent-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--text-main);
+        }
+
+        /* Options */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .option-label:hover:not(.disabled) {
+            background: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .option-label.selected {
+            border-color: var(--accent-color);
+            background: rgba(74, 111, 165, 0.05);
+        }
+
+        .option-label.disabled {
+            cursor: default;
+            opacity: 0.8;
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: var(--accent-color);
+        }
+
+        /* Feedback Box */
+        .feedback-box {
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-correct {
+            background-color: var(--success-bg);
+            border-left: 4px solid var(--success);
+            color: #1b5e20;
+        }
+
+        .feedback-error {
+            background-color: var(--error-bg);
+            border-left: 4px solid var(--error);
+            color: #b71c1c;
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* Summary Screen */
+        .summary-box {
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 20px 0;
+        }
+
+        .warning-card {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .input-group { flex-direction: column; }
+            .input-group .domain { width: 100%; text-align: center; border-left: none; border-top: 2px solid #e0e5ec; }
+            .controls { flex-direction: column-reverse; gap: 15px; }
+            .controls .btn { width: 100%; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla 1: Login -->
+    <div id="screen-login" class="glass-container">
+        <h2>Bienvenido a la Evaluación Formativa</h2>
+        <p>Esta actividad complementa los materiales revisados en el aula invertida sobre Programación PDM e Incertidumbre.</p>
+        
+        <div class="input-wrapper" style="margin-top: 30px;">
+            <label for="emailPrefix">Ingresa tu correo institucional:</label>
+            <div class="input-group">
+                <input type="text" id="emailPrefix" placeholder="nombre.apellido" autocomplete="off">
+                <span class="domain">@alumnos.ulagos.cl</span>
+            </div>
+            <div id="emailError" class="error-msg">Por favor, ingresa la primera parte de tu correo.</div>
+        </div>
+
+        <button class="btn" onclick="startQuiz()" style="width: 100%;">Comenzar Evaluación</button>
+    </div>
+
+    <!-- Pantalla 2: Cuestionario -->
+    <div id="screen-quiz" class="glass-container hidden">
+        <div class="quiz-header">
+            <span class="user-badge" id="displayEmail">usuario@alumnos.ulagos.cl</span>
+            <span class="progress-text" id="progressText">Pregunta 1/10</span>
+        </div>
+
+        <div id="questionContainer">
+            <div class="question-text" id="questionText">¿Texto de la pregunta?</div>
+            <div class="options-container" id="optionsContainer">
+                <!-- Opciones inyectadas vía JS -->
+            </div>
+        </div>
+
+        <div id="feedbackContainer" class="feedback-box hidden">
+            <div class="feedback-title" id="feedbackTitle"></div>
+            <div class="feedback-text" id="feedbackText"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-outline" id="btnPrev" onclick="navigate(-1)">Anterior</button>
+            <button class="btn" id="btnNext" onclick="handleNextClick()">Evaluar</button>
+        </div>
+    </div>
+
+    <!-- Pantalla 3: Resumen Final -->
+    <div id="screen-summary" class="glass-container hidden summary-box">
+        <h2>Resultados de la Evaluación</h2>
+        <p>Has completado el cuestionario sobre Modelamiento PDM y Gestión de la Incertidumbre.</p>
+        
+        <div class="score-display" id="finalScoreDisplay">0/10</div>
+        
+        <div id="warningMessage" class="warning-card hidden">
+            ⚠️ Has respondido correctamente menos de 3 preguntas. Te recomendamos volver a revisar los materiales teóricos y realizar la evaluación nuevamente.
+        </div>
+
+        <p style="margin-top: 20px; font-weight: 600; color: var(--text-main);">
+            Recuerda descargar y subir el PDF al chat de la asignatura.
+        </p>
+
+        <div class="action-buttons">
+            <button class="btn btn-outline" id="btnRetry" onclick="restartQuiz()">Reintentar Cuestionario</button>
+            <button class="btn" onclick="generatePDF()">📄 Descargar Resumen (PDF)</button>
+        </div>
+    </div>
+
+    <script>
+        // Datos del cuestionario basados en las reglas y contexto proporcionado
+        const questionsData = [
+            {
+                question: "¿Qué diferencia principal presenta el método de diagramación por precedencia (PDM) respecto al método del camino crítico (CPM) tradicional?",
+                options: [
+                    "Requiere que todas las actividades críticas tengan una duración determinística constante a lo largo del tiempo.",
+                    "Permite superponer actividades mediante relaciones de inicio y fin complementadas con posposiciones (lags).",
+                    "Se fundamenta en la asignación automática de los recursos sin necesidad de aplicar algoritmos de nivelación.",
+                    "Emplea de manera restrictiva relaciones lógicas de fin a inicio para evitar la formación de ciclos en la red."
+                ],
+                correctIndex: 1,
+                explanation: "El método PDM permite una mayor flexibilidad al incorporar cuatro tipos de relaciones (FS, SS, FF, SF) y el uso de posposiciones (lags) para modelar de forma precisa el traslape de partidas en obras."
+            },
+            {
+                question: "¿Qué característica define estructuralmente a una actividad discontinua en el contexto de la programación de una obra de construcción?",
+                options: [
+                    "Su ejecución puede fragmentarse en el tiempo incorporando períodos de inactividad programada sin perder su integridad técnica.",
+                    "Carece de holgura total y libre a lo largo de todo el ciclo de vida del proyecto debido a su nivel de sensibilidad.",
+                    "Requiere la asignación exclusiva de recursos fijos ininterrumpidos para evitar caídas severas en el rendimiento de la cuadrilla.",
+                    "Modifica la ruta crítica de manera aleatoria al carecer de actividades predecesoras y sucesoras claramente definidas en la lógica."
+                ],
+                correctIndex: 0,
+                explanation: "Una actividad discontinua es aquella cuya ejecución permite interrupciones (ej. clima, mantenimiento) y el modelo debe 'saltar' esos períodos recalculando la fecha de término sin alterar la duración de trabajo neto."
+            },
+            {
+                question: "¿De qué manera el software de planificación o una hoja de cálculo debe modelar una parada técnica obligatoria durante la ejecución de una partida?",
+                options: [
+                    "Aumentando el rendimiento general de los recursos asignados para asegurar que la actividad finalice antes de la interrupción.",
+                    "Eliminando temporalmente la actividad de la ruta crítica del proyecto para aislar y evitar retrasos globales en el plazo.",
+                    "Desplazando la fecha de término temprano de la actividad en el calendario para absorber el vacío temporal de la interrupción.",
+                    "Reduciendo el valor de la holgura total de las actividades desarrolladas en paralelo hasta llevar su margen a un valor cero."
+                ],
+                correctIndex: 2,
+                explanation: "Para programar paradas técnicas, el modelo absorbe el tiempo inactivo desplazando el término de la actividad, manteniendo intacta la duración neta de trabajo requerida por la partida."
+            },
+            {
+                question: "¿Por qué el uso de un enfoque probabilístico es superior al método determinístico en proyectos que presentan alta complejidad operativa?",
+                options: [
+                    "Porque garantiza matemáticamente que la duración de término del proyecto será exactamente igual al tiempo optimista planificado.",
+                    "Porque elimina por completo la necesidad algorítmica de calcular holguras en aquellas actividades consideradas no críticas.",
+                    "Porque asegura la reducción constante de los costos indirectos de la obra a medida que avanza la curva de progreso del proyecto.",
+                    "Porque captura mediante distribuciones la variabilidad operativa real asociada a la mano de obra, clima y entorno de la faena."
+                ],
+                correctIndex: 3,
+                explanation: "Los métodos probabilísticos permiten integrar la incertidumbre real de la obra (rendimientos, clima, riesgos), asumiendo que las duraciones estimadas son variables aleatorias y no tiempos fijos o determinísticos."
+            },
+            {
+                question: "Bajo un escenario de planificación con incertidumbre, ¿qué fenómeno suele ocurrir con aquellas actividades que poseen holguras pequeñas en el diagrama inicial?",
+                options: [
+                    "Incrementan su porcentaje de holgura libre exponencialmente en el momento en que se retrasan las tareas predecesoras del flujo.",
+                    "Pueden convertirse repentinamente en actividades críticas debido a la alta volatilidad de sus propias duraciones estimadas.",
+                    "Pierden sus relaciones lógicas de precedencia al entrar en conflicto algorítmico con el calendario establecido para las paradas.",
+                    "Reducen el costo directo total del proyecto al demandar una menor concentración de recursos durante el período de ejecución."
+                ],
+                correctIndex: 1,
+                explanation: "Las actividades con holguras pequeñas pueden absorberlas rápidamente debido a la variabilidad (incertidumbre) de sus tiempos o de las predecesoras, pasando a formar parte de la ruta crítica de manera imprevista."
+            },
+            {
+                question: "Dentro de los algoritmos de cálculo en redes PDM, ¿cuál es la definición conceptual correcta para la Holgura Total (HT) de una actividad?",
+                options: [
+                    "Es la diferencia matemática exacta calculada entre el tiempo temprano de inicio y el tiempo temprano de término de dicha partida.",
+                    "Es el margen de tiempo máximo que una actividad predecesora puede adelantarse respecto al inicio programado de su tarea sucesora.",
+                    "Es el período de tiempo inactivo obligatorio programado de manera externa por razones climáticas, logísticas o de suministro de red.",
+                    "Es el margen de tiempo que una actividad puede retrasarse desde su inicio temprano sin afectar la fecha de término global del proyecto."
+                ],
+                correctIndex: 3,
+                explanation: "La Holgura Total (HT) se calcula como LS - ES o LF - EF, y representa el tiempo que una tarea puede demorarse sin alterar el plazo de término total del proyecto. Si HT es cero, la actividad es crítica."
+            },
+            {
+                question: "Al realizar el cálculo hacia adelante (forward pass) en una red PDM, ¿cómo se determina el tiempo de Inicio Temprano (ES) de una actividad que posee múltiples predecesoras con relación Fin a Inicio (FS)?",
+                options: [
+                    "Corresponde al valor máximo obtenido entre los tiempos de término temprano de todas sus actividades lógicamente vinculadas.",
+                    "Equivale al promedio aritmético ponderado de los tiempos de inicio temprano registrados por sus actividades predecesoras.",
+                    "Es exactamente igual al valor mínimo existente entre los tiempos de término tardío analizados en la red completa del proyecto.",
+                    "Se calcula restando la holgura total disponible al tiempo de término tardío de la predecesora que posee la menor duración."
+                ],
+                correctIndex: 0,
+                explanation: "En una relación FS típica, una actividad sucesora no puede comenzar hasta que *todas* sus predecesoras hayan finalizado. Por lo tanto, el ES de la sucesora está determinado por el mayor Término Temprano (EF) de sus predecesoras."
+            },
+            {
+                question: "¿Cuál es una ventaja operativa crítica al utilizar herramientas digitales como ProjectLibre o Google Sheets para el cálculo de redes con posposiciones (lags)?",
+                options: [
+                    "Reemplazan analíticamente la necesidad de interpretar los datos probabilísticos de salida por parte del equipo de ingeniería civil.",
+                    "Automatizan el recalculo instantáneo de la ruta crítica y las holguras al modificar duraciones o relaciones de precedencia.",
+                    "Generan de manera automatizada e independiente los rendimientos de maquinaria sin requerir el ingreso de datos históricos base.",
+                    "Transforman automáticamente un modelo conceptual determinístico en un modelo estocástico sin intervención manual del usuario."
+                ],
+                correctIndex: 1,
+                explanation: "El principal valor de los softwares de gestión de proyectos y hojas de cálculo parametrizadas es su capacidad para ejecutar los pasos hacia adelante y hacia atrás automáticamente ante cualquier modificación en la red, actualizando la criticidad en tiempo real."
+            },
+            {
+                question: "En el contexto de la teoría de sistemas aplicada a la programación de obras, ¿qué implica la frase 'el mapa no es el territorio'?",
+                options: [
+                    "Los planos topográficos de la construcción deben actualizarse en terreno previamente a trazar la carta Gantt general del proyecto.",
+                    "La ruta crítica y los plazos proyectados en el software serán idénticos a la secuencia rítmica de ejecución física en la faena.",
+                    "El plan de obra es un modelo idealizado útil para prever, pero la ejecución real contiene imprevistos y variables incontrolables.",
+                    "Las herramientas tecnológicas actuales son incapaces de representar geométricamente la secuencia de las partidas constructivas."
+                ],
+                correctIndex: 2,
+                explanation: "Esta premisa recuerda que la Carta Gantt o la red PDM (el mapa) es solo un modelo de simplificación para gestionar la incertidumbre. La obra física (el territorio) posee entropía e imprevistos que el modelo no puede predecir perfectamente."
+            },
+            {
+                question: "¿Qué utilidad práctica tiene establecer una relación de Inicio a Inicio (SS) con un lag positivo (+días) entre dos actividades en construcción?",
+                options: [
+                    "Evita la asignación simultánea de recursos compartidos en partidas que pertenecen a diferentes áreas geográficas de la edificación.",
+                    "Permite que una actividad sucesora comience un tiempo determinado después del inicio de su predecesora, superponiendo trabajo.",
+                    "Obliga normativamente a que ambas actividades constructivas finalicen de forma exacta en el mismo instante del calendario laboral.",
+                    "Retrasa temporalmente el inicio del proyecto completo hasta garantizar que los materiales de ambas tareas se encuentren en faena."
+                ],
+                correctIndex: 1,
+                explanation: "La relación SS con un lag positivo se utiliza habitualmente para lograr traslapes controlados (fast-tracking). Por ejemplo, iniciar la pintura (sucesora) 3 días después de haber comenzado a instalar los revestimientos (predecesora)."
+            }
+        ];
+
+        // Estado de la App
+        const state = {
+            email: "",
+            currentIndex: 0,
+            answers: new Array(10).fill(null) // Guardará { selectedIndex, isCorrect }
+        };
+
+        // Referencias DOM
+        const elScreenLogin = document.getElementById('screen-login');
+        const elScreenQuiz = document.getElementById('screen-quiz');
+        const elScreenSummary = document.getElementById('screen-summary');
+        
+        const elEmailPrefix = document.getElementById('emailPrefix');
+        const elEmailError = document.getElementById('emailError');
+        const elDisplayEmail = document.getElementById('displayEmail');
+        
+        const elProgressText = document.getElementById('progressText');
+        const elQuestionText = document.getElementById('questionText');
+        const elOptionsContainer = document.getElementById('optionsContainer');
+        
+        const elFeedbackContainer = document.getElementById('feedbackContainer');
+        const elFeedbackTitle = document.getElementById('feedbackTitle');
+        const elFeedbackText = document.getElementById('feedbackText');
+        
+        const elBtnPrev = document.getElementById('btnPrev');
+        const elBtnNext = document.getElementById('btnNext');
+
+        // Lógica de navegación
+        function startQuiz() {
+            const prefix = elEmailPrefix.value.trim();
+            if (prefix === "") {
+                elEmailError.style.display = 'block';
+                return;
+            }
+            
+            elEmailError.style.display = 'none';
+            state.email = `${prefix}@alumnos.ulagos.cl`;
+            elDisplayEmail.textContent = state.email;
+            
+            elScreenLogin.classList.add('hidden');
+            elScreenQuiz.classList.remove('hidden');
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questionsData[state.currentIndex];
+            const savedAnswer = state.answers[state.currentIndex];
+
+            elProgressText.textContent = `Pregunta ${state.currentIndex + 1}/${questionsData.length}`;
+            elQuestionText.textContent = q.question;
+            
+            elOptionsContainer.innerHTML = '';
+            elFeedbackContainer.classList.add('hidden');
+
+            const isAnswered = savedAnswer !== null;
+
+            q.options.forEach((optText, index) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                if (isAnswered) {
+                    label.classList.add('disabled');
+                    if (savedAnswer.selectedIndex === index) label.classList.add('selected');
+                }
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quizOption';
+                radio.value = index;
+                if (isAnswered && savedAnswer.selectedIndex === index) radio.checked = true;
+                if (isAnswered) radio.disabled = true;
+
+                radio.addEventListener('change', () => {
+                    if(!isAnswered) {
+                        document.querySelectorAll('.option-label').forEach(lbl => lbl.classList.remove('selected'));
+                        label.classList.add('selected');
+                    }
+                });
+
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(optText));
+                elOptionsContainer.appendChild(label);
+            });
+
+            // Configurar botones
+            elBtnPrev.disabled = state.currentIndex === 0;
+
+            if (isAnswered) {
+                showFeedbackUI(savedAnswer.isCorrect, q);
+                elBtnNext.textContent = state.currentIndex === questionsData.length - 1 ? "Finalizar" : "Siguiente Pregunta";
+            } else {
+                elBtnNext.textContent = "Evaluar";
+            }
+        }
+
+        function handleNextClick() {
+            const isAnswered = state.answers[state.currentIndex] !== null;
+
+            if (!isAnswered) {
+                // Modo Evaluar
+                const selectedRadio = document.querySelector('input[name="quizOption"]:checked');
+                if (!selectedRadio) {
+                    alert("Por favor, selecciona una opción antes de evaluar.");
+                    return;
+                }
+
+                const selectedIndex = parseInt(selectedRadio.value);
+                const q = questionsData[state.currentIndex];
+                const isCorrect = selectedIndex === q.correctIndex;
+
+                state.answers[state.currentIndex] = { selectedIndex, isCorrect };
+                renderQuestion(); // Re-renderiza para mostrar feedback y bloquear opciones
+            } else {
+                // Modo Avanzar
+                if (state.currentIndex < questionsData.length - 1) {
+                    state.currentIndex++;
+                    renderQuestion();
+                } else {
+                    finishQuiz();
+                }
+            }
+        }
+
+        function navigate(dir) {
+            if (dir === -1 && state.currentIndex > 0) {
+                state.currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function showFeedbackUI(isCorrect, questionObj) {
+            elFeedbackContainer.className = 'feedback-box'; // reset classes
+            elFeedbackContainer.classList.remove('hidden');
+
+            if (isCorrect) {
+                elFeedbackContainer.classList.add('feedback-correct');
+                elFeedbackTitle.innerHTML = '✅ Correcto';
+                elFeedbackText.textContent = questionObj.explanation;
+            } else {
+                elFeedbackContainer.classList.add('feedback-error');
+                const correctLetter = String.fromCharCode(65 + questionObj.correctIndex); // A, B, C o D
+                const correctText = questionObj.options[questionObj.correctIndex];
+                elFeedbackTitle.innerHTML = '❌ Incorrecto';
+                elFeedbackText.innerHTML = `La respuesta correcta era: <strong>${correctText}</strong><br><br>${questionObj.explanation}`;
+            }
+        }
+
+        function finishQuiz() {
+            elScreenQuiz.classList.add('hidden');
+            elScreenSummary.classList.remove('hidden');
+
+            const score = state.answers.filter(a => a && a.isCorrect).length;
+            document.getElementById('finalScoreDisplay').textContent = `${score}/10 correctas`;
+
+            const btnRetry = document.getElementById('btnRetry');
+            const warningMsg = document.getElementById('warningMessage');
+
+            if (score < 3) {
+                warningMsg.classList.remove('hidden');
+                btnRetry.classList.remove('hidden');
+            } else {
+                warningMsg.classList.add('hidden');
+                btnRetry.classList.add('hidden');
+            }
+        }
+
+        function restartQuiz() {
+            state.currentIndex = 0;
+            state.answers = new Array(10).fill(null);
+            elScreenSummary.classList.add('hidden');
+            elScreenQuiz.classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function generatePDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const score = state.answers.filter(a => a && a.isCorrect).length;
+                const dateStr = new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+
+                // Configurar PDF
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(18);
+                doc.setTextColor(30, 42, 58);
+                doc.text("Resumen de Evaluación Formativa", 20, 20);
+
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Asignatura: Planificación y Control de Proyectos`, 20, 30);
+                doc.text(`Estudiante: ${state.email}`, 20, 37);
+                doc.text(`Fecha: ${dateStr}`, 20, 44);
+                
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(score >= 5 ? 46 : 198, score >= 5 ? 125 : 40, score >= 5 ? 50 : 40); // Verde o Rojo
+                doc.text(`Puntaje Final: ${score} / 10`, 20, 52);
+
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, 56, 190, 56);
+
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                let yPos = 65;
+
+                questionsData.forEach((q, idx) => {
+                    if (yPos > 270) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+
+                    const ans = state.answers[idx];
+                    const isCorrect = ans && ans.isCorrect;
+                    const statusText = isCorrect ? "[Correcta]" : "[Incorrecta]";
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Pregunta ${idx + 1}: ${statusText}`, 20, yPos);
+                    
+                    doc.setFont("helvetica", "normal");
+                    yPos += 6;
+                    
+                    // Split question text to fit width
+                    const splitTitle = doc.splitTextToSize(q.question, 170);
+                    doc.text(splitTitle, 20, yPos);
+                    
+                    yPos += (splitTitle.length * 5) + 6;
+                });
+
+                doc.save(`Evaluacion_PDM_${state.email.split('@')[0]}.pdf`);
+            } catch (error) {
+                console.error("Error generando PDF:", error);
+                alert("Hubo un problema al generar el PDF. Asegúrese de tener conexión a internet para cargar la librería.");
+            }
+        }
+    </script>
+</body>
+</html>
