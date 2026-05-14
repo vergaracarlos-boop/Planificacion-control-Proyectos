@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 2 - Semana 9 | Planificación y Control</title>
+    
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    
+    <!-- MathJax para ecuaciones matemáticas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-text: #0f172a;
+            --color-text-mut: #64748b;
+            --color-accent: #0f766e; /* Teal técnico y arquitectónico */
+            --color-accent-dark: #0f172a;
+            --border-width: 3px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            overflow: hidden; 
+            line-height: 1.6;
+        }
+
+        /* Contenedor principal de diapositivas */
+        #deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Estilo base de cada diapositiva */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            transform: translateY(20px);
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            z-index: 0;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            z-index: 10;
+        }
+
+        /* Columna Izquierda: Marcador Arquitectónico */
+        .sidebar {
+            background-color: var(--color-surface);
+            border-right: var(--border-width) solid var(--color-accent-dark);
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .section-marker {
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-top: var(--border-width) solid var(--color-accent-dark);
+            padding-top: 1rem;
+            color: var(--color-text);
+        }
+
+        .nav-hints {
+            font-size: 0.75rem;
+            color: var(--color-text-mut);
+            font-weight: 500;
+        }
+
+        /* Columna Derecha: Contenido Principal */
+        .content {
+            padding: 4rem 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4.2rem;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 2.5rem;
+            max-width: 950px;
+            color: var(--color-accent-dark);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+
+        ul.points {
+            list-style: none;
+            width: 100%;
+            max-width: 850px;
+        }
+
+        ul.points li {
+            font-size: 1.6rem;
+            font-weight: 300;
+            margin-bottom: 1.8rem;
+            padding-left: 1.5rem;
+            border-left: var(--border-width) solid var(--color-accent);
+            color: var(--color-text);
+        }
+
+        /* Componentes de Interacción y Tablas */
+        .btn {
+            background: var(--color-accent-dark);
+            color: var(--color-surface);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover {
+            background: var(--color-accent);
+        }
+
+        .hidden-content {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--color-surface);
+            border: var(--border-width) solid var(--color-accent-dark);
+            font-size: 1.4rem;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            max-width: 850px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        table {
+            width: 100%;
+            max-width: 950px;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--color-surface);
+        }
+
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+
+        th {
+            background: var(--color-accent-dark);
+            color: var(--color-surface);
+            font-weight: 800;
+            border-color: var(--color-accent-dark);
+        }
+
+        .icon-large {
+            font-size: 4.5rem;
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 800;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        a:hover {
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        /* Grillas y diseño específico */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .rubric-box {
+            border: 1px solid #cbd5e1;
+            border-top: var(--border-width) solid var(--color-accent-dark);
+            padding: 1.5rem;
+            background: var(--color-surface);
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .rubric-box .pts {
+            position: absolute;
+            top: -15px;
+            right: 15px;
+            background: var(--color-accent);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .rubric-box h3 {
+            font-size: 1.2rem;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .rubric-box p {
+            font-size: 1.05rem;
+            color: var(--color-text-mut);
+        }
+
+        .img-placeholder {
+            width: 100%;
+            max-width: 800px;
+            height: 250px;
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--color-text-mut);
+            margin-top: 2rem;
+        }
+
+        /* Responsividad */
+        @media (max-width: 1024px) {
+            h1 { font-size: 3.2rem; }
+            ul.points li { font-size: 1.3rem; }
+            .content { padding: 3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .slide { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow-y: auto;}
+            .sidebar { border-right: none; border-bottom: var(--border-width) solid var(--color-accent-dark); padding: 1.5rem; flex-direction: row; align-items: center;}
+            .section-marker { border-top: none; padding-top: 0; border-left: var(--border-width) solid var(--color-accent-dark); padding-left: 1rem;}
+            .content { padding: 2rem; }
+            h1 { font-size: 2.2rem; }
+            .grid-2 { grid-template-columns: 1fr; gap: 1.5rem; }
+            .rubric-box .pts { top: 10px; right: 10px; position: static; display: inline-block; margin-bottom: 10px;}
+        }
+        
+        /* Progress Bar */
+        #progress {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: var(--color-accent);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress" style="width: 0%;"></div>
+
+    <div id="deck">
+
+        <!-- SLIDE 1: PORTADA -->
+        <div class="slide active">
+            <div class="sidebar">
+                <div class="section-marker">01. INICIO</div>
+                <div class="nav-hints">
+                    → Flecha Der / Espacio<br>
+                    ← Flecha Izq<br>
+                    [F] Pantalla Completa
+                </div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Actividad Presencial</div>
+                <h1>Domina la Incertidumbre con Simulación Operativa</h1>
+                <ul class="points" style="border:none; padding:0; margin-top:2rem;">
+                    <li style="border:none; padding:0; font-weight:800;">Planificación y Control de Proyectos</li>
+                    <li style="border:none; padding:0; font-size:1.2rem; color:var(--color-text-mut);">Clase 2, Semana 9</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: RECORDATORIO 1 -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">02. RECORDATORIO</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Conceptos Clave</div>
+                <h1>Las Paradas Técnicas No Son Retrasos</h1>
+                <ul class="points">
+                    <li>Interrupciones lógicas exigen un modelado riguroso.</li>
+                    <li>Se absorbe el vacío sin alterar la duración de trabajo neto.</li>
+                    <li>El software recalcula dinámicamente fechas tempranas y tardías.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: RECORDATORIO 2 -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">03. ANÁLISIS</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Dinámica Sistémica</div>
+                <h1>Anticipa el Comportamiento de Rutas Críticas</h1>
+                <ul class="points">
+                    <li>La incertidumbre consume holguras libres velozmente.</li>
+                    <li>Actividades paralelas estables pueden volverse críticas repentinamente.</li>
+                    <li>Simular escenarios protege la viabilidad real del proyecto.</li>
+                </ul>
+                <p style="margin-top: 2rem; font-size: 1.1rem; color: var(--color-text-mut); max-width: 800px;">
+                    *Se asume la revisión de la <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/slidesC1Semana9.html" target="_blank">Clase 1</a>, el <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Resumen_Semana_9.pdf" target="_blank">Documento de Estudio</a>, el <a href="https://youtu.be/NKWenoqP0WI" target="_blank">Video</a> y el <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/cuestionarioSemana9.html" target="_blank">Cuestionario Formativo</a>.
+                </p>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: ACTIVACIÓN -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">04. ACTIVACIÓN</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Evaluación Rápida</div>
+                <h1>Resuelve el Conflicto Sistémico</h1>
+                <div style="font-size: 2.2rem; font-weight: 300; margin-bottom: 2rem; max-width: 900px;">
+                    "Durante la excavación \( (HT=2) \), se detecta roca dura. La duración neta pasa de 4 a 8 días. ¿Qué ocurre con la red?"
+                </div>
+                <button class="btn" onclick="toggleAnswer('ans1')">Evaluar Impacto</button>
+                <div id="ans1" class="hidden-content">
+                    <strong>Respuesta Técnica:</strong><br><br>
+                    La holgura se consume por completo y genera un déficit de -2 días. <br><br>
+                    <strong>Efecto:</strong> La tarea se vuelve crítica y retrasa ineludiblemente el hito de término global en 2 días.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: DESCRIPCIÓN ACTIVIDAD -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">05. CONTEXTO</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Preparación Técnica</div>
+                <h1>Modela Escenarios Dinámicos Reales</h1>
+                <ul class="points">
+                    <li>Aplicaremos estrés operativo a una red PDM base.</li>
+                    <li>Analizaremos paradas discontinuas complejas en el software.</li>
+                    <li>Tomaremos decisiones estratégicas basadas en datos digitales.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: ACTIVIDAD FORMATIVA -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">06. PRÁCTICA</div>
+            </div>
+            <div class="content">
+                <div class="icon-large">⏱️</div>
+                <div class="subtitle">Evaluación Formativa (60 Minutos)</div>
+                <h1>TALLER EVALUADO: Simulación de Riesgos</h1>
+                <div style="font-size: 1.5rem; font-weight: 500; margin-top: 1rem;">
+                    Herramientas permitidas:<br>
+                    <span style="color:var(--color-accent); font-weight: 800;">MS Excel</span>, <span style="color:var(--color-accent); font-weight: 800;">ProjectLibre</span> o <span style="color:var(--color-accent); font-weight: 800;">Google Sheets</span>.
+                </div>
+                <div style="margin-top: 1.5rem; font-size: 1.15rem; color: var(--color-text-mut);">
+                    El taller evalúa la capacidad analítica frente a la entropía constructiva y el manejo de herramientas.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: DATOS DEL CASO BASE -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">07. DATOS BASE</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Estructura Inicial</div>
+                <h1>Datos Estructurales: Proyecto "Centro Logístico"</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Partida Constructiva</th>
+                            <th>Duración (Días)</th>
+                            <th>Precedencia Lógica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A</td><td>Trazado y Niveles</td><td>2</td><td>-</td></tr>
+                        <tr><td>B</td><td>Excavación Masiva</td><td>5</td><td>A (FS)</td></tr>
+                        <tr><td>C</td><td>Fundaciones y Emplantillado</td><td>6</td><td>B (FS)</td></tr>
+                        <tr><td>D</td><td>Montaje Estructura Metálica</td><td>8</td><td>C (FS)</td></tr>
+                        <tr><td>E</td><td>Hormigonado de Radieres</td><td>4</td><td>C (SS + 2d)</td></tr>
+                        <tr><td>F</td><td>Instalación de Cubierta</td><td>5</td><td>D (FS)</td></tr>
+                        <tr><td>G</td><td>Revestimientos Laterales</td><td>6</td><td>D (FS), E (FS)</td></tr>
+                        <tr><td>H</td><td>Recepción y Aseo Final</td><td>2</td><td>F (FS), G (FS)</td></tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 1.5rem; font-size: 1.05rem; border: 1px solid #cbd5e1; border-left: 6px solid var(--color-accent-dark); padding: 1rem; background: var(--color-surface);">
+                    <strong style="color: var(--color-accent-dark); text-transform: uppercase; font-size: 0.95rem; letter-spacing: 0.05em;">Parámetros de Calendario del Proyecto</strong><br><br>
+                    • <strong>Fecha de Inicio:</strong> Lunes 2 de Septiembre.<br>
+                    • <strong>Jornada Operativa:</strong> Lunes a Sábado (6 días laborables por semana).<br>
+                    • <strong>Feriados Obligatorios:</strong> Miércoles 18 y Jueves 19 de Septiembre (Días inactivos).
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: ESCENARIOS -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">08. INCERTIDUMBRE</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Condiciones de Estrés</div>
+                <h1>Define los Escenarios Operativos</h1>
+                <div class="grid-2" style="grid-template-columns: 1fr;">
+                    <div class="rubric-box" style="border-left: 8px solid #0f766e;">
+                        <h3>Escenario 1: Parada Técnica Discontinua</h3>
+                        <p>Fuertes ráfagas de viento obligan a suspender el Montaje de Estructura (D) por <strong>3 días exactos</strong>. La paralización inicia al comenzar el 3er día de la tarea.</p>
+                    </div>
+                    <div class="rubric-box" style="border-left: 8px solid #0f172a;">
+                        <h3>Escenario 2: Falla de Rendimiento</h3>
+                        <p>Una falla en la maquinaria de movimiento de tierras retrasa la Excavación (B). Su duración neta se extiende a <strong>8 días</strong> totales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: TAREAS -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">09. EJECUCIÓN</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Requerimientos Técnicos</div>
+                <h1>Ejecuta las Fases Analíticas</h1>
+                <ul class="points">
+                    <li><strong>Fase 1:</strong> Configura el calendario (sábados y feriados). Construye la red PDM base y registra plazos.</li>
+                    <li><strong>Fase 2:</strong> Simula el <em>Escenario 1</em>. Identifica el desplazamiento de fechas.</li>
+                    <li><strong>Fase 3:</strong> Simula el <em>Escenario 2</em> sobre la red base. Verifica si la ruta crítica cambia.</li>
+                    <li><strong>Fase 4:</strong> Elabora un cuadro comparativo final y sugiere mitigaciones.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: RÚBRICA -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">10. EVALUACIÓN</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Instrumento Formativo</div>
+                <h1>Rúbrica Técnica (Escala 100 Pts)</h1>
+                <div class="grid-2">
+                    <div class="rubric-box">
+                        <span class="pts">20 pts</span>
+                        <h3>Modelado Base Correcto</h3>
+                        <p>Cálculo exacto de la red inicial, ajustada al calendario: ES, EF, LS, LF y holguras.</p>
+                    </div>
+                    <div class="rubric-box">
+                        <span class="pts">30 pts</span>
+                        <h3>Lógica de Paradas</h3>
+                        <p>El escenario 1 se modela sin alterar la duración de trabajo neto de la partida D.</p>
+                    </div>
+                    <div class="rubric-box">
+                        <span class="pts">30 pts</span>
+                        <h3>Análisis de Sensibilidad</h3>
+                        <p>El escenario 2 demuestra comprensión del consumo de holguras y cambio de criticidad.</p>
+                    </div>
+                    <div class="rubric-box">
+                        <span class="pts">20 pts</span>
+                        <h3>Dominio Digital</h3>
+                        <p>Uso estructurado, limpio y parametrizado de Excel, ProjectLibre o Google Sheets.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: CIERRE -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">11. REFLEXIÓN</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Conclusión</div>
+                <h1>El Plan Debe Absorber la Entropía</h1>
+                
+                <div class="img-placeholder">
+                    
+                </div>
+
+                <div style="font-size: 2.2rem; font-weight: 300; margin-top: 2rem; line-height: 1.3; border-left: 4px solid var(--color-accent); padding-left: 2rem;">
+                    "Planificar bajo incertidumbre no es adivinar el futuro, es construir un sistema resiliente."
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: BIBLIOGRAFIA -->
+        <div class="slide">
+            <div class="sidebar">
+                <div class="section-marker">12. REFERENCIAS</div>
+            </div>
+            <div class="content">
+                <div class="subtitle">Fuentes y Documentos</div>
+                <h1>Fundamentos Técnicos Consultados</h1>
+                <ul class="points">
+                    <li>A. Serpell (2002). <em>Planificación y Control de Proyectos</em> (Cap. 3, 4 y 5).</li>
+                    <li>H. Kerzner (2009). <em>Project Management: A Systems Approach</em>.</li>
+                    <li>Materiales Semana 9: Resumen Teórico y Video "Mapa vs Territorio".</li>
+                    <li>Cuestionario Formativo y Presentación Clase 1.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Lógica de Presentación -->
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if(index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            // Actualizar barra de progreso
+            const progressPercent = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = progressPercent + '%';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            if (num >= 0 && num < slides.length) {
+                currentSlide = num;
+                updateSlide();
+            }
+        }
+
+        // Mostrar / Ocultar respuestas en slide interactiva
+        function toggleAnswer(id) {
+            const el = document.getElementById(id);
+            if(el.style.display === 'block') {
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'block';
+            }
+        }
+
+        // Navegación por Teclado
+        document.addEventListener('keydown', (e) => {
+            // Siguiente: Flecha Derecha o Espacio
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            // Anterior: Flecha Izquierda
+            else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+            // Pantalla Completa: Letra 'f' o 'F'
+            else if (e.key.toLowerCase() === 'f') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Error intentando activar pantalla completa: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            // Navegación por números (1-9)
+            else if (e.key >= '1' && e.key <= '9') {
+                const target = parseInt(e.key) - 1;
+                goToSlide(target);
+            }
+        });
+
+        // Inicializar
+        updateSlide();
+    </script>
+</body>
+</html>
