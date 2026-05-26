@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1, Semana 10 - Planificación de Proyectos</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        :root {
+            --bg-color: #F8F9FA;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --accent: #000000;
+            --grid-gap: 2rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden; /* Prevent scrolling during presentation */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Presentation Container */
+        #presentation {
+            width: 100%;
+            max-width: 1440px;
+            height: 100%;
+            position: relative;
+            background: #FFFFFF;
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Slide Styles */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 4rem;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            grid-template-columns: 6fr 4fr;
+            grid-template-rows: auto 1fr auto;
+            gap: var(--grid-gap);
+        }
+
+        .slide.active {
+            display: grid;
+            opacity: 1;
+        }
+
+        /* Typography & Layout */
+        .slide-header {
+            grid-column: 1 / -1;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slide-content {
+            grid-column: 1 / 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 2rem;
+        }
+
+        .slide-visual {
+            grid-column: 2 / 3;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            color: var(--text-main);
+            max-width: 900px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            font-size: 1.5rem;
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        li::before {
+            content: "■";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Large numbers for asymmetry */
+        .big-number {
+            font-size: 18rem;
+            font-weight: 800;
+            color: #F0F0F0;
+            line-height: 1;
+            user-select: none;
+            letter-spacing: -0.05em;
+        }
+
+        /* Architectural Icon/Shapes */
+        .arch-shape {
+            width: 150px;
+            height: 150px;
+            background: transparent;
+            border: 8px solid var(--accent);
+            position: relative;
+        }
+        .arch-shape::after {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 150px;
+            height: 150px;
+            background: var(--bg-color);
+            z-index: -1;
+        }
+
+        /* Navigation indicator */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 1rem;
+            right: 4rem;
+            font-size: 0.8rem;
+            color: #999;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background-color: var(--accent);
+            color: #FFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: background 0.2s;
+        }
+        .btn-link:hover {
+            background-color: var(--text-muted);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            h1 { font-size: 3rem; }
+            li { font-size: 1.2rem; }
+            .big-number { font-size: 12rem; }
+            .slide { padding: 3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                padding: 2rem;
+                overflow-y: auto;
+            }
+            .slide-content { padding-right: 0; }
+            .slide-visual { display: none; } /* Hide large decorative elements on mobile */
+            h1 { font-size: 2.2rem; margin-bottom: 1.5rem; }
+            li { font-size: 1.1rem; }
+            .controls-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="presentation">
+        <!-- Progress Bar -->
+        <div id="progress" class="progress-bar" style="width: 0%;"></div>
+
+        <!-- SLIDE 1: TÍTULO -->
+        <div class="slide active">
+            <div class="slide-header">
+                <span>01. INICIO</span>
+                <span>Clase 1, Semana 10</span>
+            </div>
+            <div class="slide-content">
+                <h1>Actividad Presencial: Gestión de Recursos</h1>
+                <ul>
+                    <li><strong>Asignatura:</strong> Planificación y Control de Proyectos.</li>
+                    <li><strong>Enfoque:</strong> Optimización operativa y resolución de colisiones.</li>
+                    <li><strong>Herramientas:</strong> Software ProjectLibre.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <div class="arch-shape"></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: CONCEPTOS -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>02. CONCEPTOS</span>
+                <span>Teoría de Restricciones</span>
+            </div>
+            <div class="slide-content">
+                <h1>Naturaleza Física de los Recursos</h1>
+                <ul>
+                    <li><strong>Almacenables:</strong> Insumos acumulables (acero, hormigón). No limitan flujo diario.</li>
+                    <li><strong>Perecederos:</strong> Horas-hombre y equipos. Capacidad ociosa es pérdida irrecuperable.</li>
+                    <li><strong>Ecuación Fundamental:</strong> \( Trabajo = Duración \times Capacidad \).</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">01</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: CONCEPTOS -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>02. CONCEPTOS</span>
+                <span>Optimización</span>
+            </div>
+            <div class="slide-content">
+                <h1>Estrategias de Resolución</h1>
+                <ul>
+                    <li><strong>Nivelación (Smoothing):</strong> Suaviza demanda usando holguras. Plazo inalterable.</li>
+                    <li><strong>Asignación Limitada:</strong> Límite físico obliga a secuenciar. Extiende plazo.</li>
+                    <li><strong>Heurística Crítica:</strong> Prioridad absoluta a la actividad con menor holgura total.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">02</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: ACTIVACIÓN -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>03. ACTIVACIÓN</span>
+                <span>Incertidumbre</span>
+            </div>
+            <div class="slide-content">
+                <h1>El Mapa vs. El Territorio</h1>
+                <ul>
+                    <li>El cálculo CPM teórico asume capacidad infinita ideal.</li>
+                    <li>El primer día de obra destruye el cronograma original.</li>
+                    <li>¿Cómo operar cuando múltiples partidas exigen el mismo recurso crítico?</li>
+                </ul>
+                <a href="https://youtu.be/NKWenoqP0WI" target="_blank" class="btn-link">Ver Contexto Video</a>
+            </div>
+            <div class="slide-visual">
+                <!-- Abstract geometry representing chaos/uncertainty -->
+                <div style="width: 200px; height: 200px; border-top: 10px solid #000; border-left: 10px solid #000; transform: rotate(45deg);"></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: ACTIVIDAD DESCRIPCIÓN -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>04. SIMULACIÓN</span>
+                <span>Entorno Digital</span>
+            </div>
+            <div class="slide-content">
+                <h1>Planificación bajo Incertidumbre</h1>
+                <ul>
+                    <li>Modelaremos la gestión dinámica de carga en ProjectLibre.</li>
+                    <li>Diagnóstico visual: histogramas saturados (rojo) y cuellos de botella.</li>
+                    <li>Aplicación de redistribución, sobretiempo y secuenciación lógica.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">03</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: ACTIVIDAD SUMATIVA -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>05. DESAFÍO</span>
+                <span>Taller Sumativo</span>
+            </div>
+            <div class="slide-content">
+                <h1>Evaluación de Toma de Decisiones</h1>
+                <ul>
+                    <li><strong>Misión:</strong> Resolver 7 escenarios de sobreasignación estructural.</li>
+                    <li><strong>Entregable:</strong> Archivo `.pod` consolidado con cronograma viable.</li>
+                    <li><strong>Tiempo de ejecución:</strong> 90 Minutos netos.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <!-- Clock Icon SVG -->
+                <svg width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: EJERCICIO 1 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 1</span>
+                <span>Capacidad 100%</span>
+            </div>
+            <div class="slide-content">
+                <h1>Secuenciación por Sobreasignación</h1>
+                <ul>
+                    <li><strong>Recurso:</strong> Topógrafo de Obra (100% capacidad).</li>
+                    <li><strong>Problema:</strong> Dos tareas de levantamiento simultáneas exigen 200%.</li>
+                    <li><strong>Restricción:</strong> Prohibido subcontratar personal.</li>
+                    <li><strong>Acción:</strong> Modelar secuenciación Fin-Comienzo priorizando ruta crítica.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E1</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: EJERCICIO 2 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 2</span>
+                <span>Capacidad Distribuida</span>
+            </div>
+            <div class="slide-content">
+                <h1>Distribución Simultánea Forzada</h1>
+                <ul>
+                    <li><strong>Recurso:</strong> Laboratorista de Calidad (100% capacidad).</li>
+                    <li><strong>Restricción:</strong> ITO exige inicio simultáneo de dos tareas.</li>
+                    <li><strong>Acción:</strong> Reducir asignación al 50% por tarea.</li>
+                    <li><strong>Análisis:</strong> Observar extensión proporcional del plazo resultante.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E2</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: EJERCICIO 3 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 3</span>
+                <span>Hitos Inamovibles</span>
+            </div>
+            <div class="slide-content">
+                <h1>Interrupción Lógica de Tareas</h1>
+                <ul>
+                    <li><strong>Contexto:</strong> Inspección continua (4 días) cruza con Reunión inamovible.</li>
+                    <li><strong>Problema:</strong> Ingeniero sobreasignado el día martes.</li>
+                    <li><strong>Acción:</strong> Aplicar herramienta "Dividir Tarea" (Split Task).</li>
+                    <li><strong>Análisis:</strong> Contrastar eficiencia versus secuenciación total.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E3</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: EJERCICIO 4 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 4</span>
+                <span>Múltiples Recursos</span>
+            </div>
+            <div class="slide-content">
+                <h1>Optimización de Caminos Paralelos</h1>
+                <ul>
+                    <li><strong>Contexto:</strong> Montaje estructural. Soldadores cruzados ineficientemente.</li>
+                    <li><strong>Paso 1:</strong> Reasignar recursos linealmente por frente de trabajo.</li>
+                    <li><strong>Paso 2:</strong> Posponer tarea no crítica para evitar colisión de viernes.</li>
+                    <li><strong>Paso 3:</strong> Acelerar ruta inyectando recurso ocioso.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E4</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: EJERCICIO 5 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 5</span>
+                <span>Esfuerzo Guiado</span>
+            </div>
+            <div class="slide-content">
+                <h1>Aceleración por Esfuerzo (Effort-Driven)</h1>
+                <ul>
+                    <li><strong>Contexto:</strong> Descimbre de losas estimado en 32 horas (1 Carpintero).</li>
+                    <li><strong>Acontecimiento:</strong> Jornal de faena queda libre anticipadamente.</li>
+                    <li><strong>Acción:</strong> Asignar Jornal a la tarea en curso.</li>
+                    <li><strong>Análisis:</strong> Verificar reducción matemática del plazo a la mitad.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E5</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: EJERCICIO 6 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 6</span>
+                <span>Calendarios Asimétricos</span>
+            </div>
+            <div class="slide-content">
+                <h1>Impacto de Jornadas Especiales</h1>
+                <ul>
+                    <li><strong>Contexto:</strong> Recurso A (Lunes-Viernes). Recurso B (Lunes-Martes).</li>
+                    <li><strong>Problema:</strong> Asignación lineal 50/50 arrastra el plazo total.</li>
+                    <li><strong>Acción:</strong> Desequilibrar carga en vista "Task Usage".</li>
+                    <li><strong>Solución:</strong> 64 hrs para Recurso A, 16 hrs para Recurso B.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E6</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: EJERCICIO 7 -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>06. CASO 7</span>
+                <span>Excepciones Físicas</span>
+            </div>
+            <div class="slide-content">
+                <h1>Asignación sin Variación de Plazo</h1>
+                <ul>
+                    <li><strong>Contexto:</strong> Reunión de coordinación de seguridad (4 horas fijas).</li>
+                    <li><strong>Problema:</strong> Agregar asistentes colapsa la duración a minutos.</li>
+                    <li><strong>Acción:</strong> Configurar tarea como "Duración Fija".</li>
+                    <li><strong>Verificación:</strong> Horas-hombre aumentan, plazo se mantiene inalterado.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">E7</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: RÚBRICA -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>07. EVALUACIÓN</span>
+                <span>Rúbrica</span>
+            </div>
+            <div class="slide-content">
+                <h1>Criterios de Valoración</h1>
+                <ul>
+                    <li><strong>Dimensión Técnica (40%):</strong> Supresión de alertas de colisión en ProjectLibre.</li>
+                    <li><strong>Dimensión Analítica (40%):</strong> Eficiencia del plazo (no afectar ruta crítica sin justificación).</li>
+                    <li><strong>Formalidad (20%):</strong> Configuración correcta de calendarios de faena.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <div class="arch-shape"></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: CIERRE -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>08. CIERRE</span>
+                <span>Conclusión</span>
+            </div>
+            <div class="slide-content">
+                <h1>Escala de Desempeño Operativo</h1>
+                <ul>
+                    <li><strong>Destacado:</strong> Resuelve conflictos optimizando la holgura libre.</li>
+                    <li><strong>Competente:</strong> Elimina colisiones pero genera ineficiencias de plazo.</li>
+                    <li><em>"La ingeniería civil genuina comienza cuando los recursos se agotan."</em></li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">///</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: BIBLIOGRAFÍA -->
+        <div class="slide">
+            <div class="slide-header">
+                <span>09. REFERENCIAS</span>
+                <span>Bibliografía</span>
+            </div>
+            <div class="slide-content">
+                <h1>Fuentes de Estudio</h1>
+                <ul>
+                    <li><strong>Serpell, A. & Alarcón, L.F.</strong> Planificación y Control de Proyectos (Cap. 6 y 10).</li>
+                    <li><strong>Kerzner, H.</strong> Project Management: A Systems Approach (Cap. 12 y 21).</li>
+                    <li><strong>ProjectLibre.</strong> Documentación técnica Open Source Software.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <span class="big-number">Ref</span>
+            </div>
+        </div>
+
+        <!-- Controls Hint -->
+        <div class="controls-hint">
+            <span>[Espacio/→] Siguiente</span>
+            <span>[←] Anterior</span>
+            <span>[F] Pantalla Completa</span>
+            <span>[1-9] Ir a slide</span>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const progress = document.getElementById('progress');
+            let currentSlide = 0;
+
+            function updateSlide() {
+                slides.forEach((slide, index) => {
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                // Update Progress bar
+                const percent = ((currentSlide + 1) / slides.length) * 100;
+                progress.style.width = percent + '%';
+            }
+
+            function nextSlide() {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            }
+
+            function prevSlide() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            }
+
+            function goToSlide(num) {
+                // Num is 1-based index
+                const idx = num - 1;
+                if (idx >= 0 && idx < slides.length) {
+                    currentSlide = idx;
+                    updateSlide();
+                }
+            }
+
+            function toggleFullScreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            }
+
+            // Keyboard Events
+            window.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case 'ArrowRight':
+                    case ' ':
+                        e.preventDefault();
+                        nextSlide();
+                        break;
+                    case 'ArrowLeft':
+                        prevSlide();
+                        break;
+                    case 'f':
+                    case 'F':
+                        toggleFullScreen();
+                        break;
+                    default:
+                        // Check for numbers 1-9
+                        const num = parseInt(e.key);
+                        if (!isNaN(num) && num > 0 && num <= 9) {
+                            goToSlide(num);
+                        }
+                        break;
+                }
+            });
+
+            // Initial setup
+            updateSlide();
+        });
+    </script>
+</body>
+</html>

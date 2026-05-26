@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Aula Invertida - Gestión en Ingeniería</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2C3E50;
+            --secondary: #3498DB;
+            --tertiary: #ECF0F1;
+            --success: #27AE60;
+            --text-primary: #2C3E50;
+            --text-secondary: #7F8C8D;
+            --white: #FFFFFF;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-hover: 0 8px 15px rgba(0,0,0,0.15);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--tertiary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        /* Section Styles */
+        .phase-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .phase-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--tertiary);
+        }
+
+        .phase-header h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .phase-icon {
+            font-size: 1.5rem;
+        }
+
+        .objective {
+            background: var(--tertiary);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .instruction {
+            background: linear-gradient(135deg, var(--secondary), #2980B9);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--tertiary);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary);
+        }
+
+        .card::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--success);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .card iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+            border-radius: 6px;
+            background: var(--tertiary);
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--white);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #2980B9;
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: var(--primary);
+        }
+
+        .btn-download:hover {
+            background: #1a252f;
+        }
+
+        /* Two Column Layout for Phase 2 */
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .session-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--secondary);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .session-card.tuesday {
+            border-top-color: #3498DB;
+        }
+
+        .session-card.thursday {
+            border-top-color: #27AE60;
+        }
+
+        .session-day {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--tertiary);
+        }
+
+        .session-activation {
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 0.5rem 0;
+            font-size: 1.05rem;
+        }
+
+        .session-activity {
+            margin: 0.75rem 0;
+        }
+
+        .session-activity a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .session-activity a:hover {
+            text-decoration: underline;
+        }
+
+        .session-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: var(--radius);
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .footer-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            margin: 1rem 0;
+            border-radius: 2px;
+        }
+
+        .footer-reminder {
+            font-weight: 500;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            background: rgba(52, 152, 219, 0.15);
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            background: rgba(52, 152, 219, 0.3);
+        }
+
+        .footer-credits {
+            opacity: 0.85;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            .phase-section {
+                padding: 1.25rem 1.5rem;
+            }
+
+            .phase-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .cards-grid,
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card iframe {
+                height: 250px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .card iframe {
+                height: 200px;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Semana 10: Asignación de Recursos</h1>
+            <p>Planificación del 25 al 29 de mayo</p>
+        </header>
+
+        <!-- Phase 1: Preparation -->
+        <section class="phase-section">
+            <div class="phase-header">
+                <span class="phase-icon">📚</span>
+                <h2>FASE 1: PREPARACIÓN · Trabajo autónomo previo</h2>
+            </div>
+            <div class="objective">
+                <strong>Objetivo:</strong> Introducir a los estudiantes en los conceptos fundamentales de la gestión en ingeniería
+            </div>
+            <div class="instruction">
+                ⚠️ Completa las siguientes actividades ANTES de nuestras sesiones presenciales. Prepara tus apuntes y dudas.
+            </div>
+
+            <div class="cards-grid">
+                <!-- Card 1: PDF Reading -->
+                <article class="card">
+                    <h3>📄 Planificación y Control de Proyectos: Modelamiento de Redes PDM con Actividades Discontinuas e Incertidumbre Operativa</h3>
+                    <p>Revisa este documento base antes de continuar.</p>
+                    <iframe src="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Resumen_Semana_10.pdf" width="640" height="480" title="Resumen Semana 10"></iframe>
+                </article>
+
+                <!-- Card 2: Video -->
+                <article class="card">
+                    <h3>🎥 Video: Mapa vs Territorio</h3>
+                    <p>Este video complementa la lectura con ejemplos prácticos.</p>
+                    <a href="https://youtu.be/HllUxXrWsIg" target="_blank" rel="noopener noreferrer" class="btn">Ver video en YouTube</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- Phase 2: In-Person Sessions -->
+        <section class="phase-section">
+            <div class="phase-header">
+                <span class="phase-icon">👥</span>
+                <h2>FASE 2: SESIONES PRESENCIALES · Práctica guiada y colaboración</h2>
+            </div>
+            <div class="objective">
+                <strong>Objetivo:</strong> Profundizar en los conceptos y aplicarlos en actividades prácticas.
+            </div>
+            <div class="instruction">
+                ✅ Asiste y participa activamente en ambas sesiones.
+            </div>
+
+            <div class="sessions-grid">
+                <!-- Tuesday Column -->
+                <article class="session-card tuesday">
+                    <div class="session-day">MARTES</div>
+                    <div class="session-activation">🎯 Activación: Identificar y Asignar Recursos</div>
+                    <div class="session-activity">
+                        <strong>Actividad:</strong> Guía de Ejercicios de asignación de recursos
+                    </div>
+                    <div class="session-description">
+                        <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Ejercicios_asignacion_recursos_Semana_10.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-download">
+                            📥 Descargar Guía de Ejercicio
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Thursday Column -->
+                <article class="session-card thursday">
+                    <div class="session-day">JUEVES</div>
+                    <div class="session-activation">🎯 Activación: Optimización y Nivelación de Recursos</div>
+                    <div class="session-activity">
+                        <strong>Actividad:</strong> Taller Nivelación de Recursos en ProjectLibre
+                    </div>
+                    <div class="session-description">
+                        <p>Trabajo práctico colaborativo utilizando software especializado para la nivelación y optimización de recursos en proyectos de ingeniería.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-reminder">
+                💡 Recuerda que la preparación previa es clave para el aprovechamiento de las sesiones presenciales.
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-links">
+                <a href="https://poe.com/IngProyectosBot" target="_blank" rel="noopener noreferrer">🤖 Chatbot IngProyectosBot</a>
+                <a href="https://chat.google.com/room/AAQAx5IqQps?cls=7" target="_blank" rel="noopener noreferrer">💬 Chat de Google</a>
+            </div>
+            <div class="footer-credits">
+                Planificación diseñada para curso de Ingeniería · Formato Aula Invertida
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
