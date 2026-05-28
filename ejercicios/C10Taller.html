@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller Evaluado: Optimización de Recursos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        .nav-active {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border-left-width: 4px;
+            border-color: #1d4ed8;
+            font-weight: 600;
+        }
+        .nav-inactive {
+            color: #64748b;
+            border-left-width: 4px;
+            border-color: transparent;
+        }
+        .nav-inactive:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .accordion-content {
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .accordion-active .accordion-content {
+            max-height: 1000px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .accordion-active .accordion-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Chosen Palette: Slate & Blue (Professional/Academic Engineering theme). Background: #f8fafc (slate-50), Cards: White, Accents: #1d4ed8 (blue-700), Text: #1e293b (slate-800). -->
+    <!-- Application Structure Plan: A dashboard-style SPA tailored for a workshop/exam guide. The left sidebar provides linear or non-linear navigation through the workshop phases (Context, Resources, WBS, Challenges, Rubric). This structure was chosen because a linear document is hard to reference while working in external software (ProjectLibre). Segmenting into logical, task-oriented views allows the student to focus on one constraint or challenge at a time without losing context. -->
+    <!-- Visualization & Content Choices: 
+         1. Goal: Inform (Availability) -> Method: Chart.js Bar Chart showing the asymmetrical weekly calendar of the student. Justification: Visually highlights the severe capacity constraints (0 hours on many days) much better than text, setting the stage for the allocation challenges. 
+         2. Goal: Organize (WBS) -> Method: Interactive HTML Table with clear hierarchy. Justification: Easy to read and copy data into ProjectLibre. 
+         3. Goal: Engagement (Challenges) -> Method: Accordion layout. Justification: Keeps the UI clean and allows students to focus on solving one challenge at a time. 
+         Confirming NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="w-full md:w-64 bg-white border-r border-slate-200 flex-shrink-0 z-10 glass-panel md:sticky md:top-0 md:h-screen overflow-y-auto">
+        <div class="p-6">
+            <div class="text-2xl font-bold text-blue-800 tracking-tight leading-tight mb-2">ULagos</div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-8">Planificación y Control</div>
+            <div class="space-y-1" id="nav-menu">
+                <button data-target="sec-contexto" class="w-full text-left px-4 py-3 text-sm transition-colors nav-active">
+                    <span class="mr-2">🏠</span> 1. Contexto Inicial
+                </button>
+                <button data-target="sec-recursos" class="w-full text-left px-4 py-3 text-sm transition-colors nav-inactive">
+                    <span class="mr-2">⚙️</span> 2. Parámetros y Recursos
+                </button>
+                <button data-target="sec-wbs" class="w-full text-left px-4 py-3 text-sm transition-colors nav-inactive">
+                    <span class="mr-2">📋</span> 3. Estructura WBS
+                </button>
+                <button data-target="sec-desafios" class="w-full text-left px-4 py-3 text-sm transition-colors nav-inactive">
+                    <span class="mr-2">🎯</span> 4. Desafíos Prácticos
+                </button>
+                <button data-target="sec-evaluacion" class="w-full text-left px-4 py-3 text-sm transition-colors nav-inactive">
+                    <span class="mr-2">⚖️</span> 5. Evaluación y Rúbrica
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto w-full relative">
+        <div class="max-w-4xl mx-auto">
+            
+            <header class="mb-10">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">Taller Evaluado: Optimización y Ajuste de Recursos en ProjectLibre</h1>
+                <div class="flex flex-wrap gap-3 text-sm font-medium text-blue-700 bg-blue-50 inline-flex px-4 py-2 rounded-lg border border-blue-100">
+                    <span>⏱️ 60 Minutos</span>
+                    <span>•</span>
+                    <span>💻 Modalidad Práctica (ProjectLibre)</span>
+                    <span>•</span>
+                    <span>💯 100 Puntos</span>
+                </div>
+            </header>
+
+            <section id="sec-contexto" class="view-section block">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">1. Introducción y Contexto</h2>
+                    <p class="text-slate-600 mb-6 text-lg leading-relaxed">
+                        Esta sección introduce el problema central del taller. Presenta la dicotomía entre la planificación teórica ideal y la realidad operativa de un proyecto, estableciendo el marco mental necesario para que el estudiante enfrente los desafíos de asignación con criterio de ingeniería.
+                    </p>
+                    <div class="prose max-w-none text-slate-700 space-y-4">
+                        <p>En la práctica profesional de la ingeniería civil, la formulación de mallas CPM/PDM bajo el supuesto de capacidad ilimitada representa una aproximación teórica útil, pero insuficiente. El verdadero desafío de la administración de obras consiste en reconciliar dicha secuencia lógica con las restricciones físicas, la escasez de recursos no almacenables (mano de obra y maquinaria) y los imprevistos climáticos o contractuales del terreno.</p>
+                        <div class="bg-slate-50 p-6 rounded-xl border-l-4 border-blue-500 mt-6">
+                            <p class="font-medium text-slate-800 mb-2">🎯 El Escenario a Modelar:</p>
+                            <p>Modelaremos un sistema dinámico donde los recursos limitantes serán el tiempo de estudio (horas-hombre) y los materiales de consulta (libros y apuntes). Te enfrentarás a un escenario abierto donde deberás tomar decisiones estratégicas de asignación, interrupción de tareas y reprogramación asimétrica para asegurar la viabilidad del proyecto antes de la fecha límite del examen.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-recursos" class="view-section hidden">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">2. Condiciones de Borde y Configuración</h2>
+                    <p class="text-slate-600 mb-6 text-lg leading-relaxed">
+                        Aquí se definen las restricciones matemáticas y físicas del modelo. Encontrarás los parámetros de calendario que debes ingresar en ProjectLibre y visualizarás gráficamente la severa limitación de tu propia capacidad como recurso principal, lo cual es la raíz de los conflictos a resolver.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-3 flex items-center"><span class="mr-2">📅</span> Parámetros del Proyecto</h3>
+                            <ul class="space-y-2 text-slate-700 text-sm">
+                                <li><strong>Inicio del Proyecto:</strong> Lunes 1 de junio de 2026</li>
+                                <li><strong>Fecha Límite (Meta):</strong> Sábado 20 de junio de 2026</li>
+                                <li><strong>Unidad de Esfuerzo:</strong> Horas de trabajo efectivas</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-3 flex items-center"><span class="mr-2">🤝</span> Recursos de Apoyo</h3>
+                            <ul class="space-y-3 text-slate-700 text-sm">
+                                <li><strong>Grupo de Estudio (GE):</strong> 3 amigos con misma disponibilidad. Actúan bajo lógica <em>effort-driven</em> para reducir duraciones.</li>
+                                <li><strong>Amigo Experto (AE):</strong> Especialista en software. <strong>Restricción estricta:</strong> Solo disponible Sábados (Máx. 2 horas).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 border border-slate-200 rounded-xl overflow-hidden">
+                        <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                            <h3 class="font-bold text-slate-800 text-lg">Perfil de Disponibilidad: Estudiante Principal (EP)</h3>
+                            <p class="text-sm text-slate-500">Restricción asimétrica semanal para el calendario del recurso.</p>
+                        </div>
+                        <div class="p-6 bg-white">
+                            <div class="chart-container">
+                                <canvas id="availabilityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-wbs" class="view-section hidden">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">3. Estructura del Proyecto (EDT / WBS)</h2>
+                    
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                        <p class="text-slate-600 text-base leading-relaxed md:max-w-xl">
+                            Esta tabla contiene la red lógica fundamental del proyecto. Debes trasladar exactamente esta información a la vista Gantt de ProjectLibre para construir la línea base teórica antes de comenzar a resolver las colisiones operativas.
+                        </p>
+                        <button onclick="downloadWbsCSV()" class="self-start md:self-center inline-flex items-center px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold rounded-lg shadow-sm transition-all transform hover:-translate-y-0.5 gap-2 flex-shrink-0">
+                            <span>📥</span> Descargar CSV Estructura
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse" id="wbs-table">
+                            <thead>
+                                <tr class="bg-slate-800 text-white text-sm uppercase tracking-wider">
+                                    <th class="p-4 font-semibold">ID</th>
+                                    <th class="p-4 font-semibold w-1/3">Actividad</th>
+                                    <th class="p-4 font-semibold">Duración</th>
+                                    <th class="p-4 font-semibold">Predecesoras</th>
+                                    <th class="p-4 font-semibold">Recursos Asignados</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm text-slate-700 bg-white" id="wbs-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-desafios" class="view-section hidden">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">4. Desafíos de Optimización Abiertos</h2>
+                    <p class="text-slate-600 mb-6 text-lg leading-relaxed">
+                        A continuación se presentan las cuatro problemáticas operativas que debes resolver secuencialmente en el software. Cada desafío aborda una anomalía distinta generada por las restricciones de recursos reales.
+                    </p>
+                    
+                    <div class="space-y-4" id="challenges-container">
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-evaluacion" class="view-section hidden">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">5. Entregables y Rúbrica Analítica</h2>
+                    <p class="text-slate-600 mb-6 text-lg leading-relaxed">
+                        Revisa los requisitos de entrega para finalizar el taller y comprende los criterios bajo los cuales se evaluará tu capacidad de análisis y dominio técnico del software de planificación.
+                    </p>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+                        <h3 class="font-bold text-blue-900 text-lg mb-3 flex items-center"><span class="mr-2">📤</span> Archivos a subir (Plataforma Moodle)</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-blue-800 text-sm ml-2">
+                            <li><strong>Archivo de Respaldo:</strong> El proyecto guardado en formato nativo de ProjectLibre (<code class="bg-white px-1 py-0.5 rounded">.pod</code>).</li>
+                            <li><strong>Ficha de Análisis (PDF/Word):</strong> Reporte concreto con respuestas a los desafíos e inclusión de capturas de pantalla (Histograma de Recursos y Task Usage) antes y después de optimizar.</li>
+                        </ol>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-800 text-sm">
+                                    <th class="p-4 font-bold border-b border-slate-200">Criterio de Evaluación</th>
+                                    <th class="p-4 font-bold border-b border-slate-200 text-green-700 bg-green-50">Excelente (100%)</th>
+                                    <th class="p-4 font-bold border-b border-slate-200 text-amber-700 bg-amber-50">Competente (70%)</th>
+                                    <th class="p-4 font-bold border-b border-slate-200 text-red-700 bg-red-50">Insuficiente (30%)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm text-slate-700 divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-4 font-semibold text-slate-900 w-1/5">Modelamiento de Calendarios (20%)</td>
+                                    <td class="p-4">Configura con precisión el calendario del proyecto y las restricciones asimétricas de jornada del EP.</td>
+                                    <td class="p-4">Registra el calendario de forma parcial; presenta pequeñas desviaciones en los días laborables.</td>
+                                    <td class="p-4">No configura los calendarios; trabaja con la jornada estándar de 8 horas sin restricciones.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-4 font-semibold text-slate-900 w-1/5">Resolución del Hito Obligatorio (25%)</td>
+                                    <td class="p-4">Logra aislar las 2 horas de reunión el Miércoles 3 de junio dividiendo u optimizando la tarea de forma limpia en el Gantt.</td>
+                                    <td class="p-4">Resuelve la colisión pero atrasa arbitrariamente todo el proyecto o duplica la jornada permitida de ese día.</td>
+                                    <td class="p-4">No identifica la colisión o superpone la reunión con las horas de estudio del EP.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-4 font-semibold text-slate-900 w-1/5">Integración y Plazo (25%)</td>
+                                    <td class="p-4">Incorpora con éxito el GE y el amigo experto, logrando que el hito final se sitúe antes de la fecha límite del 20 de junio.</td>
+                                    <td class="p-4">Utiliza los recursos de apoyo pero presenta una desviación marginal que desplaza el hito final fuera del límite.</td>
+                                    <td class="p-4">No logra reducir los plazos; entrega una programación inviable fuera de la fecha contractual.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-4 font-semibold text-slate-900 w-1/5">Ajuste de Calendarios Cruzados (30%)</td>
+                                    <td class="p-4">Utiliza con éxito la hoja <em>Task Usage</em> para balancear las horas asimétricas del experto, evitando extensión del plazo.</td>
+                                    <td class="p-4">Asigna al amigo experto pero genera sobreasignación secundaria o extiende de forma ineficiente la partida.</td>
+                                    <td class="p-4">Limita la asignación a la vista Gantt básica, arrastrando el plazo por efecto del calendario restrictivo.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const wbsData = [
+            { id: "1", task: "Frente Teórico Avanzado", dur: "", pred: "", res: "", isHeader: true },
+            { id: "1.1", task: "Recopilación de Apuntes Base", dur: "1 día", pred: "---", res: "Estudiante Principal (EP)" },
+            { id: "1.2", task: "Lectura Crítica de Capítulos Base", dur: "3 días", pred: "1.1 (FC)", res: "EP + [Material: 1 Apunte Digital]" },
+            { id: "1.3", task: "Análisis de Casos de Estudio", dur: "2 Días", pred: "1.2 (FC)", res: "Estudiante Principal (EP)" },
+            { id: "2", task: "Frente Práctico de Software", dur: "", pred: "", res: "", isHeader: true },
+            { id: "2.1", task: "Descarga de Guías de ProjectLibre", dur: "1 día", pred: "---", res: "Estudiante Principal (EP)" },
+            { id: "2.2", task: "Resolución de Ejercicios Tipo 1 a 4", dur: "2 días", pred: "2.1 (FC)", res: "Estudiante Principal (EP)" },
+            { id: "2.3", task: "Simulación en PC de Ejercicios 5 a 7", dur: "2 días", pred: "2.2 (FC)", res: "Estudiante Principal (EP)" },
+            { id: "3", task: "Frente de Integración y Cierre", dur: "", pred: "", res: "", isHeader: true },
+            { id: "3.1", task: "Preparación de Fórmulas de Control", dur: "1 día", pred: "1.2 (FC)", res: "Estudiante Principal (EP)" },
+            { id: "3.2", task: "Ensayo General de Evaluación", dur: "2 días", pred: "1.3 (FC), 2.3 (FC)", res: "EP + [Material: 1 Apunte Digital]" },
+            { id: "3.3", task: "Revisión de Errores y Ajustes", dur: "1 día", pred: "3.2 (FC)", res: "Estudiante Principal (EP)" },
+            { id: "3.4", task: "HITO: Rendición de Examen Semanal", dur: "0 días", pred: "3.1 (FC), 3.3 (FC)", res: "---", isHighlight: true }
+        ];
+
+        const challengesData = [
+            {
+                title: "Desafío I: Diagnóstico de la Sobreasignación Teórica",
+                content: "Al ingresar el cronograma inicial con los frentes en paralelo, observe los indicadores de alerta en el Gantt y en el Histograma de Recursos. Identifique en qué fechas específicas se produce la primera colisión de recursos y explique detalladamente la causa matemática del conflicto a partir de las tasas de asignación diarias."
+            },
+            {
+                title: "Desafío II: Gestión de la Interrupción Obligatoria",
+                content: "El día <strong>Miércoles 3 de junio de 2026</strong>, se ha programado una reunión de avance obligatoria con el docente. Esta reunión consumirá las únicas <strong>2 horas disponibles</strong> que tiene su recurso (EP) para ese día.<br><br> • Esta reunión interrumpe físicamente el desarrollo de la <em>Lectura Crítica (Actividad 1.2)</em>.<br> • Resuelva este conflicto en el diagrama de Gantt de ProjectLibre de manera que asista a la reunión sin alterar las predecesoras lógicas de la red ni perder las horas de trabajo estimadas para la lectura."
+            },
+            {
+                title: "Desafío III: La Trampa de los Calendarios Cruzados",
+                content: "Para la <em>Simulación en PC de Ejercicios 5 a 7 (Actividad 2.3)</em>, decide incorporar la asesoría de su <strong>Amigo Experto (AE)</strong>, respetando su restricción estricta de disponibilidad (Sábados, máx. 2 horas).<br><br> • <strong>El Problema:</strong> Al asignar a AE a la tarea junto con EP, note cómo el software deforma el cronograma y alarga drásticamente la duración en semanas de la tarea en lugar de contraerla.<br> • <strong>Su Misión:</strong> Utilizando la vista <strong>Uso de Tareas (Task Usage)</strong>, realice una distribución manual y asimétrica de la carga de horas de esfuerzo diaria. Logre que el amigo experto aporte sus 2 horas de asesoría el día sábado sin retrasar el avance del proyecto ni distorsionar el plazo."
+            },
+            {
+                title: "Desafío IV: Cumplimiento de la Meta mediante Nivelación",
+                content: "Si mantiene el esquema sin optimización de cuadrillas ni balance de esfuerzo, la duración total superará la fecha contractual del <strong>Sábado 20 de junio de 2026</strong>.<br><br> • <strong>Su Misión:</strong> Utilizando el <strong>Grupo de Estudio (GE)</strong> en las tareas correspondientes y aplicando técnicas de nivelación de recursos, demuestre cómo es capaz de ajustar las sobreasignaciones diarias y comprimir la ruta crítica de recursos para situar el Hito 3.4 en o antes del plazo fatal exigido."
+            }
+        ];
+
+        let currentChart = null;
+
+        function initApp() {
+            renderWbsTable();
+            renderChallenges();
+            setupNavigation();
+        }
+
+        function setupNavigation() {
+            const buttons = document.querySelectorAll('#nav-menu button');
+            const sections = document.querySelectorAll('.view-section');
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('data-target');
+                    
+                    buttons.forEach(b => {
+                        b.classList.remove('nav-active');
+                        b.classList.add('nav-inactive');
+                    });
+                    e.currentTarget.classList.add('nav-active');
+                    e.currentTarget.classList.remove('nav-inactive');
+
+                    sections.forEach(sec => {
+                        if(sec.id === targetId) {
+                            sec.classList.remove('hidden');
+                            if(targetId === 'sec-recursos' && !currentChart) {
+                                renderChart();
+                            }
+                        } else {
+                            sec.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        }
+
+        function renderWbsTable() {
+            const tbody = document.getElementById('wbs-body');
+            let html = '';
+            wbsData.forEach(row => {
+                if (row.isHeader) {
+                    html += `<tr class="bg-slate-50 border-b border-slate-200">
+                        <td class="p-4 font-bold text-slate-800">${row.id}</td>
+                        <td class="p-4 font-bold text-slate-800" colspan="4">${row.task}</td>
+                    </tr>`;
+                } else if (row.isHighlight) {
+                    html += `<tr class="bg-blue-50 border-b border-blue-100 hover:bg-blue-100 transition-colors">
+                        <td class="p-4 font-semibold text-blue-900">${row.id}</td>
+                        <td class="p-4 font-bold text-blue-900 flex items-center"><span class="mr-2">🏁</span> ${row.task}</td>
+                        <td class="p-4 font-semibold text-blue-900">${row.dur}</td>
+                        <td class="p-4 text-blue-800">${row.pred}</td>
+                        <td class="p-4 text-blue-800">${row.res}</td>
+                    </tr>`;
+                } else {
+                    html += `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                        <td class="p-4 text-slate-500 font-medium">${row.id}</td>
+                        <td class="p-4 font-medium">${row.task}</td>
+                        <td class="p-4 text-slate-600">${row.dur}</td>
+                        <td class="p-4 text-slate-600">${row.pred}</td>
+                        <td class="p-4 text-slate-600 text-xs">${row.res}</td>
+                    </tr>`;
+                }
+            });
+            tbody.innerHTML = html;
+        }
+
+        function renderChallenges() {
+            const container = document.getElementById('challenges-container');
+            let html = '';
+            challengesData.forEach((ch, index) => {
+                html += `
+                <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+                    <button class="w-full text-left px-6 py-4 bg-slate-50 hover:bg-slate-100 flex justify-between items-center focus:outline-none" onclick="toggleAccordion(${index})">
+                        <span class="font-bold text-slate-800 text-lg">${ch.title}</span>
+                        <span class="accordion-icon text-slate-400 text-xl transition-transform duration-300 transform" id="icon-${index}">▼</span>
+                    </button>
+                    <div class="accordion-content bg-white" id="content-${index}">
+                        <div class="px-6 text-slate-700 leading-relaxed text-[15px]">
+                            ${ch.content}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.toggleAccordion = function(index) {
+            const content = document.getElementById(`content-${index}`);
+            const parent = content.parentElement;
+            
+            if (parent.classList.contains('accordion-active')) {
+                parent.classList.remove('accordion-active');
+            } else {
+                document.querySelectorAll('.accordion-active').forEach(el => el.classList.remove('accordion-active'));
+                parent.classList.add('accordion-active');
+            }
+        };
+
+        function renderChart() {
+            const ctx = document.getElementById('availabilityChart').getContext('2d');
+            
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                    datasets: [{
+                        label: 'Horas Disponibles (Capacidad 100%)',
+                        data: [4, 0, 2, 0, 0, 4, 0],
+                        backgroundColor: [
+                            'rgba(29, 78, 216, 0.8)',
+                            'rgba(203, 213, 225, 0.3)',
+                            'rgba(29, 78, 216, 0.8)',
+                            'rgba(203, 213, 225, 0.3)',
+                            'rgba(203, 213, 225, 0.3)',
+                            'rgba(29, 78, 216, 0.8)',
+                            'rgba(203, 213, 225, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(29, 78, 216, 1)',
+                            'rgba(148, 163, 184, 1)',
+                            'rgba(29, 78, 216, 1)',
+                            'rgba(148, 163, 184, 1)',
+                            'rgba(148, 163, 184, 1)',
+                            'rgba(29, 78, 216, 1)',
+                            'rgba(148, 163, 184, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { family: 'Inter', size: 14 },
+                            bodyFont: { family: 'Inter', size: 14 },
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y} Horas Netas`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 8,
+                            title: {
+                                display: true,
+                                text: 'Horas',
+                                font: { family: 'Inter', weight: '600' },
+                                color: '#64748b'
+                            },
+                            ticks: { stepSize: 2 }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter' }, color: '#475569' }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.downloadWbsCSV = function() {
+            let csvRows = [];
+            csvRows.push("ID;Actividad;Duracion;Predecesoras;Recursos");
+            
+            wbsData.forEach(row => {
+                const id = row.id || "";
+                const task = row.task ? `"${row.task.replace(/"/g, '""')}"` : "";
+                const dur = row.dur ? `"${row.dur.replace(/"/g, '""')}"` : "";
+                const pred = row.pred ? `"${row.pred.replace(/"/g, '""')}"` : "";
+                const res = row.res ? `"${row.res.replace(/"/g, '""')}"` : "";
+                csvRows.push(`${id};${task};${dur};${pred};${res}`);
+            });
+            
+            const csvString = "\uFEFF" + csvRows.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "Estructura_Proyecto_WBS.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
