@@ -1,0 +1,225 @@
+{
+  "catalogo_imagenes": {
+    "beta_pert_curve": "imagenes/beta_pert_curve.png",
+    "tcl_concepto": "imagenes/tcl_concepto.png",
+    "red_precedencias": "imagenes/red_precedencias.png",
+    "herramientas_computacionales": "imagenes/herramientas_computacionales.png"
+  },
+  "diapositivas": [
+    {
+      "id": 0,
+      "marker": "01. INICIO",
+      "tipo": "portada",
+      "titulo": "Programación de Proyectos de Construcción bajo Incertidumbre",
+      "subtitulo": "Método Beta-PERT y el Teorema Central del Límite para el control de plazos contractuales",
+      "texto_extra": "Planificación y Control de Proyectos de Construcción — 9° Semestre, Ingeniería Civil en Obras Civiles",
+      "texto_extra2": "Sesión Presencial 1 · Taller Formativo"
+    },
+    {
+      "id": 1,
+      "marker": "02. PROBLEMÁTICA",
+      "tipo": "lista",
+      "subtitulo": "Contexto",
+      "titulo": "¿Por qué los plazos deterministas fallan?",
+      "puntos": [
+        "Los métodos CPM y PDM asumen duraciones fijas y ciertas, ignorando la naturaleza estocástica de la construcción.",
+        "Factores como clima, rendimiento de mano de obra, fallas en maquinaria e incertidumbre geotécnica modifican dinámicamente los plazos.",
+        "Usar valores medios estáticos genera una subestimación sistémica de los plazos totales por fenómenos de interferencia y sesgo de convergencia.",
+        "En megaproyectos (hidráulicos, viales, minería, edificación en altura) se requiere un método que reconozca explícitamente la variabilidad.",
+        "La técnica PERT modela cada actividad como una variable aleatoria continua, permitiendo cuantificar el riesgo de atraso."
+      ]
+    },
+    {
+      "id": 2,
+      "marker": "03. ESTIMACIÓN TRIPLE",
+      "tipo": "grid_cajas",
+      "subtitulo": "Fundamentos",
+      "titulo": "Los Tres Tiempos de la Estimación Probabilística (O, M, P)",
+      "tarjetas": [
+        {
+          "titulo": "Optimista (O)",
+          "contenido": "Tiempo mínimo si el desarrollo es perfecto, sin imprevistos. Probabilidad de ocurrencia menor al 1%. Representa el mejor escenario posible."
+        },
+        {
+          "titulo": "Más Probable (M)",
+          "contenido": "La moda de la distribución. Corresponde al tiempo que se registra con mayor frecuencia bajo condiciones operacionales normales y rendimientos estándar."
+        },
+        {
+          "titulo": "Pesimista (P)",
+          "contenido": "Tiempo máximo ante perturbaciones severas (excluyendo catástrofes de fuerza mayor). Probabilidad de ocurrencia menor al 1%."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "marker": "04. DISTRIBUCIÓN BETA-PERT",
+      "tipo": "lista_con_imagen",
+      "subtitulo": "Modelo probabilístico",
+      "titulo": "La Distribución Beta y las Fórmulas PERT",
+      "imagen": "beta_pert_curve",
+      "puntos": [
+        "La distribución Beta tiene soporte finito [O, P] y permite modelar asimetría positiva típica de rendimientos de construcción (atrasos más severos que adelantos).",
+        "Duración esperada: te = (O + 4M + P) / 6 → El escenario M recibe ponderación 4/6; los extremos O y P reciben 1/6 cada uno.",
+        "Varianza: σ² = [(P − O) / 6]² → A mayor brecha entre pesimista y optimista, mayor incertidumbre.",
+        "Desviación estándar: σ = (P − O) / 6 → Aproximación que asume que σ equivale a un sexto del rango total.",
+        "Estas aproximaciones fueron derivadas por los creadores de PERT para simplificar el uso directo de la función Beta en terreno."
+      ]
+    },
+    {
+      "id": 4,
+      "marker": "05. FÓRMULAS RESUMEN",
+      "tipo": "tabla",
+      "subtitulo": "Referencia rápida",
+      "titulo": "Ecuaciones Clave del Método Beta-PERT",
+      "columnas_tabla": ["Parámetro", "Fórmula", "Interpretación"],
+      "datos_tabla": [
+        ["Duración esperada (te)", "te = (O + 4M + P) / 6", "Valor medio ponderado de la actividad"],
+        ["Varianza (σ²)", "σ² = [(P − O) / 6]²", "Dispersión o incertidumbre de la actividad"],
+        ["Desviación estándar (σ)", "σ = (P − O) / 6", "Variabilidad en unidades de tiempo"],
+        ["Media del proyecto (μp)", "μp = Σ te,i (i ∈ CC)", "Suma de tiempos esperados del camino crítico"],
+        ["Varianza del proyecto (σ²p)", "σ²p = Σ σ²i (i ∈ CC)", "Suma de varianzas de actividades críticas"],
+        ["Variable estandarizada (Z)", "Z = (Td − μp) / σp", "Distancia en desviaciones estándar al plazo objetivo"]
+      ]
+    },
+    {
+      "id": 5,
+      "marker": "06. TEOREMA CENTRAL DEL LÍMITE",
+      "tipo": "lista_con_imagen",
+      "subtitulo": "Fundamento estadístico",
+      "titulo": "Teorema Central del Límite (TCL) en Proyectos",
+      "imagen": "tcl_concepto",
+      "puntos": [
+        "El TCL establece que la suma de n variables aleatorias independientes converge a una distribución Normal, sin importar la forma de las distribuciones originales.",
+        "En proyectos, la duración total T es la suma de las duraciones del camino crítico, cada una modelada por una distribución Beta-PERT (asimétrica).",
+        "Por el TCL, la duración total converge a T ~ N(μp, σ²p), lo que permite usar la tabla normal estándar para análisis de riesgo.",
+        "Esto permite calcular probabilidades de cumplimiento de plazos contractuales: P(T ≤ Td) = Φ(Z).",
+        "También permite determinar plazos contractuales seguros: Td = μp + (Zα × σp), donde Zα depende del nivel de confianza deseado."
+      ]
+    },
+    {
+      "id": 6,
+      "marker": "07. CASO PRÁCTICO",
+      "tipo": "tabla",
+      "subtitulo": "Fundaciones de hormigón armado — Planta de chancado secundario",
+      "titulo": "Datos de Estimación Triple del Subproyecto",
+      "columnas_tabla": ["Actividad", "Predecesora", "Optimista (O)", "Más Probable (M)", "Pesimista (P)"],
+      "datos_tabla": [
+        ["A — Excavación Masiva", "—", "6 días", "10 días", "20 días"],
+        ["B — Instalación de Encofrados", "A", "4 días", "6 días", "14 días"],
+        ["C — Colocación de Armadura", "B", "5 días", "8 días", "17 días"],
+        ["D — Vaciado de Hormigón", "C", "2 días", "3 días", "10 días"],
+        ["E — Curado y Desmolde", "D", "3 días", "5 días", "13 días"]
+      ]
+    },
+    {
+      "id": 7,
+      "marker": "08. EJERCICIO INTERACTIVO",
+      "tipo": "interactiva",
+      "subtitulo": "Consolidación de cálculos",
+      "titulo": "Verifica tus cálculos: ¿Coinciden tus resultados?",
+      "pregunta": "Usando las fórmulas PERT, calcula la duración esperada (te) y la varianza (σ²) de la Actividad A (O=6, M=10, P=20). ¿Cuáles son los valores correctos?",
+      "respuesta_oculta": "Actividad A: te = (6 + 4×10 + 20) / 6 = 66/6 = 11,00 días. σ² = [(20 − 6) / 6]² = (14/6)² = 5,444 días². σ = 2,333 días. Si tus resultados coinciden, tu plantilla de cálculo está correctamente programada. Ahora repite para las actividades B, C, D y E."
+    },
+    {
+      "id": 8,
+      "marker": "09. AGREGACIÓN Y RIESGO",
+      "tipo": "grid_cajas",
+      "subtitulo": "De lo individual a lo global",
+      "titulo": "Resultados del Camino Crítico y Niveles de Confianza",
+      "tarjetas": [
+        {
+          "titulo": "Duración esperada (μp)",
+          "contenido": "μp = 11 + 7 + 9 + 4 + 6 = 37,00 días. Es la suma de los tiempos esperados de las 5 actividades del camino crítico (ruta completamente secuencial)."
+        },
+        {
+          "titulo": "Dispersión del proyecto (σp)",
+          "contenido": "σ²p = 5,444 + 2,778 + 4,000 + 1,778 + 2,778 = 16,778 días². σp = √16,778 = 4,096 días. La desviación estándar NO se suma directamente."
+        },
+        {
+          "titulo": "Z = 1,282 → 90% confianza",
+          "contenido": "Td = 37 + (1,282 × 4,096) = 42,25 días → Comprometer 43 días. El 50% de confianza corresponde a Z=0 (simplemente μp = 37 días)."
+        },
+        {
+          "titulo": "Z = 1,645 → 95% confianza",
+          "contenido": "Td = 37 + (1,645 × 4,096) = 43,73 días → Comprometer 44 días. Estándar típico para contratos críticos de infraestructura."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "marker": "10. EJERCICIO CONTRATO",
+      "tipo": "interactiva",
+      "subtitulo": "Aplicación directa",
+      "titulo": "¿Qué probabilidad hay de entregar en 32 días?",
+      "pregunta": "El mandante solicita entregar las fundaciones en 32 días para coordinar el montaje de la estructura metálica. Con μp = 37,00 días y σp = 4,096 días, calcula la variable Z y determina la probabilidad de cumplimiento. ¿Es aceptable este plazo contractual?",
+      "respuesta_oculta": "Z = (32 − 37) / 4,096 = −1,221. P(T ≤ 32) = Φ(−1,221) ≈ 0,111 → Solo un 11,1% de probabilidad de cumplimiento. Este plazo es inaceptable: implica un riesgo operacional extremadamente alto de incumplimiento y multas. Se recomienda negociar un plazo de al menos 43 días (90% de confianza) o 44 días (95%)."
+    },
+    {
+      "id": 10,
+      "marker": "11. IMPLEMENTACIÓN",
+      "tipo": "lista_con_imagen",
+      "subtitulo": "Herramientas computacionales",
+      "titulo": "Automatización en Google Sheets, Python y Octave",
+      "imagen": "herramientas_computacionales",
+      "puntos": [
+        "Google Sheets: fórmulas =(B2+4*C2+D2)/6 para te y =((D2-B2)/6)^2 para varianza. Funciones =DISTR.NORM() y =INV.NORM() para probabilidades.",
+        "Python: usar numpy para cálculos vectoriales y scipy.stats.norm para distribución acumulada (norm.cdf) e inversa (norm.ppf).",
+        "Octave: funciones normcdf() y norminv() integradas. Ideal para procesamiento matricial de grandes mallas de actividades.",
+        "En los talleres, cada estudiante elige su herramienta de preferencia. El resultado debe ser el mismo independientemente del software.",
+        "Se proporcionará una plantilla base en cada herramienta para que enfoquen el tiempo en interpretación de resultados, no en programación."
+      ]
+    },
+    {
+      "id": 11,
+      "marker": "12. LIMITACIONES",
+      "tipo": "lista",
+      "subtitulo": "Análisis crítico",
+      "titulo": "Restricciones del Método PERT Clásico",
+      "puntos": [
+        "Sesgo de convergencia (Merge Event Bias): En nodos donde confluyen ramales paralelos, PERT solo considera la ruta de mayor duración media. Si un ramal subcrítico tiene alta variabilidad, podría volverse crítico en la ejecución real, subestimando la duración.",
+        "Independencia estadística asumida: Las fórmulas suponen que las actividades son independientes. En la práctica, factores comunes (clima, cuadrilla, proveedor) generan correlación positiva que aumenta la varianza real del proyecto.",
+        "Subjetividad de la estimación triple: La calidad del análisis depende de la rigurosidad en la definición de O, M y P. Estimaciones sin sustento histórico distorsionan los resultados.",
+        "Recomendación: Para obras de gran escala, complementar PERT con simulaciones de Monte Carlo, que evalúan iterativamente miles de escenarios combinando todas las distribuciones, incluyendo las actividades no críticas."
+      ]
+    },
+    {
+      "id": 12,
+      "marker": "13. EVALUACIÓN",
+      "tipo": "rubrica",
+      "subtitulo": "Taller Formativo — Sesión Presencial 1",
+      "titulo": "Criterios de Evaluación del Taller",
+      "criterios": [
+        {
+          "criterio": "Cálculo correcto de te y σ² para las 5 actividades",
+          "puntaje": 20,
+          "descripcion": "Aplicación precisa de las fórmulas PERT. Sin errores aritméticos. Presentación ordenada en tabla."
+        },
+        {
+          "criterio": "Identificación y justificación de la ruta crítica",
+          "puntaje": 15,
+          "descripcion": "Uso correcto de los valores esperados para determinar la secuencia de mayor duración. Análisis de precedencias."
+        },
+        {
+          "criterio": "Cálculo de μp, σ²p y σp del proyecto",
+          "puntaje": 15,
+          "descripcion": "Agregación correcta de parámetros en el camino crítico. Se verifica que σp se calcule como raíz de la varianza, no como suma."
+        },
+        {
+          "criterio": "Resolución de problemas de probabilidad y plazo contractual",
+          "puntaje": 25,
+          "descripcion": "Cálculo correcto de Z, uso adecuado de la distribución normal e interpretación ingenieril del resultado con recomendación."
+        },
+        {
+          "criterio": "Implementación funcional en software elegido",
+          "puntaje": 15,
+          "descripcion": "La plantilla en Google Sheets, Python u Octave produce resultados consistentes con el cálculo manual."
+        },
+        {
+          "criterio": "Análisis crítico de limitaciones del método",
+          "puntaje": 10,
+          "descripcion": "Identificación del sesgo de convergencia, la independencia asumida y la necesidad de Monte Carlo para proyectos complejos."
+        }
+      ]
+    }
+  ]
+}
