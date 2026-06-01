@@ -1,0 +1,193 @@
+{
+    "metadata": {
+        "titulo": "Domina la Incertidumbre con Simulación Operativa",
+        "subtitulo": "Planificación y Control de Proyectos",
+        "autor": "Clase 2, Semana 9",
+        "version": "1.0",
+        "fecha_creacion": "2024-01-15"
+    },
+    
+    "catalogo_imagenes": {
+        "portada_principal": "imagenes/portada_proyecto.jpg",
+        "diagrama_flujo": "imagenes/diagrama_red.png",
+        "grafico_analisis": "imagenes/grafico_sensibilidad.jpg",
+        "ejemplo_tabla": "imagenes/tabla_ejemplo.png",
+        "icono_herramientas": "imagenes/herramientas.jpg"
+    },
+    
+    "diapositivas": [
+        {
+            "id": 0,
+            "marker": "01. INICIO",
+            "tipo": "portada",
+            "titulo": "Domina la Incertidumbre con Simulación Operativa",
+            "subtitulo": "Actividad Presencial",
+            "texto_extra": "Planificación y Control de Proyectos",
+            "texto_extra2": "Clase 2, Semana 9"
+        },
+        
+        {
+            "id": 1,
+            "marker": "02. RECORDATORIO",
+            "tipo": "lista",
+            "subtitulo": "Conceptos Clave",
+            "titulo": "Las Paradas Técnicas No Son Retrasos",
+            "puntos": [
+                "Interrupciones lógicas exigen un modelado riguroso.",
+                "Se absorbe el vacío sin alterar la duración de trabajo neto.",
+                "El software recalcula dinámicamente fechas tempranas y tardías."
+            ]
+        },
+        
+        {
+            "id": 2,
+            "marker": "03. ANÁLISIS",
+            "tipo": "lista_con_imagen",
+            "subtitulo": "Dinámica Sistémica",
+            "titulo": "Anticipa el Comportamiento de Rutas Críticas",
+            "puntos": [
+                "La incertidumbre consume holguras libres velozmente.",
+                "Actividades paralelas estables pueden volverse críticas repentinamente.",
+                "Simular escenarios protege la viabilidad real del proyecto."
+            ],
+            "imagen_id": "diagrama_flujo",
+            "enlaces": [
+                {"texto": "Clase 1", "url": "https://ejemplo.com/clase1"},
+                {"texto": "Documento de Estudio", "url": "https://ejemplo.com/doc"},
+                {"texto": "Video", "url": "https://ejemplo.com/video"}
+            ]
+        },
+        
+        {
+            "id": 3,
+            "marker": "04. ACTIVACIÓN",
+            "tipo": "interactiva",
+            "subtitulo": "Evaluación Rápida",
+            "titulo": "Resuelve el Conflicto Sistémico",
+            "pregunta": "\"Durante la excavación \\( (HT=2) \\), se detecta roca dura. La duración neta pasa de 4 a 8 días. ¿Qué ocurre con la red?\"",
+            "respuesta_oculta": "<strong>Respuesta Técnica:</strong><br><br>La holgura se consume por completo y genera un déficit de -2 días.<br><br><strong>Efecto:</strong> La tarea se vuelve crítica y retrasa ineludiblemente el hito de término global en 2 días."
+        },
+        
+        {
+            "id": 4,
+            "marker": "05. CONTEXTO",
+            "tipo": "lista",
+            "subtitulo": "Preparación Técnica",
+            "titulo": "Modela Escenarios Dinámicos Reales",
+            "puntos": [
+                "Aplicaremos estrés operativo a una red PDM base.",
+                "Analizaremos paradas discontinuas complejas en el software.",
+                "Tomaremos decisiones estratégicas basadas en datos digitales."
+            ]
+        },
+        
+        {
+            "id": 5,
+            "marker": "06. PRÁCTICA",
+            "tipo": "practica",
+            "subtitulo": "Evaluación Formativa (60 Minutos)",
+            "titulo": "TALLER EVALUADO: Simulación de Riesgos",
+            "icono": "⏱️",
+            "herramientas": ["MS Excel", "ProjectLibre", "Google Sheets"],
+            "descripcion": "El taller evalúa la capacidad analítica frente a la entropía constructiva y el manejo de herramientas.",
+            "imagen_id": "icono_herramientas"
+        },
+        
+        {
+            "id": 6,
+            "marker": "07. DATOS BASE",
+            "tipo": "tabla",
+            "subtitulo": "Estructura Inicial",
+            "titulo": "Datos Estructurales: Proyecto \"Centro Logístico\"",
+            "columnas_tabla": ["ID", "Partida Constructiva", "Duración (Días)", "Precedencia Lógica"],
+            "datos_tabla": [
+                ["A", "Trazado y Niveles", "2", "-"],
+                ["B", "Excavación Masiva", "5", "A (FS)"],
+                ["C", "Fundaciones y Emplantillado", "6", "B (FS)"],
+                ["D", "Montaje Estructura Metálica", "8", "C (FS)"],
+                ["E", "Hormigonado de Radieres", "4", "C (SS + 2d)"],
+                ["F", "Instalación de Cubierta", "5", "D (FS)"],
+                ["G", "Revestimientos Laterales", "6", "D (FS), E (FS)"],
+                ["H", "Recepción y Aseo Final", "2", "F (FS), G (FS)"]
+            ],
+            "nota_calendario": {
+                "inicio": "Lunes 2 de Septiembre",
+                "jornada": "Lunes a Sábado (6 días laborables por semana)",
+                "feriados": "Miércoles 18 y Jueves 19 de Septiembre (Días inactivos)"
+            }
+        },
+        
+        {
+            "id": 7,
+            "marker": "08. INCERTIDUMBRE",
+            "tipo": "grid_cajas",
+            "subtitulo": "Condiciones de Estrés",
+            "titulo": "Define los Escenarios Operativos",
+            "cajas": [
+                {
+                    "titulo": "Escenario 1: Parada Técnica Discontinua",
+                    "descripcion": "Fuertes ráfagas de viento obligan a suspender el Montaje de Estructura (D) por <strong>3 días exactos</strong>. La paralización inicia al comenzar el 3er día de la tarea.",
+                    "color_borde": "#0f766e"
+                },
+                {
+                    "titulo": "Escenario 2: Falla de Rendimiento",
+                    "descripcion": "Una falla en la maquinaria de movimiento de tierras retrasa la Excavación (B). Su duración neta se extiende a <strong>8 días</strong> totales.",
+                    "color_borde": "#0f172a"
+                }
+            ]
+        },
+        
+        {
+            "id": 8,
+            "marker": "09. EJECUCIÓN",
+            "tipo": "lista",
+            "subtitulo": "Requerimientos Técnicos",
+            "titulo": "Ejecuta las Fases Analíticas",
+            "puntos": [
+                "<strong>Fase 1:</strong> Configura el calendario (sábados y feriados). Construye la red PDM base y registra plazos.",
+                "<strong>Fase 2:</strong> Simula el <em>Escenario 1</em>. Identifica el desplazamiento de fechas.",
+                "<strong>Fase 3:</strong> Simula el <em>Escenario 2</em> sobre la red base. Verifica si la ruta crítica cambia.",
+                "<strong>Fase 4:</strong> Elabora un cuadro comparativo final y sugiere mitigaciones."
+            ]
+        },
+        
+        {
+            "id": 9,
+            "marker": "10. EVALUACIÓN",
+            "tipo": "rubrica",
+            "subtitulo": "Instrumento Formativo",
+            "titulo": "Rúbrica Técnica (Escala 100 Pts)",
+            "rubricas": [
+                {"puntos": "20 pts", "titulo": "Modelado Base Correcto", "descripcion": "Cálculo exacto de la red inicial, ajustada al calendario: ES, EF, LS, LF y holguras."},
+                {"puntos": "30 pts", "titulo": "Lógica de Paradas", "descripcion": "El escenario 1 se modela sin alterar la duración de trabajo neto de la partida D."},
+                {"puntos": "30 pts", "titulo": "Análisis de Sensibilidad", "descripcion": "El escenario 2 demuestra comprensión del consumo de holguras y cambio de criticidad."},
+                {"puntos": "20 pts", "titulo": "Dominio Digital", "descripcion": "Uso estructurado, limpio y parametrizado de Excel, ProjectLibre o Google Sheets."}
+            ],
+            "imagen_id": "grafico_analisis"
+        },
+        
+        {
+            "id": 10,
+            "marker": "11. REFLEXIÓN",
+            "tipo": "cita",
+            "subtitulo": "Conclusión",
+            "titulo": "El Plan Debe Absorber la Entropía",
+            "cita": "\"Planificar bajo incertidumbre no es adivinar el futuro, es construir un sistema resiliente.\"",
+            "imagen_id": "portada_principal"
+        },
+        
+        {
+            "id": 11,
+            "marker": "12. REFERENCIAS",
+            "tipo": "lista",
+            "subtitulo": "Fuentes y Documentos",
+            "titulo": "Fundamentos Técnicos Consultados",
+            "puntos": [
+                "A. Serpell (2002). <em>Planificación y Control de Proyectos</em> (Cap. 3, 4 y 5).",
+                "H. Kerzner (2009). <em>Project Management: A Systems Approach</em>.",
+                "Materiales Semana 9: Resumen Teórico y Video \"Mapa vs Territorio\".",
+                "Cuestionario Formativo y Presentación Clase 1."
+            ]
+        }
+    ]
+}
