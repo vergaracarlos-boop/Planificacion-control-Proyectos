@@ -201,6 +201,40 @@ const Renderizadores = {
             </div>
         `;
     },
+    
+    // NUEVO TIPO: Renderiza las cajas en dos columnas paralelas usando estilo-presentacion.css
+    grid_cajas_paralelas: (slide) => {
+        const items = slide.tarjetas || slide.cajas;
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            return `
+                <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
+                <div class="content">
+                    <div class="subtitle">${slide.subtitulo}</div>
+                    <h1>${slide.titulo}</h1>
+                    <p style="color:#e53e3e;">Falta la propiedad "tarjetas" o "cajas" para este componente.</p>
+                </div>
+            `;
+        }
+        const uid = `cajas_paralelas_${slide.id}`;
+        return `
+            <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
+            <div class="content">
+                ${estilosMath(uid)}
+                <div class="subtitle">${slide.subtitulo}</div>
+                <h1>${slide.titulo}</h1>
+                
+                <div id="${uid}" class="grid-2">
+                    ${items.map(caja => `
+                        <div class="rubric-box" style="border-top-color: ${caja.color_borde || 'var(--color-accent)'};">
+                            <h3>${caja.titulo}</h3>
+                            <p>${caja.contenido || caja.descripcion || ''}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                ${renderizarImagen(getImagenId(slide))}
+            </div>
+        `;
+    },
 
     rubrica: (slide) => {
         const items = slide.criterios || slide.rubricas;
