@@ -152,12 +152,13 @@ body {
 
 /* Contenido de cada slide */
 .content {
-    padding: 2rem 3rem;
+    padding: 2rem 4%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     min-height: 100%;
+    width: 100%;
 }
 
 /* Personalizar scrollbar */
@@ -176,13 +177,14 @@ body {
 }
 
 /* Tipografía */
+/* Tipografía */
 h1 {
     font-size: 3rem;
     font-weight: 800;
     line-height: 1.2;
     letter-spacing: -0.02em;
     margin-bottom: 1.5rem;
-    max-width: 900px;
+    max-width: 85%;
     color: var(--color-accent-dark);
 }
 
@@ -198,7 +200,7 @@ h1 {
 ul.points {
     list-style: none;
     width: 100%;
-    max-width: 850px;
+    max-width: 85%;
 }
 
 ul.points li {
@@ -206,14 +208,14 @@ ul.points li {
     font-weight: 300;
     margin-bottom: 1rem;
     padding-left: 1rem;
-    border-left: var(--border-width) solid var(--color-accent);
+    border-left: 3px solid var(--color-accent);
     color: var(--color-text);
 }
 
 /* Tablas */
 table {
     width: 100%;
-    max-width: 900px;
+    max-width: 85%;
     border-collapse: collapse;
     margin-top: 0.75rem;
     background: var(--color-surface);
@@ -250,14 +252,16 @@ th {
     background: var(--color-accent);
 }
 
+/* Respuestas ocultas */
 .hidden-content {
     margin-top: 1.5rem;
     padding: 1.5rem;
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-accent-dark);
+    border: 3px solid var(--color-accent-dark);
     font-size: 1.1rem;
     display: none;
-    max-width: 850px;
+    max-width: 85%;
+    width: 100%;
 }
 
 /* Grids */
@@ -266,7 +270,7 @@ th {
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     width: 100%;
-    max-width: 950px;
+    max-width: 85%;
 }
 
 .rubric-box {
@@ -299,10 +303,10 @@ th {
     color: var(--color-text-mut);
 }
 
-/* Imágenes en slides con texto (compactas, clic para ampliar) */
+/* Imágenes */
 .img-placeholder {
     width: 100%;
-    max-width: 520px;
+    max-width: 55%;
     max-height: 220px;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
@@ -312,19 +316,18 @@ th {
     justify-content: center;
     margin-top: 1rem;
     overflow: hidden;
-    transition: box-shadow 0.2s ease;
 }
 
 .img-clickable:hover {
     box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
 }
 
+
 .img-placeholder img {
     width: 100%;
     max-height: 220px;
     height: auto;
     object-fit: contain;
-    transition: opacity 0.2s ease;
 }
 
 /* Barra de progreso */
