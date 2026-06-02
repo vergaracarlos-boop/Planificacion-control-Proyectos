@@ -128,8 +128,9 @@
       "subtitulo": "Consolidación de cálculos",
       "titulo": "Verifica tus cálculos: ¿Coinciden tus resultados?",
       "pregunta": "Usando las fórmulas PERT, calcula la duración esperada «(t_e)» y la varianza «(/sigma^2)» de la Actividad A «(O=6, M=10, P=20)». ¿Cuáles son los valores correctos?",
-      "respuesta_oculta": "<strong>Actividad A:</strong><br>«t_e = /dfrac{6 + 4 /times 10 + 20}{6} = /dfrac{66}{6} = 11{,}00» días.<br>«/sigma^2 = /left[/dfrac{20 - 6}{6}/right]^2 = /left(/dfrac{14}{6}/right)^2 = 5{,}444» días².<br>«/sigma = 2{,}333» días.<br><br>Si tus resultados coinciden, tu plantilla de cálculo está correctamente programada. Ahora repite para las actividades B, C, D y E."
+      "respuesta_oculta": "<strong>Actividad A:</strong><br>««t_e = /dfrac{6 + 4 /times 10 + 20}{6} = /dfrac{66}{6} = 11{,}00 /text{ días}»»<br>««/sigma^2 = /left[/dfrac{20 - 6}{6}/right]^2 = /left(/dfrac{14}{6}/right)^2 = 5{,}444 /text{ días}^2»»<br>««/sigma = 2{,}333 /text{ días}»»<br><br>Si tus resultados coinciden, tu plantilla de cálculo está correctamente programada. Ahora repite para las actividades B, C, D y E."
     },
+
     {
       "id": 8,
       "marker": "09. AGREGACIÓN Y RIESGO",
@@ -163,8 +164,9 @@
       "subtitulo": "Aplicación directa",
       "titulo": "¿Qué probabilidad hay de entregar en 32 días?",
       "pregunta": "El mandante solicita entregar las fundaciones en 32 días para coordinar el montaje de la estructura metálica. Con «/mu_p = 37{,}00» días y «/sigma_p = 4{,}096» días, calcula la variable «Z» y determina la probabilidad de cumplimiento. ¿Es aceptable este plazo contractual?",
-      "respuesta_oculta": "«Z = /dfrac{32 - 37}{4{,}096} = -1{,}221».<br>«P(T /leq 32) = /Phi(-1{,}221) /approx 0{,}111» → Solo un 11,1% de probabilidad de cumplimiento.<br><br>Este plazo es <strong>inaceptable</strong>: implica un riesgo operacional extremadamente alto de incumplimiento y multas. Se recomienda negociar un plazo de al menos 43 días (90% de confianza) o 44 días (95%)."
+      "respuesta_oculta": "««Z = /dfrac{32 - 37}{4{,}096} = -1{,}221»»<br>««P(T /leq 32) = /Phi(-1{,}221) /approx 0{,}111»» → Solo un 11,1% de probabilidad de cumplimiento.<br><br>Este plazo es <strong>inaceptable</strong>: implica un riesgo operacional extremadamente alto de incumplimiento y multas. Se recomienda negociar un plazo de al menos 43 días (90% de confianza) o 44 días (95%)."
     },
+
     {
       "id": 10,
       "marker": "11. IMPLEMENTACIÓN",

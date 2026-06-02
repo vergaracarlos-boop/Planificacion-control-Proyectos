@@ -1,8 +1,5 @@
 /**
- * =====================================================
- * MÓDULO DE RENDERIZADO - FUNCIONES DE PINTADO
- * VERSIÓN CON PROCESAMIENTO DE ECUACIONES «...»
- * =====================================================
+ * MÓDULO DE RENDERIZADO - VERSIÓN FINAL
  */
 
 let CATALOGO_IMAGENES = {};
@@ -12,12 +9,8 @@ function inicializarCatalogo(catalogo) {
 }
 
 function getImageSrc(imageId) {
-    if (CATALOGO_IMAGENES[imageId]) {
-        return CATALOGO_IMAGENES[imageId];
-    } else if (imageId) {
-        console.warn(`Imagen no encontrada: ${imageId}`);
-        return null;
-    }
+    if (CATALOGO_IMAGENES[imageId]) return CATALOGO_IMAGENES[imageId];
+    if (imageId) { console.warn(`Imagen no encontrada: ${imageId}`); }
     return null;
 }
 
@@ -29,12 +22,12 @@ function renderizarImagen(imageId, className = "img-placeholder") {
                     <img src="${src}" alt="Imagen referencia" style="width:100%; height:auto;">
                 </div>`;
     }
-    return `<div class="${className}">[IMAGEN: ${imageId}] - Verificar carpeta imagenes/</div>`;
+    return `<div class="${className}">[IMAGEN: ${imageId}]</div>`;
 }
 
 function renderizarEnlaces(enlaces) {
     if (!enlaces || enlaces.length === 0) return '';
-    return `<p style="margin-top: 2rem; font-size: 1.1rem; color: var(--color-text-mut); max-width: 800px;">
+    return `<p style="margin-top:2rem; font-size:1.1rem; color:var(--color-text-mut); max-width:85%;">
                 *Se asume la revisión de ${enlaces.map(e => `<a href="${e.url}" target="_blank">${e.texto}</a>`).join(", ")}.
             </p>`;
 }
@@ -43,29 +36,33 @@ function getImagenId(slide) {
     return slide.imagen || slide.imagen_id || null;
 }
 
-// =====================================================
-// CONVERSOR DE ECUACIONES
-// «sigma» → $$sigma$$        (símbolo simple)
-// «/sigma» → $$\sigma$$      (/ = prefijo LaTeX → \)
-// «/dfrac{a}{b}» → $$\dfrac{a}{b}$$
-// =====================================================
+// Conversor de ecuaciones
+// «x» → inline math \(x\)
+// ««x»» → display math \[x\]
+// /letra → \letra (prefijo LaTeX)
 function procesarEcuaciones(html) {
-    // Display math: ««...»» → $$...$$ (ecuación centrada, en bloque propio)
-    html = html.replace(/««([^»]+)»»/g, (match, contenido) => {
-        const latex = contenido.replace(/\/([a-zA-Z])/g, '\\$1');
+    html = html.replace(/««([^»]+)»»/g, (m, c) => {
+        const latex = c.replace(/\/([a-zA-Z])/g, '\\$1');
         return `\\[${latex}\\]`;
     });
-    // Inline math: «...» → $$...$$
-    html = html.replace(/«([^»]+)»/g, (match, contenido) => {
-        const latex = contenido.replace(/\/([a-zA-Z])/g, '\\$1');
+    html = html.replace(/«([^»]+)»/g, (m, c) => {
+        const latex = c.replace(/\/([a-zA-Z])/g, '\\$1');
         return `\\(${latex}\\)`;
     });
     return html;
 }
 
+// Estilos KaTeX forzados para ecuaciones en contenedores pequeños
+function estilosMath(containerId) {
+    return `<style>
+        #${containerId} .katex-display { margin: 0.6rem 0 !important; }
+        #${containerId} .katex-display > .katex { font-size: 1.15em !important; }
+        #${containerId} .katex { font-size: 1em !important; }
+    </style>`;
+}
 
 // =====================================================
-// RENDERIZADORES POR TIPO
+// RENDERIZADORES
 // =====================================================
 
 const Renderizadores = {
@@ -107,17 +104,18 @@ const Renderizadores = {
     `,
 
     interactiva: (slide) => {
-        const uniqueId = `ans_${slide.id}_${Date.now()}`;
+        const uid = `ans_${slide.id}`;
         return `
             <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
             <div class="content">
+                ${estilosMath(uid)}
                 <div class="subtitle">${slide.subtitulo}</div>
                 <h1>${slide.titulo}</h1>
-                <div style="font-size: 2.2rem; font-weight: 300; margin-bottom: 2rem; max-width: 900px;">
+                <div style="font-size:2rem; font-weight:300; margin-bottom:2rem; max-width:85%;">
                     ${slide.pregunta || 'No se definió una pregunta'}
                 </div>
-                <button class="btn" onclick="window.toggleAnswer('${uniqueId}')">Evaluar Impacto</button>
-                <div id="${uniqueId}" class="hidden-content">${slide.respuesta_oculta || 'No se definió una respuesta'}</div>
+                <button class="btn" onclick="window.toggleAnswer('${uid}')">Evaluar Impacto</button>
+                <div id="${uid}" class="hidden-content">${slide.respuesta_oculta || 'No se definió una respuesta'}</div>
                 ${renderizarImagen(getImagenId(slide))}
             </div>
         `;
@@ -126,14 +124,14 @@ const Renderizadores = {
     practica: (slide) => `
         <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
         <div class="content">
-            <div class="icon-large" style="font-size: 4rem;">${slide.icono || "📊"}</div>
+            <div style="font-size:4rem;">${slide.icono || "📊"}</div>
             <div class="subtitle">${slide.subtitulo}</div>
             <h1>${slide.titulo}</h1>
-            <div style="font-size: 1.5rem; font-weight: 500; margin-top: 1rem;">
+            <div style="font-size:1.5rem; font-weight:500; margin-top:1rem;">
                 Herramientas permitidas:<br>
-                ${slide.herramientas ? slide.herramientas.map(h => `<span style="color:var(--color-accent); font-weight: 800;">${h}</span>`).join(", ") : 'No se definieron herramientas'}
+                ${slide.herramientas ? slide.herramientas.map(h => `<span style="color:var(--color-accent); font-weight:800;">${h}</span>`).join(", ") : 'No se definieron herramientas'}
             </div>
-            <div style="margin-top: 1.5rem; font-size: 1.15rem; color: var(--color-text-mut);">
+            <div style="margin-top:1.5rem; font-size:1.15rem; color:var(--color-text-mut);">
                 ${slide.descripcion || ''}
             </div>
             ${renderizarImagen(getImagenId(slide))}
@@ -147,13 +145,10 @@ const Renderizadores = {
                 <div class="content">
                     <div class="subtitle">${slide.subtitulo}</div>
                     <h1>${slide.titulo}</h1>
-                    <div style="color: #e53e3e; padding: 1rem; border: 1px solid #e53e3e;">
-                        Error: Faltan datos de tabla (columnas_tabla o datos_tabla)
-                    </div>
+                    <p style="color:#e53e3e;">Error: Faltan datos de tabla</p>
                 </div>
             `;
         }
-
         return `
             <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
             <div class="content">
@@ -164,13 +159,12 @@ const Renderizadores = {
                     <tbody>${slide.datos_tabla.map(fila => `<tr>${fila.map(celda => `<td>${celda}</td>`).join('')}</tr>`).join('')}</tbody>
                 </table>
                 ${slide.nota_calendario ? `
-                <div style="margin-top: 1.5rem; font-size: 1.05rem; border: 1px solid #cbd5e1; border-left: 6px solid var(--color-accent-dark); padding: 1rem; background: var(--color-surface);">
-                    <strong style="color: var(--color-accent-dark); text-transform: uppercase; font-size: 0.95rem;">Parámetros de Calendario</strong><br><br>
+                <div style="margin-top:1.5rem; font-size:1.05rem; border:1px solid #cbd5e1; border-left:6px solid var(--color-accent-dark); padding:1rem; background:var(--color-surface);">
+                    <strong style="color:var(--color-accent-dark); text-transform:uppercase; font-size:0.95rem;">Parámetros de Calendario</strong><br><br>
                     • <strong>Fecha de Inicio:</strong> ${slide.nota_calendario.inicio}<br>
                     • <strong>Jornada Operativa:</strong> ${slide.nota_calendario.jornada}<br>
                     • <strong>Feriados Obligatorios:</strong> ${slide.nota_calendario.feriados}
-                </div>
-                ` : ''}
+                </div>` : ''}
                 ${renderizarImagen(getImagenId(slide))}
             </div>
         `;
@@ -184,20 +178,21 @@ const Renderizadores = {
                 <div class="content">
                     <div class="subtitle">${slide.subtitulo}</div>
                     <h1>${slide.titulo}</h1>
-                    <p style="color:#e53e3e;">Falta la propiedad "tarjetas" en esta diapositiva.</p>
+                    <p style="color:#e53e3e;">Falta la propiedad "tarjetas".</p>
                 </div>
             `;
         }
-
+        const uid = `cajas_${slide.id}`;
         return `
             <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
             <div class="content">
+                ${estilosMath(uid)}
                 <div class="subtitle">${slide.subtitulo}</div>
                 <h1>${slide.titulo}</h1>
-                <div style="display:flex; flex-direction:column; gap:1.25rem; width:100%; max-width:800px;">
-                    ${items.map((caja, i) => `
-                        <div class="rubric-box" style="border-left:6px solid ${caja.color_borde || '#0f766e'}; padding:1.2rem 1.5rem; background:#fff;">
-                            <h3 style="font-size:0.95rem; margin-bottom:0.5rem; letter-spacing:0.02em;">${caja.titulo}</h3>
+                <div id="${uid}" style="display:flex; flex-direction:column; gap:1.25rem; width:100%; max-width:85%;">
+                    ${items.map(caja => `
+                        <div class="rubric-box" style="border-left:6px solid ${caja.color_borde || '#0f766e'}; padding:1.2rem 1.5rem;">
+                            <h3 style="font-size:0.95rem; margin-bottom:0.5rem;">${caja.titulo}</h3>
                             <p style="font-size:0.88rem; line-height:1.75; color:var(--color-text-mut); margin:0;">${caja.contenido || caja.descripcion || ''}</p>
                         </div>
                     `).join('')}
@@ -207,8 +202,6 @@ const Renderizadores = {
         `;
     },
 
-
-
     rubrica: (slide) => {
         const items = slide.criterios || slide.rubricas;
         if (!items || !Array.isArray(items) || items.length === 0) {
@@ -217,13 +210,10 @@ const Renderizadores = {
                 <div class="content">
                     <div class="subtitle">${slide.subtitulo}</div>
                     <h1>${slide.titulo}</h1>
-                    <div style="color: #e53e3e; padding: 1rem; border: 1px solid #e53e3e;">
-                        Error: Faltan datos de rúbrica
-                    </div>
+                    <p style="color:#e53e3e;">Faltan datos de rúbrica</p>
                 </div>
             `;
         }
-
         return `
             <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
             <div class="content">
@@ -249,44 +239,37 @@ const Renderizadores = {
             <div class="subtitle">${slide.subtitulo}</div>
             <h1>${slide.titulo}</h1>
             ${renderizarImagen(getImagenId(slide))}
-            <div style="font-size: 2.2rem; font-weight: 300; margin-top: 2rem; line-height: 1.3; border-left: 4px solid var(--color-accent); padding-left: 2rem;">
+            <div style="font-size:2.2rem; font-weight:300; margin-top:2rem; line-height:1.3; border-left:4px solid var(--color-accent); padding-left:2rem;">
                 ${slide.cita || 'No se definió una cita'}
             </div>
         </div>
     `,
-        // ✅ NUEVO: Slide de solo imagen con título
+
     imagen_full: (slide) => `
         <div class="sidebar"><div class="section-marker">${slide.marker}</div></div>
-        <div class="content" style="justify-content: flex-start; padding-top: 2rem;">
+        <div class="content" style="justify-content:flex-start; padding-top:2rem;">
             <div class="subtitle">${slide.subtitulo || ''}</div>
-            <h1 style="margin-bottom: 1rem;">${slide.titulo}</h1>
+            <h1 style="margin-bottom:1rem;">${slide.titulo}</h1>
             ${renderizarImagen(getImagenId(slide), "img-placeholder img-full")}
         </div>
     `
 };
 
 // =====================================================
-// FUNCIONES DE RENDERIZADO PRINCIPAL
+// FUNCIONES PRINCIPALES
 // =====================================================
 
 function renderizarDiapositiva(slide) {
-    const renderizador = Renderizadores[slide.tipo];
-    if (renderizador) {
-        return procesarEcuaciones(renderizador(slide));
-    }
-    return procesarEcuaciones(`<div class="sidebar"><div class="section-marker">${slide.marker || 'ERROR'}</div></div>
-            <div class="content"><h1>Tipo no soportado: ${slide.tipo || 'desconocido'}</h1></div>`);
+    const r = Renderizadores[slide.tipo];
+    return procesarEcuaciones(r ? r(slide) : `<div class="content"><h1>Tipo no soportado: ${slide.tipo}</h1></div>`);
 }
 
 function renderizarDiapositivaSinSidebar(slide) {
-    const renderizador = Renderizadores[slide.tipo];
-    if (renderizador) {
-        const htmlCompleto = procesarEcuaciones(renderizador(slide));
-        const contentStart = htmlCompleto.indexOf('<div class="content">');
-        if (contentStart !== -1) {
-            return htmlCompleto.substring(contentStart);
-        }
-        return htmlCompleto;
+    const r = Renderizadores[slide.tipo];
+    if (r) {
+        const html = procesarEcuaciones(r(slide));
+        const i = html.indexOf('<div class="content">');
+        return i !== -1 ? html.substring(i) : html;
     }
     return `<div class="content"><h1>${slide.titulo || "Tipo no soportado"}</h1></div>`;
 }
