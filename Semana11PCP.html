@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Aula Invertida - Gestión en Ingeniería</title>
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #3498DB;
+            --bg-light: #ECF0F1;
+            --success: #27AE60;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* Encabezado */
+        header {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--secondary);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header h2 {
+            font-size: 1.2rem;
+            color: var(--bg-light);
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* Secciones y Fases */
+        .phase-section {
+            padding: 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .phase-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .objective-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+
+        .objective-box strong {
+            color: var(--primary);
+        }
+
+        .instruction-highlight {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        /* Sistema de Tarjetas (Cards) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card::after {
+            content: '✓';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            padding-right: 25px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Iframe responsivo */
+        .iframe-container {
+            width: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            background: var(--bg-light);
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 350px;
+            border: none;
+            display: block;
+        }
+
+        /* Botones */
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: #ffffff;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #2980B9;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--secondary);
+            color: #ffffff;
+        }
+
+        /* Grilla de Días */
+        .days-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .day-card {
+            background-color: #ffffff;
+            border: 1px solid #eaeaea;
+            border-top: 5px solid var(--primary);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .day-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .day-card h3 {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bg-light);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .day-card .activity-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 15px;
+            display: block;
+        }
+
+        .day-card p {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        /* Pie de página */
+        footer {
+            padding: 40px;
+            background-color: #f8f9fa;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer-line {
+            width: 60px;
+            height: 3px;
+            background-color: var(--secondary);
+            margin: 0 auto 20px;
+            border-radius: 2px;
+        }
+
+        .footer-reminder {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .footer-links {
+            margin-bottom: 25px;
+            color: var(--text-muted);
+        }
+
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .credits {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            opacity: 0.8;
+        }
+
+        /* Media Queries para Responsividad */
+        @media (max-width: 768px) {
+            header {
+                padding: 30px 15px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .phase-section {
+                padding: 25px 15px;
+            }
+            
+            .days-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .iframe-container iframe {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Encabezado -->
+        <header>
+            <h1>Semana 11: Planificación con incertidumbre: <strong>Beta - PERT</strong></h1>
+            <h2>Planificación del 1 al 5 de junio</h2>
+        </header>
+
+        <!-- Fase 1: Preparación -->
+        <section class="phase-section">
+            <h2 class="section-title"><span>📖</span> FASE 1: PREPARACIÓN · Trabajo autónomo previo</h2>
+            
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Introducir a los estudiantes en los conceptos fundamentales de la gestión en ingeniería.
+            </div>
+            
+            <span class="instruction-highlight">Completa las siguientes actividades ANTES de nuestras sesiones presenciales. Prepara tus apuntes y dudas.</span>
+            
+            <div class="cards-grid">
+                <!-- Tarjeta 1: PDF -->
+                <div class="card">
+                    <h3>Planificación y Control de Proyectos:Planificación y Control de Proyectos con Incertidumbre</h3>
+                    <p>Revisa este documento base antes de continuar.</p>
+                    <div class="iframe-container">
+                        <iframe src="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Resumen_Semana_11.pdf" title="Documento de lectura"></iframe>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2: Video -->
+                <div class="card">
+                    <h3>🎥 Video: Beta-PERT</h3>
+                    <p>Este video complementa la lectura con ejemplos prácticos sobre la realidad de la obra y el ajuste de recursos.</p>
+                    <a href="https://youtu.be/HoKvZqTpcB4" target="_blank" class="btn" rel="noopener noreferrer">Ver video en YouTube</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fase 2: Sesiones Presenciales -->
+        <section class="phase-section">
+            <h2 class="section-title"><span>👥</span> FASE 2: SESIONES PRESENCIALES · Práctica guiada y colaboración</h2>
+            
+            <div class="objective-box">
+                <strong>Objetivo:</strong> Profundizar en los conceptos y aplicarlos en actividades prácticas.
+            </div>
+            
+            <span class="instruction-highlight">Asiste y participa activamente en ambas sesiones.</span>
+            
+            <div class="days-grid">
+                <!-- Columna Martes -->
+                <div class="day-card">
+                    <h3>MARTES</h3>
+                    <span class="activity-label">Activación:</span>
+                    <p>Probabilidad de cumplimiento de hitos.</p>
+                    
+                    <span class="activity-label">Actividad:</span>
+                    <p>Estimación probabilística de tiempos (O, P, M).</p>
+                    
+                    <span class="activity-label">Presentación Clase Martes:</span>
+                    <p><a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/slidesC1Semana11/index.html" target="_blank" rel="noopener noreferrer">Clase 1 Semana 11</a></p>
+                    <!-- Agregar texto pdf en actividades diarias -->
+                    <!--<div style="margin-top: 20px; text-align: center;">
+                        <a href="https://vergaracarlos-boop.github.io/Planificacion-control-Proyectos/docPDF/Ejercicios_asignacion_recursos_Semana_10.pdf" target="_blank" class="btn btn-outline" rel="noopener noreferrer">
+                            📥 Descargar Guía de Ejercicio
+                        </a>
+                    </div>-->
+                </div>
+
+                <!-- Columna Jueves -->
+                <div class="day-card">
+                    <h3>JUEVES</h3>
+                    <span class="activity-label">Activación:</span>
+                    <p>Varianza y nivel de confianza.</p>
+                    
+                    <span class="activity-label">Actividad:</span>
+                    <p>Cálculo de fechas contractuales con seguridad estadística.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pie de página y Notas -->
+        <footer>
+            <div class="footer-line"></div>
+            <p class="footer-reminder">Recuerda que la preparación previa es clave para el aprovechamiento de las sesiones presenciales.</p>
+            
+            <p class="footer-links">
+                🤖 Apóyate en nuestro Chatbot IA: <a href="https://poe.com/IngProyectosBot" target="_blank" rel="noopener noreferrer">IngProyectosBot</a><br>
+                💬 O utiliza nuestro canal de consultas: <a href="https://chat.google.com/room/AAQAx5IqQps?cls=7" target="_blank" rel="noopener noreferrer">Chat de Google (Sala Asignatura)</a>
+            </p>
+            
+            <p class="credits">Planificación diseñada para curso de Ingeniería · Formato Aula Invertida</p>
+        </footer>
+    </div>
+
+</body>
+</html>
