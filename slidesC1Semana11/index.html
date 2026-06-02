@@ -4,29 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Presentación Técnica | Plantilla Modular</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
-    
-    <link rel="stylesheet" href="css/estilo-presentacion.css">
+
+    <!-- KaTeX: reemplaza MathJax -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <link rel="stylesheet" href="css/estilo-presentacion.css?v=2">
 </head>
 <body>
 
     <div id="progress" style="width: 0%;"></div>
-    
-    <!-- MENÚ LATERAL GLOBAL (NUEVO) -->
+
     <div id="global-sidebar">
         <div id="global-menu-container"></div>
         <div class="nav-hints-global">→ Flecha Der / Espacio<br>← Flecha Izq<br>[F] Pantalla Completa</div>
     </div>
-    
+
     <div id="deck"></div>
 
-    <script src="js/core/renderizado.js"></script>
-    <script src="js/core/navegacion.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/core/renderizado.js?v=2"></script>
+    <script src="js/core/navegacion.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
 </body>
 </html>
