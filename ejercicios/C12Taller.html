@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluación: Análisis de Riesgo en Proyectos mediante Simulación de Montecarlo</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; max-width: 900px; margin: 30px auto; padding: 20px; color: #333; }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #34495e; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        p { text-align: justify; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 3px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #34495e; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        ul, ol { margin-left: 20px; }
+        li { margin-bottom: 10px; }
+        .alert-box { background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .alert-box strong { color: #856404; }
+    </style>
+</head>
+<body>
+
+    <h1>Evaluación Práctica: Simulación de Montecarlo en Redes de Proyectos</h1>
+
+    <h2>1. Contexto del Problema</h2>
+    <p>
+        Un proyecto compuesto por 10 actividades (de la A a la J) presenta variabilidad e incertidumbre en los tiempos de ejecución de sus tareas. Debido a esto, las estimaciones estáticas tradicionales (como el método de la ruta crítica clásico) no son suficientes para asegurar el cumplimiento de los plazos. Para modelar el comportamiento real de la red, se han estimado tres escenarios de duración para cada actividad: <strong>Optimista (op)</strong>, <strong>Moda o Más Probable (moda)</strong> y <strong>Pesimista (pes)</strong>.
+    </p>
+
+    <h2>2. Datos del Proyecto</h2>
+    <p>
+        A continuación, se presenta la tabla con la estructura de dependencias lógicas y los tiempos estimados para cada actividad:
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Actividad</th>
+                <th>Predecesores</th>
+                <th>Duración Optimista (op)</th>
+                <th>Duración Moda (moda)</th>
+                <th>Duración Pesimista (pes)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>A</strong></td>
+                <td>-</td>
+                <td>2</td>
+                <td>4</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td><strong>B</strong></td>
+                <td>A</td>
+                <td>5</td>
+                <td>7</td>
+                <td>11</td>
+            </tr>
+            <tr>
+                <td><strong>C</strong></td>
+                <td>B</td>
+                <td>3</td>
+                <td>6</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td><strong>D</strong></td>
+                <td>B</td>
+                <td>6</td>
+                <td>9</td>
+                <td>15</td>
+            </tr>
+            <tr>
+                <td><strong>F</strong></td>
+                <td>C</td>
+                <td>4</td>
+                <td>6</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td><strong>E</strong></td>
+                <td>F, D</td>
+                <td>3</td>
+                <td>5</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td><strong>G</strong></td>
+                <td>E</td>
+                <td>4</td>
+                <td>6</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td><strong>H</strong></td>
+                <td>E</td>
+                <td>5</td>
+                <td>8</td>
+                <td>14</td>
+            </tr>
+            <tr>
+                <td><strong>I</strong></td>
+                <td>H, G</td>
+                <td>3</td>
+                <td>5</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td><strong>J</strong></td>
+                <td>I</td>
+                <td>2</td>
+                <td>3</td>
+                <td>6</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="alert-box">
+        <strong>¡Importante considerar durante el desarrollo!:</strong> Recuerde que al incorporar variabilidad en las duraciones, la ruta crítica deja de ser estática. En una iteración específica de la simulación, un camino rezagado podría superar al camino previsto originalmente y convertirse en la ruta crítica de esa línea. Por lo tanto, el modelo debe recalcular por completo el paso hacia adelante y el paso hacia atrás en cada iteración individual.
+    </div>
+
+    <h2>3. Requerimientos de la Entrega</h2>
+    <p>Los estudiantes deberán desarrollar y documentar un modelo de simulación en una planilla de cálculo (ej. Excel) o entorno de programación, respondiendo formalmente a los siguientes puntos:</p>
+    
+    <ol>
+        <li>
+            <strong>Dibujo del diagrama de red:</strong> Utilizando la tabla de precedencias, dibuje de forma clara el grafo o diagrama de bloques que representa la secuencia lógica del proyecto.
+        </li>
+        <li>
+            <strong>Definición de variables aleatorias:</strong> Declare analíticamente las variables aleatorias asociadas a la duración de cada una de las actividades del proyecto.
+        </li>
+        <li>
+            <strong>Función de distribución de probabilidad:</strong> Defina y fundamente la función de distribución utilizada para modelar los tres tiempos de estimación (Distribución Triangular), mostrando las ecuaciones matemáticas de asignación que se programarán.
+        </li>
+        <li>
+            <strong>Modelo de Simulación de Montecarlo:</strong> Construya la estructura de simulación ejecutando exactamente <strong>500 iteraciones</strong>. Cada línea de simulación debe registrar de forma independiente la duración de cada tarea, la duración total resultante del proyecto y las holguras correspondientes.
+        </li>
+        <li>
+            <strong>Prueba de la Ley Fuerte de los Números Grandes:</strong> Grafique la evolución de la media acumulada de la duración total del proyecto a lo largo de las 500 iteraciones. Analice y comente el comportamiento del gráfico respecto a la convergencia y estabilización del valor esperado.
+        </li>
+        <li>
+            <strong>Gráfico de Probabilidades vs. Duración:</strong> Genere un histograma de frecuencias y una curva S de probabilidad acumulada para la duración total del proyecto. Indique claramente cuál es la probabilidad de terminar el proyecto antes del tiempo obtenido bajo el análisis estático de la moda.
+        </li>
+        <li>
+            <strong>Factor de Criticidad por Actividad:</strong> Calcule el índice o factor de criticidad para cada una de las actividades (A-J), expresado como el porcentaje de las 500 iteraciones en las cuales la actividad obtuvo una holgura igual a cero. Identifique cuáles son las actividades con mayor riesgo operacional.
+        </li>
+    </ol>
+
+</body>
+</html>
