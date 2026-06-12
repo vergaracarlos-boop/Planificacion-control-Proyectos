@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interactivo: Taller Sumativo RA2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Slate gray for structure, neutral white for content areas, and engineering blue/teal accents (bg-slate-900, text-blue-700, bg-slate-50, bg-teal-600) for trust and precision. -->
+    <!-- Application Structure Plan: A progressive dashboard layout designed to guide the student intuitively through the evaluation requirements. It moves from theoretical context to interactive project data, then to specific page-by-page deliverables, and finally to the grading rubric. This chunking prevents cognitive overload and allows students to focus on one specific aspect of the complex assignment at a time. -->
+    <!-- Visualization & Content Choices: The report's theoretical concepts are presented as an interactive grid to encourage active reading. The raw project data table is paired with a dynamic Chart.js bar chart (NO SVG used) to instantly visualize the PERT distribution (Optimistic vs Expected vs Pessimistic) for any selected activity, bridging the gap between raw numbers and statistical concepts. Deliverables are tabbed to mirror the strict "Page Budget" constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+        }
+        .concept-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .table-row-interactive {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .table-row-interactive:hover, .table-row-interactive.active {
+            background-color: #e0f2fe;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <nav class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">🏗️</span>
+                    <span class="font-bold text-lg tracking-tight">Planificación y Control: Evaluación RA2</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#contexto" class="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium">🧠 Contexto</a>
+                        <a href="#datos" class="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium">📊 Datos</a>
+                        <a href="#entregables" class="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium">📑 Entregables</a>
+                        <a href="#rubrica" class="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium">📋 Rúbrica</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-blue-800 text-white py-12 shadow-inner">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-extrabold mb-4">Taller Sumativo de Programación Avanzada</h1>
+            <p class="text-xl text-blue-100 max-w-3xl">Guía interactiva para la aplicación de CPM, Algoritmo PERT y Simulación estocástica de Montecarlo en proyectos de obras civiles.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <section id="contexto" class="scroll-mt-20">
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-blue-600 pb-2 inline-block">1. Contexto y Desafío</h2>
+                <p class="mt-4 text-slate-600 text-lg">Esta sección establece el marco teórico y la problemática central del caso. Aquí encontrarás la descripción del encargo profesional y los fundamentos matemáticos que debes aplicar para resolver la incertidumbre del proyecto. Comprender estos conceptos es vital antes de iniciar cualquier cálculo.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 mb-8">
+                <h3 class="text-xl font-semibold text-blue-800 mb-3">🏢 El Encargo Profesional</h3>
+                <p class="text-slate-700 leading-relaxed mb-4">
+                    Ustedes forman parte del equipo de Control de Proyectos de una prestigiosa constructora. Se les ha encomendado planificar la fase crítica de obras civiles para la subestructura de un edificio industrial de alta complejidad.
+                </p>
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                    <p class="text-red-800 font-medium">
+                        <strong>Restricción Contractual:</strong> El mandante exige un plazo de ejecución máximo de <span class="text-2xl font-bold mx-1">23</span> días hábiles. Un retraso significará multas diarias severas.
+                    </p>
+                </div>
+                <p class="text-slate-700 leading-relaxed">
+                    El proyecto consta de 8 actividades principales con relaciones de precedencia puras de Término-Comienzo (FC = 0). Debido a las condiciones geotécnicas y la variabilidad en el suministro de materiales, el equipo ha estimado tres escenarios de duración para cada tarea: Optimista (a), Más Probable (m) y Pesimista (b).
+                </p>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mb-4">🧠 Fundamentos Teóricos Requeridos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="concept-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition-all duration-300 cursor-default">
+                    <div class="text-3xl mb-3">⏱️</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-2">Camino Crítico (CPM)</h4>
+                    <p class="text-sm text-slate-600">Secuencia de actividades con holgura total igual a cero (HT = 0) que determina la duración mínima en un escenario estrictamente determinista.</p>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition-all duration-300 cursor-default">
+                    <div class="text-3xl mb-3">📈</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-2">Algoritmo PERT</h4>
+                    <p class="text-sm text-slate-600 mb-2">Modelo estadístico para duración esperada (Te) y varianza (σ²):</p>
+                    <div class="bg-slate-100 p-2 rounded text-xs font-mono text-center">Te = (a + 4m + b) / 6</div>
+                    <div class="bg-slate-100 p-2 rounded text-xs font-mono text-center mt-1">σ² = ((b - a) / 6)²</div>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition-all duration-300 cursor-default">
+                    <div class="text-3xl mb-3">🔔</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-2">Teorema Límite Central</h4>
+                    <p class="text-sm text-slate-600">La duración de la ruta crítica tiende a una distribución normal. Permite calcular probabilidad de plazo (Td) vía: <span class="font-mono bg-slate-100 px-1">Z = (Td - μ) / σ</span></p>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition-all duration-300 cursor-default">
+                    <div class="text-3xl mb-3">🔢</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-2">Ley de Grandes Números</h4>
+                    <p class="text-sm text-slate-600">Garantiza que el promedio acumulado de la simulación converge al valor esperado teórico a medida que las iteraciones (n) tienden a infinito.</p>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition-all duration-300 cursor-default lg:col-span-2">
+                    <div class="text-3xl mb-3">🔀</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-2">Sesgo de Convergencia (Merge Event Bias)</h4>
+                    <p class="text-sm text-slate-600">Distorsión que ocurre en nodos donde convergen múltiples rutas paralelas. Como el sucesor espera a la <em>última</em> predecesora, la duración esperada real del nodo tiende a ser mayor que la calculada por PERT clásico.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="datos" class="scroll-mt-20">
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-blue-600 pb-2 inline-block">2. Parámetros Técnicos y Exploración</h2>
+                <p class="mt-4 text-slate-600 text-lg">En esta sección se presentan los datos brutos del proyecto (actividades, precedencias y estimaciones de tiempo). Selecciona cualquier fila de la tabla para interactuar con el modelo matemático y visualizar automáticamente cómo difieren las estimaciones deterministas de la media estocástica (PERT) para esa actividad en específico.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                
+                <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-800 text-white px-6 py-4">
+                        <h3 class="font-semibold text-lg">Tabla de Actividades</h3>
+                        <p class="text-xs text-slate-300">Haz clic en una fila para analizar la actividad.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-3">ID</th>
+                                    <th class="px-4 py-3">Actividad</th>
+                                    <th class="px-4 py-3">Prec.</th>
+                                    <th class="px-2 py-3 text-center" title="Optimista">a</th>
+                                    <th class="px-2 py-3 text-center" title="Más Probable">m</th>
+                                    <th class="px-2 py-3 text-center" title="Pesimista">b</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 bg-slate-50 text-xs text-slate-500 border-t border-slate-200">
+                        * Todas las relaciones son Término-Comienzo (FC = 0).
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sticky top-24">
+                    <h3 class="font-semibold text-xl text-slate-800 mb-2">Análisis de Varianza: Actividad <span id="selectedActivityId" class="text-blue-600">A</span></h3>
+                    <p id="selectedActivityName" class="text-sm text-slate-500 mb-6 h-10">Excavación y Obras de Desvío</p>
+                    
+                    <div class="chart-container">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <p class="text-xs text-blue-600 font-bold uppercase mb-1">Duración Esperada (Te)</p>
+                            <p class="text-3xl font-black text-blue-900" id="calcTe">0.00</p>
+                            <p class="text-xs text-slate-500 mt-1 formula">Te = (a + 4m + b) / 6</p>
+                        </div>
+                        <div class="bg-teal-50 p-4 rounded-lg border border-teal-100">
+                            <p class="text-xs text-teal-600 font-bold uppercase mb-1">Varianza (σ²)</p>
+                            <p class="text-3xl font-black text-teal-900" id="calcVar">0.00</p>
+                            <p class="text-xs text-slate-500 mt-1 formula">σ² = ((b - a) / 6)²</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="entregables" class="scroll-mt-20">
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-blue-600 pb-2 inline-block">3. Presupuesto de Páginas (Entregables)</h2>
+                <p class="mt-4 text-slate-600 text-lg">La evaluación exige un Informe Ejecutivo formal con un límite estricto de 4 páginas. Para fomentar la capacidad de síntesis, utiliza la navegación por pestañas a continuación para revisar qué contenido exacto debe ir en cada página de tu documento. Superar este límite restará puntos.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="flex flex-wrap border-b border-slate-200 bg-slate-50">
+                    <button onclick="switchTab('page1')" id="btn-page1" class="tab-btn flex-1 py-4 px-6 text-center font-bold border-b-4 border-blue-600 text-blue-600 hover:bg-slate-100">Pág 1: Red y Contexto</button>
+                    <button onclick="switchTab('page2')" id="btn-page2" class="tab-btn flex-1 py-4 px-6 text-center font-bold border-b-4 border-transparent text-slate-500 hover:bg-slate-100">Pág 2: CPM y PERT</button>
+                    <button onclick="switchTab('page3')" id="btn-page3" class="tab-btn flex-1 py-4 px-6 text-center font-bold border-b-4 border-transparent text-slate-500 hover:bg-slate-100">Pág 3: Montecarlo</button>
+                    <button onclick="switchTab('page4')" id="btn-page4" class="tab-btn flex-1 py-4 px-6 text-center font-bold border-b-4 border-transparent text-slate-500 hover:bg-slate-100">Pág 4: Análisis Cuantitativo</button>
+                </div>
+
+                <div class="p-8">
+                    
+                    <div id="page1" class="tab-content block">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4 text-blue-600">📄</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Presentación, Contextualización y Diagrama de Red</h3>
+                        </div>
+                        <ul class="space-y-4 text-slate-700 list-none">
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Portada Ejecutiva:</strong> Título del proyecto, fecha, identificación de los autores y asignatura (máximo un tercio superior de la página).</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Resumen Ejecutivo:</strong> Un único párrafo (máximo 250 palabras) que sintetice el problema, la metodología aplicada, las métricas clave encontradas y la recomendación principal para el directorio.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Introducción:</strong> Declaración clara del objetivo del informe y la justificación técnica de por qué la programación determinista (CPM) es insuficiente ante la variabilidad de las obras civiles.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Diagrama de Red PDM:</strong> Gráfico formal del diagrama de precedencias del proyecto utilizando la notación de bloques/nodos (ES, EF, LS, LF, HT, HL) para las duraciones más probables (m). Debe ser completamente legible.</div></li>
+                        </ul>
+                    </div>
+
+                    
+                    <div id="page2" class="tab-content hidden">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4 text-blue-600">📈</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Desarrollo Metodológico Determinista y Estadístico</h3>
+                        </div>
+                        <ul class="space-y-4 text-slate-700 list-none">
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Desarrollo CPM:</strong> Tabla de resultados analíticos del camino crítico con fechas tempranas, tardías y holguras para las 8 actividades. Identificación explícita de la ruta crítica y la duración total (T<sub>CPM</sub>).</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Desarrollo PERT:</strong> Tabla resumen con los valores calculados de duración esperada (T<sub>e</sub>) y varianza (σ²) por actividad. Identificación de la ruta crítica probabilística.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Curva S Analítica de PERT:</strong> Gráfico de la función de distribución acumulada normal P(T ≤ t) frente a la duración del proyecto t.</div></li>
+                            <li class="flex items-start bg-yellow-50 p-3 rounded text-yellow-900 border border-yellow-200">
+                                <span class="mr-2">⚠️</span> <strong>Obligatorio:</strong> Marcar el plazo de 23 días con su probabilidad analítica y desglosar matemáticamente el cálculo para asegurar un plazo al 95% de confianza.
+                            </li>
+                        </ul>
+                    </div>
+
+                    
+                    <div id="page3" class="tab-content hidden">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4 text-blue-600">💻</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Resultados de la Simulación Estocástica (Montecarlo)</h3>
+                        </div>
+                        <ul class="space-y-4 text-slate-700 list-none">
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Ley Fuerte de los Grandes Números:</strong> Plotear el promedio acumulado de la duración total del proyecto contra el número de iteraciones (hasta 1.000). Debe demostrar la convergencia del simulador.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Curva S Empírica de Montecarlo:</strong> Gráfico empírico de probabilidad acumulada y duración basado en las 1.000 iteraciones realizadas en Google Sheets.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div>
+                                <strong>Desglose de Probabilidad e Intervalo de Confianza:</strong> Seleccionar la probabilidad empírica de cumplir 23 días (p̂). Desglosar el cálculo de su Intervalo de Confianza del 95% usando la aproximación binomial:
+                                <div class="bg-slate-100 p-3 mt-2 rounded font-mono text-center text-sm shadow-inner">
+                                    IC<sub>95%</sub> = p̂ ± 1.96 * √[ p̂(1 - p̂) / 1000 ]
+                                </div>
+                            </div></li>
+                        </ul>
+                    </div>
+
+                    
+                    <div id="page4" class="tab-content hidden">
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl mr-4 text-blue-600">🎯</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Análisis Cuantitativo y Recomendaciones</h3>
+                        </div>
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 text-red-800 text-sm">
+                            <strong>Estrictamente Prohibido:</strong> Realizar afirmaciones cualitativas sin soporte de datos. Toda discusión debe ser paramétrica usando los números de tu simulación.
+                        </div>
+                        <ul class="space-y-4 text-slate-700 list-none">
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Comparación de Medias:</strong> Comparar explícitamente T<sub>CPM</sub> vs μ<sub>proyecto</sub> vs μ<sub>Sim</sub>.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Merge Event Bias:</strong> Explicar numéricamente el impacto cuantificando la probabilidad real de que las actividades D y E demoren la partida de F.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Criticidad Estocástica:</strong> Analizar el Índice de Criticidad de las tareas no críticas deterministas y los percentiles de riesgo.</div></li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">▶</span> <div><strong>Recomendaciones de Ingeniería:</strong> Presentar dos (2) acciones mitigadoras fundamentadas numéricamente a partir del Índice de Criticidad para asegurar los 23 días y minimizar multas.</div></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rubrica" class="scroll-mt-20 pb-20">
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-blue-600 pb-2 inline-block">4. Rúbrica de Evaluación</h2>
+                <p class="mt-4 text-slate-600 text-lg">Esta sección detalla los criterios de corrección. Revisa los descriptores de la columna "Excelente (100%)" antes de entregar tu informe para garantizar que cumples con los estándares de calidad de ingeniería esperados.</p>
+            </div>
+
+            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-800 text-white">
+                        <tr>
+                            <th class="p-4 w-1/4">Criterio / Dimensión</th>
+                            <th class="p-4 w-1/4 bg-green-700">Excelente (100%)</th>
+                            <th class="p-4 w-1/4 bg-yellow-600">Competente (75%)</th>
+                            <th class="p-4 w-1/4 bg-red-700">En Desarrollo (≤50%)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-700">
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-900">Diagrama CPM (15%)</td>
+                            <td class="p-4 border-l border-slate-200">Diagrama PDM impecable. Cálculo exacto del camino crítico (22 días) con FC=0 correctas.</td>
+                            <td class="p-4 border-l border-slate-200">Pequeños errores de rotulación o cálculos menores, pero ruta crítica correcta.</td>
+                            <td class="p-4 border-l border-slate-200">Errores lógicos de precedencia. Ruta crítica mal calculada.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-900">PERT y Curva S (20%)</td>
+                            <td class="p-4 border-l border-slate-200">Cálculos exactos. Curva S normal correcta, con cálculo explícito contractual y 95% confianza.</td>
+                            <td class="p-4 border-l border-slate-200">Errores menores en varianzas o redondeos en el plazo al 95%.</td>
+                            <td class="p-4 border-l border-slate-200">Suma desviaciones estándar directo. Gráfico incorrecto o ausente.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-900">Montecarlo (30%)</td>
+                            <td class="p-4 border-l border-slate-200">Sheets dinámico. Gráficos impecables. IC 95% para probabilidad desglosado con precisión.</td>
+                            <td class="p-4 border-l border-slate-200">Falta dinamismo en fórmulas. Errores aritméticos en Intervalo de Confianza.</td>
+                            <td class="p-4 border-l border-slate-200">Lógica de red no evalúa camino crítico en cada iteración.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-900">Análisis Cuantitativo (20%)</td>
+                            <td class="p-4 border-l border-slate-200">Análisis brillante. Justifica matemáticamente el Merge Event Bias. Decisiones basadas en datos.</td>
+                            <td class="p-4 border-l border-slate-200">Explicaciones cualitativas abstractas. No cruza bien datos CPM/PERT/Montecarlo.</td>
+                            <td class="p-4 border-l border-slate-200">Solo enumera resultados. Sin análisis de variabilidad ni sesgo.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-900">Síntesis y Pauta (15%)</td>
+                            <td class="p-4 border-l border-slate-200">Límite estricto de 4 páginas. Estructura ejecutiva. Excelente redacción en 3ra persona.</td>
+                            <td class="p-4 border-l border-slate-200">Excede límite por poco. Redacción informal ocasional o fallas en síntesis.</td>
+                            <td class="p-4 border-l border-slate-200">Excede ampliamente límite. Desordenado, redundante, faltas ortográficas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm">
+        <p>Herramienta interactiva generada para la asignatura de Planificación y Control de Proyectos.</p>
+    </footer>
+
+    <script>
+        
+        const activitiesData = [
+            { id: 'A', name: 'Excavación y Obras de Desvío', prec: '-', a: 3, m: 5, b: 13 },
+            { id: 'B', name: 'Instalación de Faenas y Bodegas', prec: '-', a: 2, m: 4, b: 6 },
+            { id: 'C', name: 'Trazado, Replanteo y Emplantillado', prec: 'A', a: 2, m: 3, b: 4 },
+            { id: 'D', name: 'Encofrado (Moldajes) de Fundaciones', prec: 'B, C', a: 4, m: 6, b: 8 },
+            { id: 'E', name: 'Enfierradura y Armadura Acero', prec: 'C', a: 3, m: 6, b: 15 },
+            { id: 'F', name: 'Instalación de Pernos de Anclaje', prec: 'D, E', a: 2, m: 3, b: 10 },
+            { id: 'G', name: 'Hormigonado (Vaciado y Vibrado)', prec: 'F', a: 1, m: 2, b: 3 },
+            { id: 'H', name: 'Desmolde, Curado y Limpieza', prec: 'G', a: 2, m: 3, b: 4 }
+        ];
+
+        
+        const tbody = document.getElementById('dataTableBody');
+        activitiesData.forEach((act, index) => {
+            const tr = document.createElement('tr');
+            tr.className = `table-row-interactive border-b border-slate-100 ${index === 0 ? 'active' : ''}`;
+            tr.onclick = () => selectActivity(index, tr);
+            
+            tr.innerHTML = `
+                <td class="px-4 py-3 font-bold text-slate-800">${act.id}</td>
+                <td class="px-4 py-3">${act.name}</td>
+                <td class="px-4 py-3 font-mono text-xs text-slate-500">${act.prec}</td>
+                <td class="px-2 py-3 text-center text-slate-700 bg-blue-50/50">${act.a}</td>
+                <td class="px-2 py-3 text-center font-semibold text-slate-900 bg-blue-100/50">${act.m}</td>
+                <td class="px-2 py-3 text-center text-slate-700 bg-blue-50/50">${act.b}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        
+        let activityChart;
+        
+        function initChart() {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            activityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Optimista (a)', 'Más Probable (m)', 'Pesimista (b)', 'Esperada (Te)'],
+                    datasets: [{
+                        label: 'Días',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(147, 197, 253, 0.8)', 
+                            'rgba(59, 130, 246, 0.8)', 
+                            'rgba(30, 64, 175, 0.8)', 
+                            'rgba(16, 185, 129, 0.9)'  
+                        ],
+                        borderColor: [
+                            'rgb(96, 165, 250)',
+                            'rgb(37, 99, 235)',
+                            'rgb(30, 58, 138)',
+                            'rgb(5, 150, 105)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toFixed(2) + ' días';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Duración (Días)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        
+        function selectActivity(index, rowElement) {
+            
+            document.querySelectorAll('.table-row-interactive').forEach(el => el.classList.remove('active'));
+            if(rowElement) rowElement.classList.add('active');
+
+            const act = activitiesData[index];
+            document.getElementById('selectedActivityId').textContent = act.id;
+            document.getElementById('selectedActivityName').textContent = act.name;
+
+            
+            const te = (act.a + 4 * act.m + act.b) / 6;
+            const varianza = Math.pow((act.b - act.a) / 6, 2);
+
+            document.getElementById('calcTe').textContent = te.toFixed(2);
+            document.getElementById('calcVar').textContent = varianza.toFixed(2);
+
+            
+            activityChart.data.datasets[0].data = [act.a, act.m, act.b, te];
+            activityChart.update();
+        }
+
+        
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-blue-600', 'text-blue-600');
+                el.classList.add('border-transparent', 'text-slate-500');
+            });
+            
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('border-blue-600', 'text-blue-600');
+            document.getElementById('btn-' + tabId).classList.remove('border-transparent', 'text-slate-500');
+        }
+
+        
+        window.onload = () => {
+            initChart();
+            selectActivity(0, document.querySelector('.table-row-interactive'));
+        };
+    </script>
+</body>
+</html>
