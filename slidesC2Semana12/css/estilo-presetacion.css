@@ -1,0 +1,322 @@
+/* ============================================
+   ESTILO PRESENTACIÓN TÉCNICA - VERSIÓN PLANTILLA
+   Basado en el diseño original de Clase 2 - Semana 9
+   ============================================ */
+
+:root {
+    --color-bg: #f8fafc;
+    --color-surface: #ffffff;
+    --color-text: #0f172a;
+    --color-text-mut: #64748b;
+    --color-accent: #0f766e;
+    --color-accent-dark: #0f172a;
+    --border-width: 3px;
+    --transition-speed: 0.4s;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    overflow: hidden;
+    line-height: 1.6;
+}
+
+/* ========== CONTENEDOR PRINCIPAL ========== */
+#deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ========== DIAPOSITIVAS ========== */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease-in-out,
+                transform var(--transition-speed) ease-in-out;
+    transform: translateY(20px);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    z-index: 0;
+}
+
+.slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    z-index: 10;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+    background-color: var(--color-surface);
+    border-right: var(--border-width) solid var(--color-accent-dark);
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.section-marker {
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-top: var(--border-width) solid var(--color-accent-dark);
+    padding-top: 1rem;
+    color: var(--color-text);
+}
+
+.nav-hints {
+    font-size: 0.75rem;
+    color: var(--color-text-mut);
+    font-weight: 500;
+}
+
+/* ========== CONTENIDO PRINCIPAL ========== */
+.content {
+    padding: 4rem 6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* ========== TIPOGRAFÍA ========== */
+h1 {
+    font-size: 4.2rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 2.5rem;
+    max-width: 950px;
+    color: var(--color-accent-dark);
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+}
+
+/* ========== LISTAS ESTILIZADAS ========== */
+ul.points {
+    list-style: none;
+    width: 100%;
+    max-width: 850px;
+}
+
+ul.points li {
+    font-size: 1.6rem;
+    font-weight: 300;
+    margin-bottom: 1.8rem;
+    padding-left: 1.5rem;
+    border-left: var(--border-width) solid var(--color-accent);
+    color: var(--color-text);
+}
+
+/* ========== TABLAS ========== */
+table {
+    width: 100%;
+    max-width: 950px;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: var(--color-surface);
+}
+
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+th {
+    background: var(--color-accent-dark);
+    color: var(--color-surface);
+    font-weight: 800;
+    border-color: var(--color-accent-dark);
+}
+
+/* ========== BOTONES ========== */
+.btn {
+    background: var(--color-accent-dark);
+    color: var(--color-surface);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn:hover {
+    background: var(--color-accent);
+}
+
+.hidden-content {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-accent-dark);
+    font-size: 1.4rem;
+    display: none;
+    animation: slideDown 0.3s ease-out;
+    max-width: 850px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== GRID Y COMPONENTES ========== */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.rubric-box {
+    border: 1px solid #cbd5e1;
+    border-top: var(--border-width) solid var(--color-accent-dark);
+    padding: 1.5rem;
+    background: var(--color-surface);
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.rubric-box .pts {
+    position: absolute;
+    top: -15px;
+    right: 15px;
+    background: var(--color-accent);
+    color: white;
+    padding: 0.2rem 0.8rem;
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+.rubric-box h3 {
+    font-size: 1.2rem;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.rubric-box p {
+    font-size: 1.05rem;
+    color: var(--color-text-mut);
+}
+
+/* ========== MANEJO DE IMÁGENES DINÁMICAS ========== */
+.img-placeholder {
+    width: 100%;
+    max-width: 800px;
+    min-height: 250px;
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-text-mut);
+    margin-top: 2rem;
+    overflow: hidden;
+}
+
+.img-placeholder img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* ========== BARRA DE PROGRESO ========== */
+#progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    background: var(--color-accent);
+    transition: width 0.3s ease;
+    z-index: 100;
+}
+
+/* ========== RESPONSIVIDAD ========== */
+@media (max-width: 1024px) {
+    h1 {
+        font-size: 3.2rem;
+    }
+    ul.points li {
+        font-size: 1.3rem;
+    }
+    .content {
+        padding: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .slide {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        overflow-y: auto;
+    }
+    .sidebar {
+        border-right: none;
+        border-bottom: var(--border-width) solid var(--color-accent-dark);
+        padding: 1.5rem;
+        flex-direction: row;
+        align-items: center;
+    }
+    .section-marker {
+        border-top: none;
+        padding-top: 0;
+        border-left: var(--border-width) solid var(--color-accent-dark);
+        padding-left: 1rem;
+    }
+    .content {
+        padding: 2rem;
+    }
+    h1 {
+        font-size: 2.2rem;
+    }
+    .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .rubric-box .pts {
+        top: 10px;
+        right: 10px;
+        position: static;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+}
