@@ -93,7 +93,19 @@
     },
     {
       "id": 5,
-      "marker": "06. TEOREMA CENTRAL DEL LÍMITE",
+      "marker": "06. SESGO EN LA VARIANZA",
+      "tipo": "lista",
+      "subtitulo": "Contexto",
+      "titulo": "Sesgo en el Cálculo de la Varianza",
+      "puntos": [
+        "Estudios realizados sobre el comportamiento real de estas estimaciones han demostrado que usar el número 6 introduce <strong>sesgos significativos</strong>",
+        "Los expertos recomiendan usar un valor entre 3,1 y 3,3. Es usual que la expresión para la varianza se de 3,2 como promedio.",
+        "«s = /dfrac{(t_p-t_o)}{3.2}»"
+      ]
+    },
+    {
+      "id": 6,
+      "marker": "07. TEOREMA CENTRAL DEL LÍMITE",
       "tipo": "lista_con_imagen",
       "subtitulo": "Fundamento estadístico",
       "titulo": "Teorema Central del Límite (TCL) en Proyectos",
@@ -107,8 +119,8 @@
       ]
     },
     {
-      "id": 6,
-      "marker": "07. CASO PRÁCTICO",
+      "id": 7,
+      "marker": "08. CASO PRÁCTICO",
       "tipo": "tabla",
       "subtitulo": "Fundaciones de hormigón armado — Planta de chancado secundario",
       "titulo": "Datos de Estimación Triple del Subproyecto",
@@ -122,8 +134,8 @@
       ]
     },
     {
-      "id": 7,
-      "marker": "08. EJERCICIO INTERACTIVO",
+      "id": 8,
+      "marker": "09. EJERCICIO INTERACTIVO",
       "tipo": "interactiva",
       "subtitulo": "Consolidación de cálculos",
       "titulo": "Verifica tus cálculos: ¿Coinciden tus resultados?",
@@ -158,8 +170,8 @@
     },
 
     {
-      "id": 9,
-      "marker": "10. EJERCICIO CONTRATO",
+      "id": 10,
+      "marker": "11. EJERCICIO CONTRATO",
       "tipo": "interactiva",
       "subtitulo": "Aplicación directa",
       "titulo": "¿Qué probabilidad hay de entregar en 32 días?",
@@ -168,8 +180,8 @@
     },
 
     {
-      "id": 10,
-      "marker": "11. IMPLEMENTACIÓN",
+      "id": 11,
+      "marker": "12. IMPLEMENTACIÓN",
       "tipo": "lista_con_imagen",
       "subtitulo": "Herramientas computacionales",
       "titulo": "Automatización en Google Sheets, Python y Octave",
@@ -183,8 +195,8 @@
       ]
     },
     {
-      "id": 11,
-      "marker": "12. LIMITACIONES",
+      "id": 12,
+      "marker": "13. LIMITACIONES",
       "tipo": "lista",
       "subtitulo": "Análisis crítico",
       "titulo": "Restricciones del Método PERT Clásico",
@@ -196,8 +208,8 @@
       ]
     },
     {
-      "id": 12,
-      "marker": "13. EVALUACIÓN",
+      "id": 13,
+      "marker": "14. EVALUACIÓN",
       "tipo": "rubrica",
       "subtitulo": "Taller Formativo — Sesión Presencial 1",
       "titulo": "Criterios de Evaluación del Taller",
@@ -235,8 +247,8 @@
       ]
     },
     {
-        "id": 13,
-        "marker": "14. INFOGRAFÍA RESUMEN",
+        "id": 14,
+        "marker": "15. INFOGRAFÍA RESUMEN",
         "tipo": "imagen_full",
         "subtitulo": "Vista general",
         "titulo": "Resumen Aplicación PERT",

@@ -1,0 +1,110 @@
+<h2 style="color: #1e293b; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Evaluación de Cátedra: Análisis de Riesgo en Proyectos mediante Simulación de Montecarlo</h2>
+
+<p style="margin-bottom: 1rem; text-align: justify; font-size: 0.95rem; line-height: 1.6; color: #475569;">
+    Un proyecto de infraestructura civil compuesto por 10 actividades interdependientes (designadas de la letra <strong>A</strong> a la <strong>J</strong>) presenta alta variabilidad en sus plazos debido a condiciones imprevistas de terreno, rendimientos de mano de obra y suministro de materiales estratégicos. Debido a esta incertidumbre, la planificación basada en métodos deterministas tradicionales resulta insuficiente.
+</p>
+<p style="margin-bottom: 1.5rem; text-align: justify; font-size: 0.95rem; line-height: 1.6; color: #475569;">
+    Para modelar de manera robusta el comportamiento temporal de la red, la oficina de planificación estructural ha estimado tres escenarios de tiempo (duraciones en días corridos) para cada una de las actividades del proyecto: <strong>Optimista ($op$)</strong>, <strong>Moda o Más Probable ($moda$)</strong> y <strong>Pesimista ($pes$)</strong>.
+</p>
+
+<h3 style="color: #2563eb; font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem;">1. Estructura y Parámetros del Proyecto</h3>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-size: 0.9rem;">
+    <thead>
+        <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+            <th style="padding: 10px; font-weight: 600; color: #1e293b;">Actividad</th>
+            <th style="padding: 10px; font-weight: 600; color: #1e293b;">Predecesores</th>
+            <th style="padding: 10px; font-weight: 600; text-align: center; color: #1e293b;">Duración Optimista ($op$)</th>
+            <th style="padding: 10px; font-weight: 600; text-align: center; color: #1e293b;">Duración Moda ($moda$)</th>
+            <th style="padding: 10px; font-weight: 600; text-align: center; color: #1e293b;">Duración Pesimista ($pes$)</th>
+        </tr>
+    </thead>
+    <tbody style="color: #475569;">
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">A</td>
+            <td style="padding: 8px;">-</td>
+            <td style="padding: 8px; text-align: center;">2</td>
+            <td style="padding: 8px; text-align: center;">4</td>
+            <td style="padding: 8px; text-align: center;">7</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">B</td>
+            <td style="padding: 8px;">A</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">7</td>
+            <td style="padding: 8px; text-align: center;">11</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">C</td>
+            <td style="padding: 8px;">B</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">10</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">D</td>
+            <td style="padding: 8px;">B</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">9</td>
+            <td style="padding: 8px; text-align: center;">15</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">F</td>
+            <td style="padding: 8px;">C</td>
+            <td style="padding: 8px; text-align: center;">4</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">9</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">E</td>
+            <td style="padding: 8px;">F, D</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">9</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">G</td>
+            <td style="padding: 8px;">E</td>
+            <td style="padding: 8px; text-align: center;">4</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">10</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">H</td>
+            <td style="padding: 8px;">E</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">8</td>
+            <td style="padding: 8px; text-align: center;">14</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">I</td>
+            <td style="padding: 8px;">H, G</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">8</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">J</td>
+            <td style="padding: 8px;">I</td>
+            <td style="padding: 8px; text-align: center;">2</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; font-size: 0.9rem; color: #78350f;">
+    <strong>Advertencia Metodológica:</strong> El algoritmo estático CPM clásico asume que el camino crítico es constante. Al simular mediante Monte Carlo, las duraciones de cada actividad variarán de forma independiente en cada línea de iteración, lo que implica que la ruta crítica se recalculará de forma dinámica en cada simulación.
+</div>
+
+<h3 style="color: #2563eb; font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem;">2. Entregables Requeridos</h3>
+<p style="margin-bottom: 1rem; font-size: 0.95rem; color: #475569;">Usted debe estructurar un modelo analítico en una planilla de cálculo (ej. Excel) o lenguaje de programación (VBA, Python o R) que desarrolle de forma estricta los siguientes puntos:</p>
+
+<ol style="margin-left: 20px; margin-bottom: 1.5rem; list-style-type: decimal; font-size: 0.9rem; line-height: 1.6; color: #475569;">
+    <li style="margin-bottom: 8px;"><strong>Dibujo de la Red de Precedencias:</strong> Dibuje el grafo de la red utilizando la nomenclatura AON (Activity on Node) según los predecesores lógicos del proyecto.</li>
+    <li style="margin-bottom: 8px;"><strong>Definición de Variables Aleatorias:</strong> Formule matemáticamente las duraciones de las actividades $D_i$ como variables aleatorias continuas que siguen una distribución de densidad triangular, definiendo claramente sus parámetros para cada nodo de la red.</li>
+    <li style="margin-bottom: 8px;"><strong>Ecuación de la Distribución de Densidad:</strong> Describa la función de distribución acumulada inversa $F^{-1}(U)$ utilizada para la generación de números pseudoaleatorios bajo el método de inversión de la transformada para la distribución triangular.</li>
+    <li style="margin-bottom: 8px;"><strong>Modelo de Monte Carlo (500 Iteraciones):</strong> Ejecute 500 simulaciones lógicas completas del proyecto. En cada iteración, aplique el paso hacia adelante (determinando los tiempos más tempranos $ES$, $EF$) y el paso hacia atrás (determinando los tiempos más tardíos $LS$, $LF$) para calcular de forma matemática la duración final de la red.</li>
+    <li style="margin-bottom: 8px;"><strong>Análisis de la Ley Fuerte de los Números Grandes:</strong> Grafique la tendencia del promedio acumulado de la duración del proyecto a lo largo de las 500 iteraciones y evalúe a partir de qué número de iteraciones el modelo converge y se estabiliza.</li>
+    <li style="margin-bottom: 8px;"><strong>Análisis de Probabilidad y Curva S:</strong> Trace un histograma de frecuencia de duraciones totales y superponga la Curva S (Probabilidad Acumulada). Calcule cuál es la probabilidad real de terminar el proyecto antes del plazo determinista calculado bajo la estimación más probable ($moda$).</li>
+    <li style="margin-bottom: 8px;"><strong>Índices de Criticidad:</strong> Determine para cada una de las actividades el <strong>Factor de Criticidad</strong> (frecuencia con la que la actividad pertenece a la ruta crítica, obteniendo una holgura $H_i = 0$). Explique sus resultados.</li>
+</ol>

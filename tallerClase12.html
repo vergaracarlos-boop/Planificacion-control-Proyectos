@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Académico - Gestión de Proyectos Civiles</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- MathJax for high-quality LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation Bar simulating an Institutional Portal -->
+    <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
+                    <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        Portal Académico
+                        <span class="text-xs bg-slate-800 text-slate-300 font-normal px-2.5 py-0.5 rounded-full border border-slate-700">Pregrado</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Departamento de Ingeniería Civil e Infraestructura</p>
+                </div>
+            </div>
+
+            <!-- Context Info -->
+            <div class="hidden lg:flex items-center gap-6 text-sm">
+                <div class="flex items-center gap-2 text-slate-400">
+                    <i data-lucide="book-open" class="w-4 h-4 text-blue-500"></i>
+                    <span>Asignatura: <strong class="text-slate-200">Análisis y Simulación de Sistemas</strong></span>
+                </div>
+                <div class="h-4 w-[1px] bg-slate-800"></div>
+                <div class="flex items-center gap-2 text-slate-400">
+                    <i data-lucide="clock" class="w-4 h-4 text-emerald-500"></i>
+                    <span>Semestre: <strong class="text-slate-200">2026-A</strong></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container styled for Widescreen Monitors -->
+    <div class="max-w-[1600px] w-full mx-auto p-6 lg:p-8 flex-1 grid grid-cols-1 xl:grid-cols-12 gap-8">
+        
+        <!-- SIDEBAR: Metadata & Control Panel (4 Columns) -->
+        <aside class="xl:col-span-4 space-y-6">
+            
+            <!-- Metadata Card -->
+            <div class="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-6">
+                <div>
+                    <span class="text-xs text-blue-400 font-bold tracking-wider uppercase">Evaluación Formativa</span>
+                    <h2 class="text-xl font-extrabold text-white mt-1">Análisis de Riesgo en Proyectos (CPM - Monte Carlo)</h2>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block mb-1">Puntaje Total</span>
+                        <strong class="text-slate-100 text-sm">100 Puntos</strong>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block mb-1">Formato</span>
+                        <strong class="text-slate-100 text-sm">Grupal (Máx. 3)</strong>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block mb-1">Duración Sim.</span>
+                        <strong class="text-slate-100 text-sm">500 Iteraciones</strong>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block mb-1">Software</span>
+                        <strong class="text-slate-100 text-sm">Excel / R / Python</strong>
+                    </div>
+                </div>
+
+                <!-- Learning Outcomes Info -->
+                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="target" class="w-4 h-4 text-blue-500"></i>
+                        Resultados de Aprendizaje
+                    </h4>
+                    <ul class="text-xs text-slate-400 space-y-2 list-disc list-inside">
+                        <li>Modelar incertidumbre mediante Distribuciones Triangulares.</li>
+                        <li>Implementar algoritmos de simulación estocástica en redes lógicas.</li>
+                        <li>Evaluar el comportamiento asintótico bajo la Ley de los Grandes Números.</li>
+                        <li>Calcular índices de criticidad dinámicos por nodo.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Doc Copier & Export Tool -->
+            <div class="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-4">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i data-lucide="code" class="text-blue-500 w-4 h-4"></i>
+                    Exportar Enunciado Limpio
+                </h3>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Obtén el código HTML optimizado del enunciado para cargarlo directamente en tu plataforma virtual. Las ecuaciones matemáticas redundantes se han depurado a sintaxis estándar de LaTeX para una integración impecable.
+                </p>
+                <div class="space-y-2">
+                    <button onclick="copyCleanHTML()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-600/10">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copiar Código HTML Depurado
+                    </button>
+                    <button onclick="toggleRawCode()" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                        <span id="btn-toggle-text">Ver Código Fuente</span>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- DOCUMENT VIEW: Interactive assignment sheet (8 Columns) -->
+        <main class="xl:col-span-8 flex flex-col gap-6">
+            
+            <!-- Raw Code View Panel (Hidden by default) -->
+            <div id="raw-code-container" class="hidden bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-indigo-400 font-bold uppercase tracking-wider">Código de Integración HTML</span>
+                    <button onclick="copyCleanHTML()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+                    </button>
+                </div>
+                <pre class="bg-slate-900 text-slate-300 p-4 rounded-xl overflow-x-auto text-xs code-font max-h-60 custom-scrollbar border border-slate-800" id="raw-html-box"></pre>
+            </div>
+
+            <!-- Main Paper Sheet representing the assignment -->
+            <div class="bg-white text-slate-800 rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                
+                <!-- Assignment Header Banner -->
+                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white px-8 py-8">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs uppercase bg-white/20 px-2.5 py-1 rounded-full font-bold tracking-wider">Evaluación Final</span>
+                            <h2 class="text-2xl font-extrabold mt-3 tracking-tight">Evaluación de Cátedra: Análisis de Riesgo en Proyectos mediante Simulación de Monte Carlo</h2>
+                            <p class="text-xs text-blue-100 mt-2">Modelado Estocástico y Métodos Numéricos en Redes de Planificación</p>
+                        </div>
+                        <div class="text-right text-xs text-blue-200 hidden sm:block">
+                            <p>Código: <strong class="text-white">CIV-402</strong></p>
+                            <p>Fecha Límite: <strong class="text-white">Semana 15</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Content Area -->
+                <div class="p-8 space-y-8" id="enunciado-html-content">
+                    
+                    <!-- Introducción -->
+                    <div class="space-y-4">
+                        <p class="text-sm leading-relaxed text-slate-600 text-justify">
+                            Un proyecto de infraestructura civil compuesto por 10 actividades interdependientes (designadas de la letra <strong>A</strong> a la <strong>J</strong>) presenta alta variabilidad en sus plazos debido a condiciones imprevistas de terreno, rendimientos de mano de obra y suministro de materiales estratégicos. Debido a esta incertidumbre, la planificación basada en métodos deterministas tradicionales resulta insuficiente.
+                        </p>
+                        <p class="text-sm leading-relaxed text-slate-600 text-justify">
+                            Para modelar de manera robusta el comportamiento temporal de la red, la oficina de planificación estructural ha estimado tres escenarios de tiempo (duraciones en días corridos) para cada una de las actividades del proyecto: <strong>Optimista ($op$)</strong>, <strong>Moda o Más Probable ($moda$)</strong> y <strong>Pesimista ($pes$)</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Diagrama de Red Formulado en SVG Profesional -->
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded"></span>
+                            Esquema de la Red de Precedencias (Grafo AON)
+                        </h3>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-center items-center overflow-x-auto">
+                            <svg viewBox="0 0 960 300" class="min-w-[750px] w-full max-w-[850px] h-[240px]">
+                                <defs>
+                                    <marker id="arrow-blue" viewBox="0 0 10 10" refX="24" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- Links / Conexiones -->
+                                <g stroke="#1e3a8a" stroke-width="2" fill="none" opacity="0.8">
+                                    <line x1="100" y1="150" x2="200" y2="150" marker-end="url(#arrow-blue)" />
+                                    <line x1="250" y1="150" x2="350" y2="90" marker-end="url(#arrow-blue)" />
+                                    <line x1="250" y1="150" x2="350" y2="210" marker-end="url(#arrow-blue)" />
+                                    <line x1="400" y1="90" x2="500" y2="90" marker-end="url(#arrow-blue)" />
+                                    <line x1="400" y1="210" x2="650" y2="160" marker-end="url(#arrow-blue)" />
+                                    <line x1="550" y1="90" x2="650" y2="160" marker-end="url(#arrow-blue)" />
+                                    <line x1="700" y1="160" x2="800" y2="100" marker-end="url(#arrow-blue)" />
+                                    <line x1="700" y1="160" x2="800" y2="220" marker-end="url(#arrow-blue)" />
+                                    <line x1="850" y1="100" x2="900" y2="160" marker-end="url(#arrow-blue)" />
+                                    <line x1="850" y1="220" x2="900" y2="160" marker-end="url(#arrow-blue)" />
+                                    <line x1="900" y1="160" x2="930" y2="160" /> 
+                                </g>
+
+                                <!-- Nodos (Representados como Cajas Modernas) -->
+                                <g transform="translate(50, 125)">
+                                    <rect width="50" height="50" rx="8" fill="#1e3a8a" stroke="#172554" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">A</text>
+                                </g>
+                                <g transform="translate(200, 125)">
+                                    <rect width="50" height="50" rx="8" fill="#1e3a8a" stroke="#172554" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">B</text>
+                                </g>
+                                <g transform="translate(350, 65)">
+                                    <rect width="50" height="50" rx="8" fill="#1e40af" stroke="#1e3a8a" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">C</text>
+                                </g>
+                                <g transform="translate(350, 185)">
+                                    <rect width="50" height="50" rx="8" fill="#1e40af" stroke="#1e3a8a" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">D</text>
+                                </g>
+                                <g transform="translate(500, 65)">
+                                    <rect width="50" height="50" rx="8" fill="#2563eb" stroke="#1d4ed8" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">F</text>
+                                </g>
+                                <g transform="translate(650, 135)">
+                                    <rect width="50" height="50" rx="8" fill="#2563eb" stroke="#1d4ed8" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">E</text>
+                                </g>
+                                <g transform="translate(800, 75)">
+                                    <rect width="50" height="50" rx="8" fill="#3b82f6" stroke="#2563eb" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">G</text>
+                                </g>
+                                <g transform="translate(800, 195)">
+                                    <rect width="50" height="50" rx="8" fill="#3b82f6" stroke="#2563eb" stroke-width="2" />
+                                    <text x="25" y="30" fill="white" font-size="16" font-weight="bold" text-anchor="middle">H</text>
+                                </g>
+                                <g transform="translate(900, 135)">
+                                    <rect width="40" height="40" rx="6" fill="#10b981" stroke="#047857" stroke-width="2" />
+                                    <text x="20" y="25" fill="white" font-size="14" font-weight="bold" text-anchor="middle">I</text>
+                                </g>
+                                <g transform="translate(920, 145)" opacity="0"> <!-- Hidden J node positioning context -->
+                                    <text>J</text> 
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Estructura y Parámetros -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded"></span>
+                            1. Parámetros de Simulación de la Red
+                        </h3>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                        <th class="p-3 text-center">Actividad</th>
+                                        <th class="p-3">Predecesores</th>
+                                        <th class="p-3 text-center">Optimista ($op$)</th>
+                                        <th class="p-3 text-center">Moda ($moda$)</th>
+                                        <th class="p-3 text-center">Pesimista ($pes$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">A</td>
+                                        <td class="p-3">-</td>
+                                        <td class="p-3 text-center">2</td>
+                                        <td class="p-3 text-center">4</td>
+                                        <td class="p-3 text-center">7</td>
+                                    </tr>
+                                    <tr class="bg-slate-50/40 hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">B</td>
+                                        <td class="p-3">A</td>
+                                        <td class="p-3 text-center">5</td>
+                                        <td class="p-3 text-center">7</td>
+                                        <td class="p-3 text-center">11</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">C</td>
+                                        <td class="p-3">B</td>
+                                        <td class="p-3 text-center">3</td>
+                                        <td class="p-3 text-center">6</td>
+                                        <td class="p-3 text-center">10</td>
+                                    </tr>
+                                    <tr class="bg-slate-50/40 hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">D</td>
+                                        <td class="p-3">B</td>
+                                        <td class="p-3 text-center">6</td>
+                                        <td class="p-3 text-center">9</td>
+                                        <td class="p-3 text-center">15</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">F</td>
+                                        <td class="p-3">C</td>
+                                        <td class="p-3 text-center">4</td>
+                                        <td class="p-3 text-center">6</td>
+                                        <td class="p-3 text-center">9</td>
+                                    </tr>
+                                    <tr class="bg-slate-50/40 hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">E</td>
+                                        <td class="p-3">F, D</td>
+                                        <td class="p-3 text-center">3</td>
+                                        <td class="p-3 text-center">5</td>
+                                        <td class="p-3 text-center">9</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">G</td>
+                                        <td class="p-3">E</td>
+                                        <td class="p-3 text-center">4</td>
+                                        <td class="p-3 text-center">6</td>
+                                        <td class="p-3 text-center">10</td>
+                                    </tr>
+                                    <tr class="bg-slate-50/40 hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">H</td>
+                                        <td class="p-3">E</td>
+                                        <td class="p-3 text-center">5</td>
+                                        <td class="p-3 text-center">8</td>
+                                        <td class="p-3 text-center">14</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">I</td>
+                                        <td class="p-3">H, G</td>
+                                        <td class="p-3 text-center">3</td>
+                                        <td class="p-3 text-center">5</td>
+                                        <td class="p-3 text-center">8</td>
+                                    </tr>
+                                    <tr class="bg-slate-50/40 hover:bg-slate-50/50">
+                                        <td class="p-3 text-center font-bold text-slate-900">J</td>
+                                        <td class="p-3">I</td>
+                                        <td class="p-3 text-center">2</td>
+                                        <td class="p-3 text-center">3</td>
+                                        <td class="p-3 text-center">6</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Nota importante -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl space-y-1">
+                        <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                            Advertencia Metodológica Fundamental
+                        </h4>
+                        <p class="text-xs leading-relaxed text-slate-600 text-justify">
+                            El algoritmo estático del Método de la Ruta Crítica (CPM) clásico asume que el camino crítico es invariable. Al introducir simulación estocástica de Monte Carlo, la duración de cada actividad fluctúa de forma probabilística e independiente en cada realización, lo que implica que el camino crítico muta y debe recalcularse en cada iteración del sistema.
+                        </p>
+                    </div>
+
+                    <!-- Entregables Requeridos -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded"></span>
+                            2. Estructura de Entregables Requeridos
+                        </h3>
+                        <p class="text-xs text-slate-500">
+                            Desarrolle un informe técnico detallado e implemente el modelo stocástico en una hoja de cálculo (Excel con macros) o entorno de programación cientifico (Python, R, Julia), respondiendo exhaustivamente a los siguientes hitos:
+                        </p>
+                        
+                        <ol class="space-y-3 text-xs text-slate-600">
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">1</span>
+                                <span class="leading-relaxed"><strong>Dibujo de la Red de Precedencias:</strong> Grafique la red utilizando la nomenclatura AON (Activity on Node) de acuerdo con los enlaces lógicos descritos en la matriz de dependencias.</span>
+                            </li>
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">2</span>
+                                <span class="leading-relaxed"><strong>Definición de Variables Aleatorias:</strong> Modele analíticamente las duraciones de las actividades $D_i$ como variables aleatorias continuas gobernadas por distribuciones de densidad triangular.</span>
+                            </li>
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">3</span>
+                                <span class="leading-relaxed"><strong>Ecuación de la Distribución de Densidad:</strong> Formule matemáticamente el operador acumulado inverso $F^{-1}(U)$ requerido para la generación de variables estocásticas bajo el método clásico de la transformada inversa.</span>
+                            </li>
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">4</span>
+                                <span class="leading-relaxed"><strong>Modelo de Simulación de Monte Carlo:</strong> Programe un motor numérico con <strong>500 iteraciones</strong>. En cada paso ejecute de forma dinámica el recorrido forward ($ES$, $EF$) y el recorrido backward ($LS$, $LF$) para mapear las holguras locales.</span>
+                            </li>
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">5</span>
+                                <span class="leading-relaxed"><strong>Validación de la Ley Fuerte de los Números Grandes:</strong> Grafique la trayectoria de la media muestral acumulada respecto al número de iteraciones. Explique y analice el concepto de convergencia estocástica observado en el límite asintótico del gráfico.</span>
+                            </li>
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">6</span>
+                                <span class="leading-relaxed"><strong>Curva S de Probabilidad Acumulada:</strong> Integre el histograma de frecuencias relativas y grafique la curva de distribución empírica. Determine con exactitud matemática la probabilidad real de finalizar la ejecución del proyecto dentro de la meta determinista calculada con las modas estadísticas ($moda$).</span>
+                            </li>
+                            <li class="flex gap-2.5 items-start">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold">7</span>
+                                <span class="leading-relaxed"><strong>Cálculo de Factores de Criticidad:</strong> Determine los coeficientes de criticidad individuales calculando la frecuencia empírica con la cual se cumple la condición estricta de holgura nula ($H_i = 0$). Identifique los nodos con el mayor nivel de riesgo.</span>
+                            </li>
+                        </ol>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification system / Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-950 text-white border border-slate-800 px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <div class="bg-blue-600/20 p-2 rounded-xl border border-blue-500/20">
+            <i data-lucide="check-circle" class="text-blue-400 w-5 h-5"></i>
+        </div>
+        <div>
+            <span class="text-xs text-slate-400 block font-normal">Sistema Académico</span>
+            <span id="toast-message" class="text-xs font-semibold text-white">Mensaje de notificación</span>
+        </div>
+    </div>
+
+    <script>
+        // Formulated HTML snippet representing ONLY the clean evaluation text (with correct LaTeX formulas)
+        const cleanHTMLSnippet = `<h2 style="color: #1e293b; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Evaluación de Cátedra: Análisis de Riesgo en Proyectos mediante Simulación de Montecarlo</h2>
+
+<p style="margin-bottom: 1rem; text-align: justify; font-size: 0.95rem; line-height: 1.6; color: #475569;">
+    Un proyecto de infraestructura civil compuesto por 10 actividades interdependientes (designadas de la letra <strong>A</strong> a la <strong>J</strong>) presenta alta variabilidad en sus plazos debido a condiciones imprevistas de terreno, rendimientos de mano de obra y suministro de materiales estratégicos. Debido a esta incertidumbre, la planificación basada en métodos deterministas tradicionales resulta insuficiente.
+</p>
+<p style="margin-bottom: 1.5rem; text-align: justify; font-size: 0.95rem; line-height: 1.6; color: #475569;">
+    Para modelar de manera robusta el comportamiento temporal de la red, la oficina de planificación estructural ha estimado tres escenarios de tiempo (duraciones en días corridos) para cada una de las actividades del proyecto: <strong>Optimista ($op$)</strong>, <strong>Moda o Más Probable ($moda$)</strong> y <strong>Pesimista ($pes$)</strong>.
+</p>
+
+<h3 style="color: #2563eb; font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem;">1. Estructura y Parámetros del Proyecto</h3>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-size: 0.9rem;">
+    <thead>
+        <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+            <th style="padding: 10px; font-weight: 600; color: #1e293b;">Actividad</th>
+            <th style="padding: 10px; font-weight: 600; color: #1e293b;">Predecesores</th>
+            <th style="padding: 10px; font-weight: 600; text-align: center; color: #1e293b;">Duración Optimista ($op$)</th>
+            <th style="padding: 10px; font-weight: 600; text-align: center; color: #1e293b;">Duración Moda ($moda$)</th>
+            <th style="padding: 10px; font-weight: 600; text-align: center; color: #1e293b;">Duración Pesimista ($pes$)</th>
+        </tr>
+    </thead>
+    <tbody style="color: #475569;">
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">A</td>
+            <td style="padding: 8px;">-</td>
+            <td style="padding: 8px; text-align: center;">2</td>
+            <td style="padding: 8px; text-align: center;">4</td>
+            <td style="padding: 8px; text-align: center;">7</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">B</td>
+            <td style="padding: 8px;">A</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">7</td>
+            <td style="padding: 8px; text-align: center;">11</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">C</td>
+            <td style="padding: 8px;">B</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">10</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">D</td>
+            <td style="padding: 8px;">B</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">9</td>
+            <td style="padding: 8px; text-align: center;">15</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">F</td>
+            <td style="padding: 8px;">C</td>
+            <td style="padding: 8px; text-align: center;">4</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">9</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">E</td>
+            <td style="padding: 8px;">F, D</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">9</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">G</td>
+            <td style="padding: 8px;">E</td>
+            <td style="padding: 8px; text-align: center;">4</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+            <td style="padding: 8px; text-align: center;">10</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">H</td>
+            <td style="padding: 8px;">E</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">8</td>
+            <td style="padding: 8px; text-align: center;">14</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">I</td>
+            <td style="padding: 8px;">H, G</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">5</td>
+            <td style="padding: 8px; text-align: center;">8</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fafafa;">
+            <td style="padding: 8px; font-weight: 600; color: #0f172a;">J</td>
+            <td style="padding: 8px;">I</td>
+            <td style="padding: 8px; text-align: center;">2</td>
+            <td style="padding: 8px; text-align: center;">3</td>
+            <td style="padding: 8px; text-align: center;">6</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; font-size: 0.9rem; color: #78350f;">
+    <strong>Advertencia Metodológica:</strong> El algoritmo estático CPM clásico asume que el camino crítico es constante. Al simular mediante Monte Carlo, las duraciones de cada actividad variarán de forma independiente en cada línea de iteración, lo que implica que la ruta crítica se recalculará de forma dinámica en cada simulación.
+</div>
+
+<h3 style="color: #2563eb; font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem;">2. Entregables Requeridos</h3>
+<p style="margin-bottom: 1rem; font-size: 0.95rem; color: #475569;">Usted debe estructurar un modelo analítico en una planilla de cálculo (ej. Excel) o lenguaje de programación (VBA, Python o R) que desarrolle de forma estricta los siguientes puntos:</p>
+
+<ol style="margin-left: 20px; margin-bottom: 1.5rem; list-style-type: decimal; font-size: 0.9rem; line-height: 1.6; color: #475569;">
+    <li style="margin-bottom: 8px;"><strong>Dibujo de la Red de Precedencias:</strong> Dibuje el grafo de la red utilizando la nomenclatura AON (Activity on Node) según los predecesores lógicos del proyecto.</li>
+    <li style="margin-bottom: 8px;"><strong>Definición de Variables Aleatorias:</strong> Formule matemáticamente las duraciones de las actividades $D_i$ como variables aleatorias continuas que siguen una distribución de densidad triangular, definiendo claramente sus parámetros para cada nodo de la red.</li>
+    <li style="margin-bottom: 8px;"><strong>Ecuación de la Distribución de Densidad:</strong> Describa la función de distribución acumulada inversa $F^{-1}(U)$ utilizada para la generación de números pseudoaleatorios bajo el método de inversión de la transformada para la distribución triangular.</li>
+    <li style="margin-bottom: 8px;"><strong>Modelo de Monte Carlo (500 Iteraciones):</strong> Ejecute 500 simulaciones lógicas completas del proyecto. En cada iteración, aplique el paso hacia adelante (determinando los tiempos más tempranos $ES$, $EF$) y el paso hacia atrás (determinando los tiempos más tardíos $LS$, $LF$) para calcular de forma matemática la duración final de la red.</li>
+    <li style="margin-bottom: 8px;"><strong>Análisis de la Ley Fuerte de los Números Grandes:</strong> Grafique la tendencia del promedio acumulado de la duración del proyecto a lo largo de las 500 iteraciones y evalúe a partir de qué número de iteraciones el modelo converge y se estabiliza.</li>
+    <li style="margin-bottom: 8px;"><strong>Análisis de Probabilidad y Curva S:</strong> Trace un histograma de frecuencia de duraciones totales y superponga la Curva S (Probabilidad Acumulada). Calcule cuál es la probabilidad real de terminar el proyecto antes del plazo determinista calculado bajo la estimación más probable ($moda$).</li>
+    <li style="margin-bottom: 8px;"><strong>Índices de Criticidad:</strong> Determine para cada una de las actividades el <strong>Factor de Criticidad</strong> (frecuencia con la que la actividad pertenece a la ruta crítica, obteniendo una holgura $H_i = 0$). Explique sus resultados.</li>
+</ol>`;
+
+        // Load the snippet into the Raw code view window on load
+        window.onload = function() {
+            lucide.createIcons();
+            document.getElementById('raw-html-box').textContent = cleanHTMLSnippet;
+        };
+
+        // Function to toggle viewing raw HTML code
+        function toggleRawCode() {
+            const container = document.getElementById('raw-code-container');
+            const textEl = document.getElementById('btn-toggle-text');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                textEl.innerText = "Ocultar Código Fuente";
+            } else {
+                container.classList.add('hidden');
+                textEl.innerText = "Ver Código Fuente";
+            }
+        }
+
+        // Copy HTML with secure feedback
+        function copyCleanHTML() {
+            const textarea = document.createElement('textarea');
+            textarea.value = cleanHTMLSnippet;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showNotification("¡Código HTML copiado al portapapeles!");
+            } catch (err) {
+                console.error('Error al intentar copiar:', err);
+                showNotification("Error al copiar. Por favor hazlo manualmente.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Show a custom stylized notification toast
+        function showNotification(message) {
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toast-message');
+            msgSpan.innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
