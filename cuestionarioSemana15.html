@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Diagnóstica: Lean Construction y LPS - Universidad de Los Lagos</title>
+    <!-- Tailwind CSS para el diseño responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF para la generación de reportes en el cliente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #F0F3F8 0%, #E8ECF2 100%);
+        }
+
+        /* Efecto de vidrio esmerilado futurista */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* Transiciones suaves */
+        .fade-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Estilo personalizado de los radio buttons ocultos */
+        .custom-radio:checked + label {
+            border-color: #4A6FA5;
+            background-color: rgba(74, 111, 165, 0.08);
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.05);
+        }
+
+        .custom-radio:checked + label .radio-indicator {
+            border-color: #4A6FA5;
+            background-color: #4A6FA5;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 antialiased">
+
+    <!-- Encabezado de la Plataforma -->
+    <header class="w-full bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-800 py-4 px-6 shadow-sm">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-[#4A6FA5] p-2 rounded-xl text-white font-extrabold text-sm tracking-wider">LPS</div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight">Planificación y Control de Proyectos de Construcción</h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Universidad de Los Lagos</p>
+                </div>
+            </div>
+            <div id="user-display" class="hidden text-xs text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                <span class="font-medium text-slate-400">Usuario:</span> <span id="current-user-email" class="font-bold text-white"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor de la Aplicación -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl">
+            
+            <!-- Pantalla 1: Registro de Correo -->
+            <div id="screen-login" class="glass-card rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 border border-slate-200/60 fade-transition">
+                <div class="text-center mb-8">
+                    <span class="inline-flex p-3 bg-blue-50 text-[#4A6FA5] rounded-full mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 009 11.5c0-.733.08-1.45.234-2.146M11.5 5.5l-.314-1.258A1.178 1.178 0 0010.03 3.5H3.582a1.178 1.178 0 00-1.156.974A13.921 13.916 0 001.5 11.5c0 1.25.156 2.463.453 3.626 1.178-.974 2.47-1.126 3.826-1.126M11.5 5.5h6.818c.536 0 1.01.32 1.206.822l2.4 6a1.178 1.178 0 01-1.096 1.678h-6.818M11.5 5.5V11.5" />
+                        </svg>
+                    </span>
+                    <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Acceso a Evaluación Diagnóstica</h2>
+                    <p class="text-sm text-slate-500 mt-2">Fundamentos de Lean Construction y Principios del Last Planner System</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Correo Institucional</label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <input type="text" id="email" placeholder="nombre.apellido" class="w-full pl-4 pr-36 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A6FA5]/40 focus:border-[#4A6FA5] text-sm text-slate-800 placeholder-slate-400 font-medium" />
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-xs font-bold text-[#5D7BA0] bg-slate-100/90 px-3 py-1.5 rounded-lg border border-slate-200">@alumnos.ulagos.cl</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="validateAndStart()" class="w-full bg-[#4A6FA5] hover:bg-[#5D7BA0] text-white font-semibold py-4 rounded-xl shadow-lg shadow-blue-500/10 transition-all active:scale-[0.99] text-sm flex items-center justify-center gap-2">
+                        <span>Ingresar y Comenzar</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pantalla 2: Cuestionario Interactivo -->
+            <div id="screen-quiz" class="hidden glass-card rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-200/60 fade-transition">
+                
+                <!-- Barra de Progreso Superior -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-500 mb-2">
+                        <span id="quiz-progress-text">Pregunta 1 de 10</span>
+                        <span id="quiz-percentage-text">Progreso: 0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="bg-[#4A6FA5] h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Enunciado de la Pregunta -->
+                <div class="mb-6">
+                    <h3 id="question-text" class="text-base sm:text-lg font-bold text-slate-800 leading-snug"></h3>
+                </div>
+
+                <!-- Opciones de Respuesta -->
+                <div id="options-container" class="space-y-3 mb-6">
+                    <!-- Dinámico -->
+                </div>
+
+                <!-- Bloque de Retroalimentación -->
+                <div id="feedback-container" class="hidden rounded-2xl p-5 mb-6 border fade-transition">
+                    <div class="flex items-start gap-3">
+                        <span id="feedback-icon" class="text-xl mt-0.5"></span>
+                        <div>
+                            <h4 id="feedback-status" class="text-xs font-extrabold uppercase tracking-wider mb-1"></h4>
+                            <p id="feedback-desc" class="text-xs leading-relaxed font-medium"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegación -->
+                <div class="flex justify-between items-center pt-4 border-t border-slate-200/60">
+                    <button id="btn-prev" onclick="prevQuestion()" class="flex items-center gap-2 text-xs font-bold text-[#4A6FA5] hover:text-[#5D7BA0] transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span>Anterior</span>
+                    </button>
+
+                    <button id="btn-action" onclick="handleActionButton()" class="bg-[#4A6FA5] hover:bg-[#5D7BA0] text-white text-xs font-bold px-6 py-3 rounded-full shadow-md shadow-blue-500/10 transition-all active:scale-[0.98]">
+                        Validar Respuesta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pantalla 3: Resumen Final -->
+            <div id="screen-result" class="hidden glass-card rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 border border-slate-200/60 fade-transition">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Reporte de Desempeño</h2>
+                    <p class="text-sm text-slate-500 mt-1">Confiabilidad de Planificación y Control de Flujos</p>
+                </div>
+
+                <!-- Tarjeta de Resultados -->
+                <div class="bg-white/80 rounded-2xl p-6 border border-slate-200/80 mb-8 flex flex-col items-center justify-center text-center">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Puntaje Obtenido</span>
+                    <div class="flex items-baseline gap-1 mb-2">
+                        <span id="final-score" class="text-5xl font-extrabold text-[#4A6FA5]">0</span>
+                        <span class="text-xl font-bold text-slate-400">/ 10</span>
+                    </div>
+                    <span id="score-percentage" class="text-xs font-bold text-[#5D7BA0]">Rendimiento: 0%</span>
+                </div>
+
+                <!-- Alerta de Rendimiento Insuficiente (< 3 aciertos) -->
+                <div id="fail-alert" class="hidden bg-rose-50 border border-rose-100 text-rose-800 rounded-2xl p-5 mb-8 flex items-start gap-3">
+                    <span class="text-xl mt-0.5">⚠️</span>
+                    <div>
+                        <h4 class="font-bold text-xs uppercase tracking-wider mb-1">Rendimiento Insuficiente</h4>
+                        <p class="text-xs leading-relaxed font-medium">Has respondido correctamente menos de 3 preguntas. Te recomendamos volver a revisar los materiales y realizar la evaluación nuevamente para afianzar tus competencias.</p>
+                    </div>
+                </div>
+
+                <!-- Indicaciones de Envío -->
+                <div class="bg-slate-50 rounded-2xl p-5 mb-8 border border-slate-100 text-slate-600 text-xs leading-relaxed">
+                    <div class="flex items-center gap-2 mb-2 font-bold text-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#4A6FA5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Indicación Importante</span>
+                    </div>
+                    <p class="font-medium">El archivo PDF generado a continuación constituye el comprobante oficial de su preparación previa para la sesión presencial. <strong>Recuerda subir el PDF al chat de la asignatura en su plataforma correspondiente.</strong></p>
+                </div>
+
+                <!-- Botones de Acción Final -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button id="btn-retry" onclick="restartQuiz()" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-6 py-3.5 rounded-full transition-all text-center">
+                        Reintentar Evaluación
+                    </button>
+                    <button onclick="downloadPDF()" class="bg-[#4A6FA5] hover:bg-[#5D7BA0] text-white text-xs font-bold px-6 py-3.5 rounded-full shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Descargar Resumen (PDF)</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Notificación Suave (Toast) -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-lg border border-slate-800 transition-all duration-300 flex items-center gap-2 pointer-events-none z-50">
+        <span id="toast-icon">ℹ️</span>
+        <span id="toast-message">Mensaje del sistema</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full bg-slate-100 border-t border-slate-200 py-5 text-center text-[10px] text-slate-500 font-medium">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 2026 Universidad de Los Lagos - Departamento de Ciencias de la Ingeniería</p>
+            <p>Rigor y especificaciones docentes según estándar académico IEEE.</p>
+        </div>
+    </footer>
+
+    <!-- Lógica de Control del Cuestionario -->
+    <script>
+        // Banco de Preguntas con rigor conceptual según nota técnica y reglas de ítem
+        const questions = [
+            {
+                category: "PROCESOS",
+                question: "1. En un proyecto de edificación, el supervisor detecta que la cuadrilla de hormigonado detiene sus labores durante 35 minutos debido a que el camión mixer se encuentra retenido en un control de tráfico externo. De acuerdo con Lean Construction, ¿bajo qué categoría de desperdicio técnico (NAV) de la metodología DOWNTIME se clasifica esta ineficiencia?",
+                options: [
+                    { text: "A) Transporte (T), por involucrar el desplazamiento de materiales críticos fuera de los límites físicos de la obra.", isCorrect: false },
+                    { text: "B) Esperas (W), debido a la inactividad forzada de la mano de obra directa por la falta de entrega oportuna del insumo.", isCorrect: true },
+                    { text: "C) Sobreprocesamiento (E), porque el hormigón experimenta un fraguado parcial que requiere un mezclado adicional.", isCorrect: false },
+                    { text: "D) Movimiento (M), dado que la cuadrilla debe reubicarse de manera temporal en otro sector de vaciado.", isCorrect: false }
+                ],
+                explanation: "El tiempo muerto generado por la demora logística de suministros críticos externos (mixer) detiene el flujo secuencial de producción y se clasifica bajo el desperdicio de Esperas (W - Waiting) en la metodología DOWNTIME."
+            },
+            {
+                category: "PARADIGMA",
+                question: "2. Durante la transición metodológica desde un sistema tradicional de planificación hacia el Last Planner System (LPS), un equipo técnico debate sobre los flujos de información. ¿Cuál es la diferencia medular en el control de producción entre la planificación convencional 'Push' (Empujar) y el enfoque 'Pull' (Atraer) que propone LPS?",
+                options: [
+                    { text: "A) El sistema Push programa actividades considerando exclusivamente restricciones operativas, mientras que el enfoque Pull empuja de forma masiva actividades a terreno mediante Gantt semanales rígidas.", isCorrect: false },
+                    { text: "B) El sistema Push utiliza software de programación de alta complejidad algorítmica, mientras que el enfoque Pull limita su control a tableros analógicos y notas adhesivas.", isCorrect: false },
+                    { text: "C) El sistema Push optimiza la nivelación de recursos financieros de la oficina central, mientras que el enfoque Pull incrementa el inventario de materiales en la faena.", isCorrect: false },
+                    { text: "D) El sistema Push define compromisos de ejecución basados en rendimientos teóricos ('Debería'), mientras que el enfoque Pull protege el flujo constructivo en cascada, validando la viabilidad real de terreno ('Se Puede').", isCorrect: true }
+                ],
+                explanation: "La planificación tradicional 'Push' empuja las tareas según metas ideales centralizadas. LPS es un sistema 'Pull' que protege los compromisos operativos mediante el análisis Lookahead, garantizando que solo se programe semanalmente lo que esté libre de restricciones."
+            },
+            {
+                category: "LOOKAHEAD",
+                question: "3. En la implementación de Last Planner System (LPS), la Planificación Lookahead o intermedia (con una ventana típica de 4 a 6 semanas) es considerada el núcleo de la estabilización del flujo. ¿Cuál es la función operativa prioritaria de esta etapa?",
+                options: [
+                    { text: "A) Realizar el análisis sistemático y la remoción de restricciones operativas, liberando frentes para asegurar que las actividades sean ejecutables.", isCorrect: true },
+                    { text: "B) Definir las metas maestras e hitos contractuales de término del proyecto para procesar los estados de pago del mandante.", isCorrect: false },
+                    { text: "C) Monitorear en tiempo real las variaciones de costo directo del proyecto frente al presupuesto aprobado.", isCorrect: false },
+                    { text: "D) Evaluar retrospectivamente el cumplimiento del plan semanal mediante indicadores probabilísticos de productividad.", isCorrect: false }
+                ],
+                explanation: "La Planificación Lookahead actúa como un filtro operativo para identificar y remover de manera sistemática las restricciones del proyecto (planos, materiales, aprobaciones, etc.), permitiendo que las tareas avancen de 'Debería' (Should) a 'Se Puede' (Can)."
+            },
+            {
+                category: "MÉTRICAS",
+                question: "4. Al finalizar el ciclo semanal en una obra civil, se determina que de 10 actividades comprometidas en la reunión de coordinación, se completaron satisfactoriamente 7 partidas. Entre las incumplidas, 2 se debieron a un retraso en la entrega de acero y 1 a la rotura de una tubería de agua. ¿Cuál es la métrica de control y la acción correctiva correspondiente de acuerdo con LPS?",
+                options: [
+                    { text: "A) Se registra un PPC del 30% y se reprograman las tareas directamente en el software Primavera sin modificar la secuencia constructiva de terreno.", isCorrect: false },
+                    { text: "B) Se establece un índice de rendimiento de plazos (SPI) de 0.70 y se aplica una sanción económica inmediata al subcontratista de enfierradura.", isCorrect: false },
+                    { text: "C) Se calcula un Porcentaje de Plan Completado (PPC) de 70% y se genera un registro formal de Causas de No Cumplimiento (CNC) para analizar desviaciones.", isCorrect: true },
+                    { text: "D) Se formula una reprogramación acelerada del camino crítico aplicando técnicas de crashing en las partidas de obra gruesa afectadas.", isCorrect: false }
+                ],
+                explanation: "El PPC se calcula dividiendo las tareas terminadas por las comprometidas (7/10 = 70%). Las causas de retraso se categorizan formalmente como CNC para aplicar de manera inmediata acciones preventivas que eviten su recurrencia."
+            },
+            {
+                category: "COMPROMISOS",
+                question: "5. Durante la sesión de compromisos semanales de LPS, un subcontratista de instalaciones sanitarias rechaza comprometerse a instalar las tuberías en el piso 5, argumentando que el moldaje de la losa de ese nivel aún no ha sido retirado de forma oficial. ¿Cómo debe proceder el Ingeniero Residente de acuerdo con la doctrina de Last Planner?",
+                options: [
+                    { text: "A) Exigir la firma del compromiso semanal de todas formas para resguardar la secuencia lógica de la carta Gantt general.", isCorrect: false },
+                    { text: "B) Respaldar la decisión del capataz y rechazar la actividad para el programa semanal por mantener una restricción técnica sin liberar.", isCorrect: true },
+                    { text: "C) Programar la actividad con carácter de prioritaria y aplicar multas automáticas en el estado de pago del periodo vigente.", isCorrect: false },
+                    { text: "D) Modificar unilateralmente la especificación técnica en Google Docs para eximir del hito de aprobación del inspector.", isCorrect: false }
+                ],
+                explanation: "Bajo las reglas de LPS, una actividad solo se transfiere a la programación semanal (WILL / Se hará) si está 100% libre de restricciones (CAN / Se puede). Introducir tareas bloqueadas fragmenta el flujo y reduce la confiabilidad del sistema."
+            },
+            {
+                category: "PROCESOS",
+                question: "6. ¿Cómo define la filosofía Lean Construction el Trabajo Contributorio o de Soporte (TC) dentro del flujo operativo de una faena de edificación?",
+                options: [
+                    { text: "A) Tareas logísticas, de transporte interno o auxiliares indispensables para viabilizar el trabajo, aunque no aporten transformación física directa.", isCorrect: true },
+                    { text: "B) Procesos de transformación física que modifican directamente el estado de la obra de acuerdo con los requerimientos contractuales del cliente.", isCorrect: false },
+                    { text: "C) Reprocesos y demoliciones originados por fallas en el control de calidad que consumen recursos adicionales de la partida.", isCorrect: false },
+                    { text: "D) Adquisición y acopio preventivo de insumos críticos con el fin de proteger la obra ante la inflación de precios del mercado.", isCorrect: false }
+                ],
+                explanation: "El Trabajo Contributorio (TC) no añade valor directo al producto final (como transportar moldajes o montar andamios), pero es operacionalmente indispensable para posibilitar el Trabajo que Sí Agrega Valor (TAV)."
+            },
+            {
+                category: "ESTABILIZACIÓN",
+                question: "7. En Lean Construction, el concepto de 'Flujo de Procesos' busca la continuidad de la producción de forma rítmica. ¿Cuál es la función técnica de un amortiguador (buffer) de capacidad en el diseño de un flujo de producción?",
+                options: [
+                    { text: "A) Aumentar de manera artificial los plazos contractuales para contar con holguras ante posibles reclamos legales de los subcontratistas.", isCorrect: false },
+                    { text: "B) Eliminar la necesidad de monitoreo por parte de la inspección técnica al delegar la aprobación de calidad en las cuadrillas de obra.", isCorrect: false },
+                    { text: "C) Reducir los costos directos de mano de obra mediante la disminución de los frentes de trabajo paralelos activos en el proyecto.", isCorrect: false },
+                    { text: "D) Absorber la variabilidad inherente de la obra mediante amortiguadores planificados de tiempo, inventario o capacidad para proteger el ritmo de las partidas.", isCorrect: true }
+                ],
+                explanation: "Un amortiguador (buffer) es un mecanismo de contingencia planificado (sea tiempo, inventario o capacidad) diseñado explícitamente para mitigar el impacto de la variabilidad de terreno en la secuencia de producción."
+            },
+            {
+                category: "RESTRICCIONES",
+                question: "8. ¿Qué representa técnicamente una 'Restricción' en la metodología del Last Planner System (LPS)?",
+                options: [
+                    { text: "A) La duración mínima teórica de una partida calculada a través del método de ruta crítica tradicional (CPM).", isCorrect: false },
+                    { text: "B) Una condición, recurso o información faltante que impide la ejecución segura, continua y eficiente de una actividad de construcción.", isCorrect: true },
+                    { text: "C) El número máximo de operarios autorizados por la normativa de prevención de riesgos en espacios confinados.", isCorrect: false },
+                    { text: "D) Cualquier limitación presupuestaria impuesta de forma exógena por la casa matriz al equipo de control de proyectos.", isCorrect: false }
+                ],
+                explanation: "Una restricción es cualquier obstáculo técnico, físico, legal o de diseño que bloquea el inicio o desarrollo óptimo de una actividad de obra. Debe ser analizada y removida de manera planificada."
+            },
+            {
+                category: "MEJORA",
+                question: "9. Al realizar el análisis de desviaciones al final de la semana, se detecta que una Causa de No Cumplimiento (CNC) recurrente es 'Falta de planos de ingeniería actualizados'. ¿Qué herramienta de mejora continua Lean es la más apropiada para abordar este problema de raíz?",
+                options: [
+                    { text: "A) Incrementar la cantidad de supervisores de obra para controlar rígidamente el rendimiento individual de cada operario.", isCorrect: false },
+                    { text: "B) Implementar la técnica de los '5 Porqués' para identificar fallas raíz en los flujos de información o suministro y formular planes de acción.", isCorrect: true },
+                    { text: "C) Rediseñar de manera inmediata el programa maestro del proyecto agregando horas extraordinarias a todo el personal de la faena.", isCorrect: false },
+                    { text: "D) Externalizar la gestión de control de plazos a una consultora externa para desvincular a la oficina técnica del proyecto.", isCorrect: false }
+                ],
+                explanation: "La técnica de los '5 Porqués' de la metodología Lean permite profundizar en las causas sistémicas de las ineficiencias de comunicación o diseño técnico para implementar planes de acción preventivos."
+            },
+            {
+                category: "CASCADA",
+                question: "10. ¿Cómo interactúan formalmente la Planificación Maestra (Gantt contractual) y la programación Lookahead intermedia en Last Planner System?",
+                options: [
+                    { text: "A) La Planificación Maestra queda anulada de forma automática al iniciar la etapa operativa de programación Lookahead.", isCorrect: false },
+                    { text: "B) El Lookahead calcula de forma independiente las curvas de costos mensuales, sin considerar las metas físicas del programa maestro.", isCorrect: false },
+                    { text: "C) El programa maestro define la línea base de hitos ('Debería'), mientras que el Lookahead detalla y depura actividades para evaluar su viabilidad real ('Se Puede').", isCorrect: true },
+                    { text: "D) El Lookahead establece compromisos de corto plazo inalterables frente a cambios o interferencias detectadas en la ingeniería.", isCorrect: false }
+                ],
+                explanation: "La Planificación Maestra proporciona el marco y los hitos contractuales a largo plazo (SHOULD). El Lookahead desglosa secuencialmente las metas a mediano plazo para identificar tempranamente las restricciones que limitan su viabilidad (CAN)."
+            }
+        ];
+
+        let studentEmail = "";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = Array(questions.length).fill(null); // Almacenará: { selectedIndex, isCorrect, answered: true }
+
+        // Inicializar pantallas
+        function validateAndStart() {
+            const emailInput = document.getElementById('email').value.trim();
+            if (!emailInput) {
+                showToast("Por favor, ingrese su nombre de usuario.", "⚠️");
+                return;
+            }
+            
+            // Generar correo ulagos completo
+            studentEmail = emailInput.toLowerCase().endsWith('@alumnos.ulagos.cl') 
+                ? emailInput.toLowerCase() 
+                : `${emailInput.toLowerCase()}@alumnos.ulagos.cl`;
+
+            // Validación de estructura mínima
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@alumnos\.ulagos\.cl$/i;
+            if (!emailRegex.test(studentEmail)) {
+                showToast("Estructura de usuario inválida. Intente de nuevo.", "❌");
+                return;
+            }
+
+            // Guardar e ingresar
+            document.getElementById('current-user-email').innerText = studentEmail;
+            document.getElementById('user-display').classList.remove('hidden');
+            
+            // Transición de pantalla
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        // Renderizar pregunta actual
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            const state = userAnswers[currentQuestionIndex];
+
+            // Barra de progreso
+            document.getElementById('quiz-progress-text').innerText = `Pregunta ${currentQuestionIndex + 1} de ${questions.length}`;
+            const progressPercent = Math.round(((currentQuestionIndex) / questions.length) * 100);
+            document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('quiz-percentage-text').innerText = `Progreso: ${progressPercent}%`;
+
+            // Actualizar enunciado
+            document.getElementById('question-text').innerText = q.question;
+
+            // Renderizar opciones como tarjetas interactivas
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = "relative flex items-center";
+
+                const isChecked = state && state.selectedIndex === index;
+                const isDisabled = state !== null ? 'disabled' : '';
+
+                optDiv.innerHTML = `
+                    <input type="radio" name="quiz-options" id="opt-${index}" value="${index}" ${isChecked ? 'checked' : ''} ${isDisabled} class="custom-radio hidden">
+                    <label for="opt-${index}" class="w-full text-xs font-semibold p-4 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 cursor-pointer fade-transition flex items-center gap-3 shadow-sm select-none">
+                        <span class="radio-indicator flex-shrink-0 w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center transition-all"></span>
+                        <span class="text-slate-700 leading-snug">${opt.text}</span>
+                    </label>
+                `;
+
+                // Añadir evento si no está respondida
+                if (state === null) {
+                    optDiv.querySelector('label').addEventListener('click', () => {
+                        document.getElementById('btn-action').disabled = false;
+                        document.getElementById('btn-action').classList.remove('opacity-55', 'cursor-not-allowed');
+                    });
+                }
+
+                optionsContainer.appendChild(optDiv);
+            });
+
+            // Control de retroalimentación
+            const fbContainer = document.getElementById('feedback-container');
+            if (state !== null) {
+                renderFeedback(state.isCorrect, q.explanation);
+                disableOptions(true);
+                updateActionButton(true);
+            } else {
+                fbContainer.classList.add('hidden');
+                updateActionButton(false);
+            }
+
+            // Botón Anterior
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+        }
+
+        // Bloquear opciones tras responder
+        function disableOptions(disable) {
+            const radios = document.getElementsByName('quiz-options');
+            for (let r of radios) {
+                r.disabled = disable;
+            }
+        }
+
+        // Renderizar bloque de feedback
+        function renderFeedback(isCorrect, explanation) {
+            const fbContainer = document.getElementById('feedback-container');
+            const fbIcon = document.getElementById('feedback-icon');
+            const fbStatus = document.getElementById('feedback-status');
+            const fbDesc = document.getElementById('feedback-desc');
+
+            fbContainer.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-800', 'bg-rose-50', 'border-rose-200', 'text-rose-800');
+
+            if (isCorrect) {
+                fbContainer.classList.add('bg-emerald-50', 'border-emerald-200/80', 'text-emerald-800');
+                fbIcon.innerText = "✅";
+                fbStatus.innerText = "Respuesta Correcta";
+            } else {
+                fbContainer.classList.add('bg-rose-50', 'border-rose-100', 'text-rose-900');
+                fbIcon.innerText = "❌";
+                fbStatus.innerText = "Respuesta Incorrecta";
+            }
+            fbDesc.innerText = explanation;
+        }
+
+        // Controlar estado del botón de acción (Validar vs Siguiente)
+        function updateActionButton(isAnswered) {
+            const btn = document.getElementById('btn-action');
+            if (isAnswered) {
+                if (currentQuestionIndex === questions.length - 1) {
+                    btn.innerText = "Finalizar Cuestionario";
+                    btn.className = "bg-[#5D7BA0] hover:bg-[#4A6FA5] text-white text-xs font-bold px-6 py-3 rounded-full transition-all active:scale-[0.98]";
+                } else {
+                    btn.innerText = "Siguiente Pregunta";
+                    btn.className = "bg-[#4A6FA5] hover:bg-[#5D7BA0] text-white text-xs font-bold px-6 py-3 rounded-full transition-all active:scale-[0.98]";
+                }
+                btn.disabled = false;
+            } else {
+                btn.innerText = "Validar Respuesta";
+                btn.className = "bg-slate-800 text-white text-xs font-bold px-6 py-3 rounded-full opacity-55 cursor-not-allowed transition-all";
+                btn.disabled = true;
+            }
+        }
+
+        // Procesar acción de botón principal
+        function handleActionButton() {
+            const state = userAnswers[currentQuestionIndex];
+            
+            if (state !== null) {
+                // Ya fue respondida, avanzar o finalizar
+                if (currentQuestionIndex === questions.length - 1) {
+                    showFinalResults();
+                } else {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }
+            } else {
+                // Validar respuesta
+                const selected = document.querySelector('input[name="quiz-options"]:checked');
+                if (!selected) {
+                    showToast("Por favor, seleccione una opción para continuar.", "⚠️");
+                    return;
+                }
+
+                const selectedIdx = parseInt(selected.value);
+                const q = questions[currentQuestionIndex];
+                const isCorrect = q.options[selectedIdx].isCorrect;
+
+                // Guardar estado
+                userAnswers[currentQuestionIndex] = {
+                    selectedIndex: selectedIdx,
+                    isCorrect: isCorrect
+                };
+
+                if (isCorrect) score++;
+
+                // Mostrar retroalimentación inmediata
+                renderFeedback(isCorrect, q.explanation);
+                disableOptions(true);
+                updateActionButton(true);
+            }
+        }
+
+        // Navegación pregunta anterior
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        // Mostrar resultados en la última pantalla
+        function showFinalResults() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            document.getElementById('final-score').innerText = score;
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('score-percentage').innerText = `Rendimiento: ${percentage}%`;
+
+            // Alerta si reprueba (menos de 3 respuestas correctas)
+            const failAlert = document.getElementById('fail-alert');
+            const retryBtn = document.getElementById('btn-retry');
+            if (score < 3) {
+                failAlert.classList.remove('hidden');
+                retryBtn.classList.remove('hidden');
+            } else {
+                failAlert.classList.add('hidden');
+                retryBtn.classList.add('hidden');
+            }
+        }
+
+        // Reintentar cuestionario (Puntajes bajos)
+        function restartQuiz() {
+            score = 0;
+            currentQuestionIndex = 0;
+            userAnswers = Array(questions.length).fill(null);
+
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Mostrar Toast del sistema
+        function showToast(message, icon = "ℹ️") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-icon').innerText = icon;
+            document.getElementById('toast-message').innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Generación del informe PDF en formato IEEE académico
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const today = new Date().toLocaleDateString('es-CL');
+            
+            // Header institucional y título formal estilo IEEE
+            doc.setFillColor(30, 41, 59); // Slate-900
+            doc.rect(0, 0, 210, 38, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text("UNIVERSIDAD DE LOS LAGOS", 20, 16);
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text("Departamento de Ciencias de la Ingeniería / Ingeniería Civil en Obras Civiles", 20, 23);
+            doc.text("Asignatura: Planificación y Control de Proyectos de Construcción", 20, 28);
+            
+            // Metadata del estudiante
+            doc.setTextColor(51, 65, 85); // Slate-700
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("REPORTE OFICIAL DE RENDIMIENTO - LECTURA PREVIA LEAN & LPS", 20, 52);
+            
+            doc.setDrawColor(226, 232, 240); // Slate-200
+            doc.line(20, 56, 190, 56);
+            
+            doc.setFont("helvetica", "normal");
+            doc.text("Estudiante:", 20, 66);
+            doc.setFont("helvetica", "bold");
+            doc.text(studentEmail, 50, 66);
+            
+            doc.setFont("helvetica", "normal");
+            doc.text("Fecha de Evaluación:", 20, 73);
+            doc.setFont("helvetica", "bold");
+            doc.text(today, 60, 73);
+            
+            doc.setFont("helvetica", "normal");
+            doc.text("Puntaje Logrado:", 20, 80);
+            doc.setFont("helvetica", "bold");
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            doc.text(`${score} de 10 preguntas correctas (${percentage}% de Rendimiento)`, 55, 80);
+            
+            doc.line(20, 86, 190, 86);
+            
+            // Título de la tabla de resultados
+            doc.setFont("helvetica", "bold");
+            doc.text("Registro Detallado de Respuestas Evaluadas", 20, 96);
+            
+            // Listado de preguntas
+            let yPosition = 106;
+            doc.setFontSize(8.5);
+            
+            questions.forEach((q, idx) => {
+                const answerState = userAnswers[idx];
+                const statusText = answerState && answerState.isCorrect ? "CORRECTA" : "INCORRECTA";
+                
+                // Color para el estado (Verde para correcto, Rojo para incorrecto)
+                if (statusText === "CORRECTA") {
+                    doc.setTextColor(16, 124, 65); // Emerald green
+                } else {
+                    doc.setTextColor(168, 44, 44); // Rose red
+                }
+                
+                doc.setFont("helvetica", "bold");
+                doc.text(`Pregunta ${idx + 1}: ${statusText}`, 20, yPosition);
+                
+                // Cuerpo de la pregunta (formateado para evitar desbordamiento)
+                doc.setTextColor(71, 85, 105); // Slate-600
+                doc.setFont("helvetica", "normal");
+                
+                const splitText = doc.splitTextToSize(q.question.replace(`${idx + 1}. `, ""), 160);
+                doc.text(splitText, 25, yPosition + 4.5);
+                
+                yPosition += 9 + (splitText.length * 4.5);
+                
+                // Verificar si se necesita una segunda página
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 25;
+                }
+            });
+            
+            // Pie de página oficial
+            doc.setFontSize(8);
+            doc.setTextColor(148, 163, 184); // Slate-400
+            doc.setFont("helvetica", "italic");
+            doc.text("Este reporte ha sido generado de manera automática en el navegador mediante el control integrado del curso. Universidad de Los Lagos.", 20, 285);
+            
+            doc.save(`Resumen_Lean_LPS_${studentEmail.split('@')[0]}.pdf`);
+            showToast("Reporte descargado correctamente.", "📄");
+        }
+    </script>
+</body>
+</html>
