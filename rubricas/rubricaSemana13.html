@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rúbrica de Evaluación: EVM en Construcción</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --light: #f8fafc;
+            --border: #cbd5e1;
+            --text: #1e293b;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #e2e8f0;
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Contenedor principal optimizado estricto para tamaño Carta */
+        #rubric-container {
+            background: white;
+            width: 216mm; /* Ancho Carta */
+            min-height: 279mm; /* Alto Carta */
+            padding: 10mm 12mm; /* Padding reducido para asegurar que cabe */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header h2 {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: normal;
+            margin-top: 4px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 3px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Tabla de Rúbrica - Espaciados reducidos */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5px; /* Ligeramente más pequeño para caber */
+            margin-bottom: 12px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 4px; /* Padding interno de celdas reducido */
+            vertical-align: top;
+            text-align: left;
+            position: relative;
+            line-height: 1.3;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 10px;
+            padding: 6px;
+        }
+
+        .criterion-col {
+            width: 16%;
+            background-color: var(--light);
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .weight-col {
+            width: 8%;
+            text-align: center;
+            background-color: #eff6ff;
+            font-weight: bold;
+        }
+
+        /* Celdas de niveles de logro */
+        .level-cell {
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            width: 15.2%; 
+        }
+
+        .level-cell:hover {
+            background-color: #eff6ff;
+        }
+
+        .level-cell.selected {
+            background-color: var(--primary);
+            color: white;
+            font-weight: normal;
+        }
+
+        .level-cell.selected .score-badge {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .score-badge {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background-color: #e2e8f0;
+            color: var(--text);
+            font-weight: bold;
+            font-size: 10px;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        /* Observaciones y Resultados - Alturas reducidas */
+        .observations {
+            margin-bottom: 12px;
+        }
+
+        .observations label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .observations textarea {
+            width: 100%;
+            height: 45px; /* Altura reducida */
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 11px;
+            resize: none;
+        }
+
+        .results-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto; 
+            border-top: 2px solid var(--border);
+            padding-top: 12px;
+        }
+
+        .results-box {
+            text-align: center;
+        }
+
+        .results-box label {
+            display: block;
+            font-size: 12px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .results-box .value {
+            font-size: 22px;
+            font-weight: bold;
+            padding: 4px 15px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            min-width: 100px;
+            display: inline-block;
+        }
+
+        #finalGrade.approved {
+            color: var(--success);
+            border-color: var(--success);
+            background-color: #f0fdf4;
+        }
+
+        #finalGrade.failed {
+            color: var(--danger);
+            border-color: var(--danger);
+            background-color: #fef2f2;
+        }
+
+        /* Botón de Descarga */
+        #downloadBtn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        #downloadBtn:hover {
+            background-color: #15803d;
+        }
+
+        #downloadBtn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rubric-container">
+        <header>
+            <h1>Rúbrica de Evaluación: Gestión de Valor Ganado (EVM)</h1>
+            <h2>Ingeniería Civil en Obras Civiles - Evaluación de Informe Técnico</h2>
+        </header>
+
+        <div class="info-grid">
+            <div class="input-group">
+                <label for="studentName">Nombre del Estudiante / Equipo:</label>
+                <input type="text" id="studentName" placeholder="Ingrese nombre(s)">
+            </div>
+            <div class="input-group">
+                <label for="evalDate">Fecha de Evaluación:</label>
+                <input type="date" id="evalDate">
+            </div>
+        </div>
+
+        <table id="rubricTable">
+            <thead>
+                <tr>
+                    <th class="criterion-col">Criterio a Evaluar</th>
+                    <th>Excelente (5)</th>
+                    <th>Bueno (4)</th>
+                    <th>Satisfactorio (3)</th>
+                    <th>Necesita Mejora (2)</th>
+                    <th>Insuficiente (1)</th>
+                    <th class="weight-col">Pond.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-weight="0.30">
+                    <td class="criterion-col">Rigor y Precisión Matemática</td>
+                    <td class="level-cell" data-score="5">Todos los cálculos numéricos de EVM (PV, SV, CV, SPI, CPI) y proyecciones (EAC, ETC, VAC, TCPI) son 100% correctos, detallando claramente los pasos y fórmulas estándar.<div class="score-badge">5</div></td>
+                    <td class="level-cell" data-score="4">La mayoría de los cálculos son correctos (más del 80%), presentando solo pequeños desvíos de redondeo que no alteran los resultados generales.<div class="score-badge">4</div></td>
+                    <td class="level-cell" data-score="3">Los cálculos principales son correctos, pero presenta errores puntuales en las proyecciones (EAC, ETC, VAC o TCPI).<div class="score-badge">3</div></td>
+                    <td class="level-cell" data-score="2">Se presentan serios errores en las fórmulas básicas de varianzas e índices, o se omiten pasos clave en el desarrollo.<div class="score-badge">2</div></td>
+                    <td class="level-cell" data-score="1">Los resultados numéricos son incorrectos en su totalidad o no se presentan los cálculos requeridos en el informe.<div class="score-badge">1</div></td>
+                    <td class="weight-col">30%</td>
+                </tr>
+                <tr data-weight="0.20">
+                    <td class="criterion-col">Interpretación Conceptual de Métricas</td>
+                    <td class="level-cell" data-score="5">Explica detallada y lógicamente el significado físico en obra de cada indicador (SV, CV, SPI, CPI, EAC, ETC, VAC, TCPI), conectándolo con la realidad del proyecto.<div class="score-badge">5</div></td>
+                    <td class="level-cell" data-score="4">Describe de forma correcta la situación del proyecto a partir de los indicadores, aunque de manera genérica y sin profundizar en la práctica real.<div class="score-badge">4</div></td>
+                    <td class="level-cell" data-score="3">Identifica adecuadamente si el proyecto está atrasado/adelantado o sobre presupuesto, pero confunde índices predictivos complejos (TCPI, VAC).<div class="score-badge">3</div></td>
+                    <td class="level-cell" data-score="2">Muestra serias confusiones conceptuales, interpretando varianzas negativas como favorables o confundiendo variaciones monetarias con tiempo.<div class="score-badge">2</div></td>
+                    <td class="level-cell" data-score="1">No presenta interpretaciones analíticas para los resultados numéricos obtenidos en el desarrollo.<div class="score-badge">1</div></td>
+                    <td class="weight-col">20%</td>
+                </tr>
+                <tr data-weight="0.20">
+                    <td class="criterion-col">Análisis Crítico y Propuestas</td>
+                    <td class="level-cell" data-score="5">Analiza integralmente la salud del proyecto. Propone planes de acción correctiva (costos y plazos) altamente viables, específicos, realistas y técnicamente justificados.<div class="score-badge">5</div></td>
+                    <td class="level-cell" data-score="4">Evalúa adecuadamente la situación general. Sugiere medidas correctivas viables, pero su especificación o justificación técnica para la obra es moderada.<div class="score-badge">4</div></td>
+                    <td class="level-cell" data-score="3">Analiza la situación superficialmente. Propone medidas correctivas genéricas ("trabajar más rápido") sin mayor sustento o análisis de viabilidad.<div class="score-badge">3</div></td>
+                    <td class="level-cell" data-score="2">El análisis de salud del proyecto es deficiente. Las propuestas no corresponden a las problemáticas reales de costo y plazo reveladas por los datos.<div class="score-badge">2</div></td>
+                    <td class="level-cell" data-score="1">No se presenta un análisis crítico del proyecto ni se proponen acciones de mejora o control para la obra.<div class="score-badge">1</div></td>
+                    <td class="weight-col">20%</td>
+                </tr>
+                <tr data-weight="0.15">
+                    <td class="criterion-col">Redacción, Estilo y Ortografía</td>
+                    <td class="level-cell" data-score="5">Tono formal, técnico e impersonal de ingeniería. Redacción fluida, clara y sin errores ortográficos, gramaticales o de puntuación.<div class="score-badge">5</div></td>
+                    <td class="level-cell" data-score="4">Redacción clara y con buen vocabulario técnico. Presenta mínimos errores ortográficos (menos de 3) o ligeras pérdidas de fluidez gramatical.<div class="score-badge">4</div></td>
+                    <td class="level-cell" data-score="3">Comprensible, pero abusa de expresiones coloquiales o primera persona ("hicimos"), o presenta errores reiterados (3 a 5 errores).<div class="score-badge">3</div></td>
+                    <td class="level-cell" data-score="2">Redacción desarticulada, redundante y confusa. Múltiples fallas ortográficas o sintácticas (más de 6 errores) que dificultan la interpretación.<div class="score-badge">2</div></td>
+                    <td class="level-cell" data-score="1">Redacción incomprensible, lenguaje inapropiado para contexto académico de ingeniería y abundantes faltas ortográficas.<div class="score-badge">1</div></td>
+                    <td class="weight-col">15%</td>
+                </tr>
+                <tr data-weight="0.15">
+                    <td class="criterion-col">Estructura, Formato y Presentación</td>
+                    <td class="level-cell" data-score="5">PDF impecable, estructurado por secciones ordenadas, tipografías homogéneas, tablas con títulos claros y diseño visualmente profesional.<div class="score-badge">5</div></td>
+                    <td class="level-cell" data-score="4">Presentación limpia, estructurada y ordenada. Tablas e ilustraciones legibles y formato mayormente consistente.<div class="score-badge">4</div></td>
+                    <td class="level-cell" data-score="3">Cumple con estructura básica, pero formato desordenado, tipografías inconsistentes o tablas mal alineadas.<div class="score-badge">3</div></td>
+                    <td class="level-cell" data-score="2">Formato deficiente, sin estructura clara de secciones, no se identifican integrantes o carece de flujo de lectura coherente.<div class="score-badge">2</div></td>
+                    <td class="level-cell" data-score="1">Formato totalmente desordenado o borrador no estructurado que no cumple normas mínimas de entrega académica.<div class="score-badge">1</div></td>
+                    <td class="weight-col">15%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="observations">
+            <label for="obsText">Observaciones y Retroalimentación al Estudiante:</label>
+            <textarea id="obsText" placeholder="Escriba aquí los comentarios respecto al desempeño general, fortalezas y áreas de mejora..."></textarea>
+        </div>
+
+        <div class="results-section">
+            <div class="results-box">
+                <label>Puntaje Total (1 a 5)</label>
+                <div class="value" id="totalScore">0.0</div>
+            </div>
+            <div class="results-box">
+                <label>Nota Final (1.0 - 7.0)</label>
+                <div class="value" id="finalGrade">1.0</div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="downloadBtn" onclick="downloadPDF()">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+        </svg>
+        Descargar Evaluación en PDF
+    </button>
+
+    <script>
+        // Lógica de selección interactiva
+        const levelCells = document.querySelectorAll('.level-cell');
+        const totalScoreEl = document.getElementById('totalScore');
+        const finalGradeEl = document.getElementById('finalGrade');
+
+        levelCells.forEach(cell => {
+            cell.addEventListener('click', function() {
+                const row = this.parentElement;
+                row.querySelectorAll('.level-cell').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                calculateScore();
+            });
+        });
+
+        function calculateScore() {
+            let totalScore = 0;
+            let allAnswered = true;
+            const rows = document.querySelectorAll('#rubricTable tbody tr');
+            
+            rows.forEach(row => {
+                const selectedCell = row.querySelector('.level-cell.selected');
+                if (selectedCell) {
+                    const score = parseFloat(selectedCell.dataset.score);
+                    const weight = parseFloat(row.dataset.weight);
+                    totalScore += (score * weight);
+                } else {
+                    allAnswered = false;
+                }
+            });
+
+            if (allAnswered) {
+                totalScoreEl.textContent = totalScore.toFixed(2);
+                let grade = 1.0 + ((totalScore - 1.0) / (5.0 - 1.0)) * 6.0;
+                grade = Math.round(grade * 10) / 10;
+                finalGradeEl.textContent = grade.toFixed(1);
+                
+                if (grade >= 4.0) {
+                    finalGradeEl.classList.add('approved');
+                    finalGradeEl.classList.remove('failed');
+                } else {
+                    finalGradeEl.classList.add('failed');
+                    finalGradeEl.classList.remove('approved');
+                }
+            } else {
+                totalScoreEl.textContent = "0.0";
+                finalGradeEl.textContent = "1.0";
+                finalGradeEl.classList.remove('approved');
+                finalGradeEl.classList.add('failed');
+            }
+        }
+
+        // Generación de PDF Optimizada
+        function downloadPDF() {
+            const dateInput = document.getElementById('evalDate');
+            if (!dateInput.value) {
+                const today = new Date();
+                dateInput.value = today.toISOString().split('T')[0];
+            }
+
+            const element = document.getElementById('rubric-container');
+            const btn = document.getElementById('downloadBtn');
+            
+            // Ocultar botón
+            btn.style.display = 'none';
+            
+            // Forzar scroll arriba para evitar el "margen fantasma" de html2canvas
+            window.scrollTo(0, 0);
+            document.body.style.padding = '0';
+
+            const opt = {
+                margin: 0,
+                filename: 'Rubrica_EVM_Construccion.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: 816, // Ancho carta en pixeles a 96dpi
+                    windowHeight: 1056 // Alto carta en pixeles a 96dpi
+                },
+                jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: 'avoid-all' } // Prevenir cortes de página
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restaurar botón y estilo body
+                btn.style.display = 'flex';
+                document.body.style.padding = '20px';
+            });
+        }
+
+        document.getElementById('evalDate').valueAsDate = new Date();
+    </script>
+</body>
+</html>
